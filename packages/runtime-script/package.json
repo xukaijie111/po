@@ -1,0 +1,10 @@
+{
+
+    "name":"@po/runtime-script",
+    "main": "dist/runtime-script.cjs.js",
+    "module":"dist/runtime-script.es.js",
+    "types": "dist/index.d.ts",
+    "files": [
+      "dist"
+    ]
+}

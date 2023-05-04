@@ -1,0 +1,10 @@
+{
+
+    "name":"@po/runtime-base",
+    "main": "dist/compiler-base.cjs.js",
+    "module":"dist/compiler-base.es.js",
+    "types": "dist/index.d.ts",
+    "files": [
+      "dist"
+    ]
+}
