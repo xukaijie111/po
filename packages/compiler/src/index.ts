@@ -1,1 +1,3 @@
-console.log(1)
+
+export * from './ast'
+export * from './parse'

@@ -6,6 +6,9 @@
     "files": [
       "dist"
     ],
+    "scripts": {
+      "dev": "ts-node  -r tsconfig-paths/register ./test/index.ts --files"
+    },
     "dependencies": {
       "@babel/core": "^7.21.0",
       "@babel/generator": "^7.21.1",
@@ -20,8 +23,7 @@
       "@babel/types": "^7.21.0",
       "@types/node": "^18.14.0",
       "@types/less": "^3.0.3",
-      "@wosai/cjs-util": "workspace:^1.0.0",
-      "@wosai/shared": "workspace:1.0.0",
+      "@po/shared": "workspace:1.0.0",
       "async": "^3.2.4",
       "enhanced-resolve": "^5.12.0",
       "fs-extra": "^10.1.0",
@@ -38,6 +40,8 @@
       "relative": "^3.0.2",
       "reserved-words": "^0.1.2",
       "watchpack": "^2.4.0",
-      "xtend": "^4.0.2"
+      "xtend": "^4.0.2",
+      "ts-node": "^10.9.1",
+      "tsconfig-paths": "^3.14.2"
     }
 }

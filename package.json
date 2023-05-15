@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@mini-types/alipay": "^2.0.19",
     "@rollup/plugin-commonjs": "^18.1.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
@@ -56,12 +55,6 @@
     "@babel/traverse": "^7.21.0",
     "@babel/types": "^7.21.0",
     "@types/babel__core": "^7.20.0",
-    "@types/babel__generator": "7.6.4",
-    "@wosai/cjs-util": "workspace:*",
-    "@wosai/compiler-po": "workspace:*",
-    "@wosai/di": "workspace:*",
-    "@wosai/reactivity": "workspace:*",
-    "@wosai/shared": "workspace:*",
-    "ts-node": "^10.9.1"
+    "@types/babel__generator": "7.6.4"
   }
 }
