@@ -28,28 +28,13 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
         if (type !== NodeTypes.ELEMENT ) return ;
 
-        let hasIfExpression:string = ""
-        let hasForExpression:string = ""
-        let hasElseIfExpression:string = ""
-        let hasElse :boolean = false;
 
 
 
         return () => {
 
 
-            function buildPropsCodeGen() {
-
-                let { props = [] } = node;
-
-
-
-                for (let i = 0; i < props.length; i++ ) {
-
-                }
-
-
-            }
+           
 
 
         }

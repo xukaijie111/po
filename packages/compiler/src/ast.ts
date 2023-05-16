@@ -103,16 +103,13 @@ export type TemplateNode = PlaiElement | TextNode | CommentNode | InterpolationN
 
 export type CodegenNode =
  ElementCodegenNode
-    | TextCodegenNode |
-    PropsCodegenNode | RootCodeGen
+    | TextCodegenNode 
     | CommentCodegenNode | IfBranchCodegenNode 
     | ForBranchCodeGenNode
     | ComponentCodegenNode
 
 export type BaseCodegenNode = {
     type: NodeTypes,
-    hosited?: string | undefined,
-    hostiedDefined?: boolean,
     children?: CodegenNode[] | undefined | string,
     tagKey?: string
 }
@@ -164,9 +161,9 @@ export interface CommentCodegenNode extends BaseCodegenNode {
     children: string
 }
 
-export interface PropsCodegenNode extends BaseCodegenNode {
-    type: NodeTypes.PROPS,
-    props: CodeGenProp[]
+export interface PropsCodegenNode  {
+    key: string,
+    value: string | undefined
 }
 
 export type CodeGenProp = {
