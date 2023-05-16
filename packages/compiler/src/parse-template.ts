@@ -312,9 +312,9 @@ function parseHTML(context: ParseContext) {
             let policies = [
                 {
 
-                    // wx:xxx = ""
+                    // po:xxx = ""
                     match:(key:string,value:any) => {
-                        return /(?:^wx:([a-z0-9-]+))/i.exec(key)
+                        return /(?:^po:([a-z0-9-]+))/i.exec(key)
                     },
 
                     exec:(key:string,value:any,res:any) => {
@@ -387,6 +387,7 @@ function parseHTML(context: ParseContext) {
                 if (res) {
                     prop = exec(key,value,res) as AttributeConstantNode
                     props.push(prop)
+                    break;
                 }
             }
 

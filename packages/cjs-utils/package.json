@@ -1,0 +1,8 @@
+{
+    "name": "@po/cjs-utils",
+    "dependencies": {
+        "@types/node": "^18.14.0",
+        "fs-extra": "^10.1.0",
+        "relative": "^3.0.2"
+    }
+}

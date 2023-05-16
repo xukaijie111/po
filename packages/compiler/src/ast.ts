@@ -170,7 +170,6 @@ export interface PropsCodegenNode extends BaseCodegenNode {
 }
 
 export type CodeGenProp = {
-    type: NodeTypes,
     key: string,
     value: string | undefined
 }

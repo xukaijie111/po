@@ -1,3 +1,4 @@
 
 export * from './ast'
-export * from './parse'
+export * from './parse-template'
+export * from './parse-json'

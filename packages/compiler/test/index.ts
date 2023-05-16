@@ -4,8 +4,8 @@ import {
     baseParse
 } from '../src/index'
 
-let code = `<view></view>`
+let code = `<view po:for="{{items}}"></view>`
 
 let result = baseParse(code);
 
-console.log(result)
+console.log(result.children[0])
