@@ -20,3 +20,6 @@ export function deleteBrackets(value:any) {
     return value.replace(/^\s*{{\s*(((?!}}).)+)\s*}}\s*$/, ($0, $1) => $1); //去除开头结尾首位的空格
   }
   
+
+
+export * from './runtimeHelpers'

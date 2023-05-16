@@ -17,7 +17,7 @@
     "removeComments": false,
     "jsx": "preserve",
     "lib": ["esnext", "dom"],
-    "types": ["jest", "node","wechat-miniprogram","@mini-types/alipay"],
+    "types": ["jest", "node"],
     "rootDir": ".",
       "paths": {
         "@po/*": ["packages/*/src"]

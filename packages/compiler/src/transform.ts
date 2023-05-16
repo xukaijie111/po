@@ -7,13 +7,12 @@ import {
 
 import _ from 'lodash'
 
+
+
 export type TransformOptions = {
 
     transforms?:Array<any>,
-    directives?:{
-        for?:any,
-        if?:any,
-    }
+    directives?:Record<any,any>
 
 
 }

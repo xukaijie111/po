@@ -129,7 +129,8 @@ export function createParseContext(template: string, options: ParseOptions): Par
 
                     element.forInfo = {
                         itemName,
-                        indexName
+                        indexName,
+                        
                     }
                 }
             }

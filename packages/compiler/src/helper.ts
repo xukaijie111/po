@@ -221,3 +221,8 @@ export function processElemnetCodegenChild(node: TemplateNode,codegenNode:Elemen
   export function normalizeComponentName(name:string) {
     return `sqb-${name}`
   }
+
+
+
+
+  

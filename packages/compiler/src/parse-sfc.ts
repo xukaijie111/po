@@ -20,6 +20,22 @@ import {
     transform
 } from './transform'
 
+
+import {
+    processOnExpression
+} from './transforms/on'
+import {
+    createTransfromElement
+} from './transforms/transformElement'
+
+import {
+    transformInterpolation
+} from './transforms/transformInterpolation'
+
+import {
+    transformText
+} from './transforms/transformText'
+
 export type sfcOptions = {
     template:string,
     json:string,
@@ -94,8 +110,14 @@ function compileTemplate(context:SfcContext) {
     let transformed = transform(ast, {
 
         transforms:[
-
-        ]
-
+            createTransfromElement(context),
+            transformText,
+            transformInterpolation
+        ],
+        directives:{
+            on:processOnExpression
+        }
     })
+
+    console.log(`transformed is`,transformed)
 }
