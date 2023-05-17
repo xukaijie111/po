@@ -83,6 +83,8 @@ export function transform(ast: RootNode,options:TransformOptions) {
 
     traverseNode(ast,context);
 
+    return ast;
+
 }
 
 

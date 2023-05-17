@@ -1,5 +1,8 @@
 {
     "name": "@po/cjs-utils",
+    "main": "dist/cjs-util.cjs.js",
+    "module": "dist/cjs-util.es.js",
+    "types": "dist/index.d.ts",
     "dependencies": {
         "@types/node": "^18.14.0",
         "fs-extra": "^10.1.0",

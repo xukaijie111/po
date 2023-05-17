@@ -11,7 +11,8 @@ import {
     PropsCodegenNode,
     PlaiElement,
     IfBranchCodegenNode,
-    ForBranchCodeGenNode
+    ForBranchCodeGenNode,
+    ComponentCodegenNode
 } from '../ast'
 
 import _ from 'lodash'
@@ -24,6 +25,7 @@ import {
 
 import {
     RENDER_LIST,
+    CREATE_COMPONENT_VNODE,
     CREATE_COMMENT_VNODE,
     CREATE_ELEMENT_VNODE
 } from '@po/shared'
@@ -54,7 +56,7 @@ export function createTransfromElement(sfcContext:SfcContext) {
     return function(node:ElementNode,transformContext:TransformContext) {
 
 
-        let { type,props } = node;
+        let { type,props , tag} = node;
 
         if (type !== NodeTypes.ELEMENT ) return ;
 
@@ -68,6 +70,8 @@ export function createTransfromElement(sfcContext:SfcContext) {
             let propsCodeGenNode = buildPropsCodeGen();
 
             let elementCodegenNode = buildElementCodeGen();
+
+            let componentCodeGenNode = buildComponentCodegen();
 
             let forCodeGenNode = buildForCodeGen();
 
@@ -87,10 +91,12 @@ export function createTransfromElement(sfcContext:SfcContext) {
                 return;
             }
 
+            node.codegenNode = currentCodegenNode;
+
 
 
             function getCurrentCodeGenNode() {
-                return conditionCodeGenNode || forCodeGenNode || elementCodegenNode
+                return conditionCodeGenNode || forCodeGenNode || elementCodegenNode || componentCodeGenNode
             }
 
             function buildElementCodeGen():ElementCodegenNode {
@@ -109,6 +115,24 @@ export function createTransfromElement(sfcContext:SfcContext) {
     
                 return elementCodegenNode
 
+            }
+
+
+            function buildComponentCodegen(): ComponentCodegenNode{
+
+                if (isComponentTag(tag)) return ;
+                transformContext.helper(CREATE_COMPONENT_VNODE)
+
+                return {
+                    type:NodeTypes.COMPONENT,
+                    //@ts-ignore
+                    tag:`"${_.camelCase(node.tag)}"`,
+                        //@ts-ignore
+                    options:_.camelCase(node.tag),
+                    propsCodeGenNode,
+
+                    tagKey:CREATE_COMPONENT_VNODE,
+                }
             }
 
 

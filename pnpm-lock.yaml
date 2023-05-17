@@ -91,6 +91,16 @@ importers:
       tslib: 2.5.0
       typescript: 4.9.5
 
+  packages/cjs-utils:
+    specifiers:
+      '@types/node': ^18.14.0
+      fs-extra: ^10.1.0
+      relative: ^3.0.2
+    dependencies:
+      '@types/node': 18.16.9
+      fs-extra: 10.1.0
+      relative: 3.0.2
+
   packages/compiler:
     specifiers:
       '@babel/core': ^7.21.0

@@ -1,4 +1,7 @@
 {
     "name":"@po/shared",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "module": "dist/shared.es.js",
+    "main": "dist/shared.cjs.js",
+    "types": "dist/index.d.ts"
 }

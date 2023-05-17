@@ -130,7 +130,7 @@ export interface ElementCodegenNode extends BaseCodegenNode {
 export interface ComponentCodegenNode extends BaseCodegenNode {
     type: NodeTypes.COMPONENT,
     tag: string,
-    propcodegenNode?: Array<PropsCodegenNode>,
+    propsCodeGenNode?: Array<PropsCodegenNode>,
     options:string, // 自定义组件导出的配置
 }
 
