@@ -7,6 +7,9 @@ import {
 
 import _ from 'lodash'
 
+import {
+    RUNTIME_WEBVIEW_NPM
+} from '@po/shared'
 
 
 export type TransformOptions = {
@@ -42,7 +45,7 @@ function createTransformContext(ast: RootNode,options:TransformOptions) {
 
         },
         // 导入的其他文件或者npm 包
-        helper(key:string,value:string ) {
+        helper(key:string,value:string = RUNTIME_WEBVIEW_NPM ) {
 
             let { helpers } = ast;
 

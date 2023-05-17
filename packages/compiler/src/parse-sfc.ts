@@ -6,6 +6,7 @@ import {
     readFileSync,
     fileIsExist
 } from '@po/cjs-utils'
+import { RootNode } from './ast'
 
 import {
     parseJson,
@@ -72,7 +73,8 @@ function getSfcOptions(input:string | sfcOptions) {
 
 export type SfcContext = {
     options:sfcOptions,
-    parsedJson?:JsonResult
+    parsedJson?:JsonResult,
+    ast?:RootNode
 }
 
 export function createSfcContext(options:sfcOptions):SfcContext {
@@ -81,6 +83,23 @@ export function createSfcContext(options:sfcOptions):SfcContext {
         options,
        
     }
+}
+
+
+function pickContext(context:SfcContext) {
+
+    return {
+
+        json:{
+            rawCode:context.options.json,
+            parsed:context.parsedJson  
+        },
+        template:{
+            rawCode:context.options.template,
+            ast:context.ast
+        }
+    }
+
 }
 
 /**
@@ -98,6 +117,9 @@ export function compilerSfc(input:string | sfcOptions) {
     context.parsedJson = parseJson(context.options.json)
 
     compileTemplate(context)
+
+
+    return pickContext(context)
     
 }
 
@@ -107,7 +129,7 @@ function compileTemplate(context:SfcContext) {
 
     let ast = baseParse(context.options.template)
 
-    let transformed = transform(ast, {
+      transform(ast, {
 
         transforms:[
             createTransfromElement(context),
@@ -119,5 +141,6 @@ function compileTemplate(context:SfcContext) {
         }
     })
 
-    console.log(`transformed is`,transformed)
+    context.ast = ast;
+    
 }

@@ -37,3 +37,6 @@ export const helperNameMap: any = {
 
 }
 
+
+
+export const RUNTIME_WEBVIEW_NPM = "@po/runtime-webview"
