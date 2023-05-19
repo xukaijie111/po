@@ -10,6 +10,12 @@ let path = require('path')
 let file = path.resolve(__dirname,'./components/index.pxml')
 
 
-let res = compilerSfc(file)
+async function a(){
+    let res = await compilerSfc(file)
 
-console.log(res)
+    console.log(res)
+}
+
+a()
+
+

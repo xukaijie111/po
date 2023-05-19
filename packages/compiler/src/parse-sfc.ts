@@ -18,6 +18,11 @@ import {
 } from './parse-template'
 
 import {
+    StyleResult,
+    compileStyle
+} from './parse-style'
+
+import {
     transform
 } from './transform'
 
@@ -86,7 +91,26 @@ export function createSfcContext(options:sfcOptions):SfcContext {
 }
 
 
-function pickContext(context:SfcContext) {
+export type CompileResult = {
+
+    json:{
+        rawCode:string,
+        parsed:JsonResult
+    },
+
+    template:{
+        rawCode:string,
+        ast:RootNode
+    },
+
+    style:{
+        rawCode:string,
+        parsed:StyleResult
+    }
+
+}
+
+async function pickContext(context:SfcContext) : Promise<CompileResult> {
 
     return {
 
@@ -97,6 +121,11 @@ function pickContext(context:SfcContext) {
         template:{
             rawCode:context.options.template,
             ast:context.ast
+        },
+
+        style:{
+            rawCode:context.options.style,
+            parsed:await compileStyle({code:context.options.style})
         }
     }
 
@@ -107,7 +136,7 @@ function pickContext(context:SfcContext) {
  * @param input 
  * template path or code
  */
-export function compilerSfc(input:string | sfcOptions) {
+export async function compilerSfc(input:string | sfcOptions):Promise<CompileResult> {
 
    
     let options = getSfcOptions(input)
@@ -119,7 +148,7 @@ export function compilerSfc(input:string | sfcOptions) {
     compileTemplate(context)
 
 
-    return pickContext(context)
+    return await pickContext(context)
     
 }
 
