@@ -12,14 +12,16 @@ import {
     PlaiElement,
     IfBranchCodegenNode,
     ForBranchCodeGenNode,
-    ComponentCodegenNode
+    ComponentCodegenNode,
+    RootNode
 } from '../ast'
 
 import _ from 'lodash'
 import { transformExpression } from "./transformExpression";
 import {
     processElemnetCodegenChild,
-    getSblingNode
+    getSblingNode,
+    getChildrenCodegen
 } from '../helper'
 
 
@@ -43,6 +45,20 @@ function getTagMap(tag:string) {
     return tag
 }
 
+
+function processRootNode(node:RootNode,context: TransformContext) {
+    node.codegenNode = {
+        tag:'"div"',
+        tagKey:CREATE_ELEMENT_VNODE,
+        type:NodeTypes.ROOT,
+        children:getChildrenCodegen(node),
+        hosited:undefined
+    }
+    context.helper(CREATE_ELEMENT_VNODE)
+
+}
+
+
 export function createTransfromElement(sfcContext:SfcContext) {
 
     let { parsedJson } = sfcContext
@@ -56,14 +72,18 @@ export function createTransfromElement(sfcContext:SfcContext) {
     return function(node:ElementNode,transformContext:TransformContext) {
 
 
-        let { type,props , tag} = node;
+        let { type, props , tag} = node as ElementNode;
 
         if (type !== NodeTypes.ELEMENT ) return ;
 
 
+        
 
 
         return () => {
+
+            //@ts-ignore
+            if (node.type === NodeTypes.ROOT) return processRootNode(node,transformContext);
 
             let hasIf,hasElseIf,hasElse
 
@@ -211,6 +231,7 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
                     if (type === NodeTypes.ATTRIBUTE_CONSTANT) {
                         properties.push({
+                            type:NodeTypes.PROPS,
                             key,
                             value:`"${value}"`
                         })
@@ -224,6 +245,7 @@ export function createTransfromElement(sfcContext:SfcContext) {
                         properties.push(res)
                     }else {
                         properties.push({
+                            type:NodeTypes.PROPS,
                             key,
                              //@ts-ignore
                             value: `"${transformExpression(value!,node,context)}"`

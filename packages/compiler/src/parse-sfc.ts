@@ -42,6 +42,10 @@ import {
     transformText
 } from './transforms/transformText'
 
+import {
+    generate
+} from './code-gen'
+
 export type sfcOptions = {
     template:string,
     json:string,
@@ -147,8 +151,12 @@ export async function compilerSfc(input:string | sfcOptions):Promise<CompileResu
 
     compileTemplate(context)
 
+    let res = await pickContext(context)
+    let code = generate(res)
 
-    return await pickContext(context)
+    console.log(`###code is `,code);
+
+    return res;
     
 }
 

@@ -107,6 +107,7 @@ export type CodegenNode =
     | CommentCodegenNode | IfBranchCodegenNode 
     | ForBranchCodeGenNode
     | ComponentCodegenNode
+    | PropsCodegenNode
 
 export type BaseCodegenNode = {
     type: NodeTypes,
@@ -162,6 +163,7 @@ export interface CommentCodegenNode extends BaseCodegenNode {
 }
 
 export interface PropsCodegenNode  {
+    type:NodeTypes.PROPS
     key: string,
     value: string | undefined
 }

@@ -1,17 +1,29 @@
+import { RootNode,
+    NodeTypes,
+    CodegenNode,
+    IfBranchCodegenNode,
+    ForBranchCodeGenNode,
+    PropsCodegenNode
+} from "./ast";
 import { CompileResult } from "./parse-sfc";
 
-export type GenerateContext = {
+import {
+    helperNameMap
+} from '@po/shared'
+
+export type CodeGenContext = {
 
     compileResult:CompileResult,
     code:string
     push: (p: any) => any,
     nextline: (num?: number) => void,
+    getRootAst:() => RootNode
 }
 
 
-function createContext(compileResult:CompileResult):GenerateContext {
+function createContext(compileResult:CompileResult):CodeGenContext {
 
-        let context =  {
+        let context:CodeGenContext =  {
             compileResult,
             code:"",
             push(str: string) {
@@ -23,6 +35,10 @@ function createContext(compileResult:CompileResult):GenerateContext {
                     context.push('\n')
                     num--
                 }
+            },
+
+            getRootAst() {
+                return context.compileResult.template.ast
             }
 
         }
@@ -47,12 +63,105 @@ export function generate(input:CompileResult):string {
 
 
 
-function generateTemplate(context:GenerateContext) {
+function generateTemplate(context:CodeGenContext) {
+
+
+    genImports(context);
+
+    context.nextline()
+
+    genImportComponents(context);
+
+}
+
+function genImportComponents(context: CodeGenContext) {
+    let { push } = context
+    let ast = context.getRootAst();
+    let { components } = ast;
+
+    components.forEach((comp) => {
+        let { cameKey , value } = comp;
+        push(`import ${cameKey} from "${value}";\n`)
+    })
 
 }
 
 
-function generateStyle(context:GenerateContext) {
+function genImports(context:CodeGenContext) {
+    let ast = context.getRootAst();
+
+    let { push } = context;
+    let { helpers } = ast
+
+    push(`import { `)
+
+    let keys = Object.keys(helpers);
+
+    keys.forEach((targetPath) => {
+
+        let keys = helpers[targetPath];
+        keys.forEach((key) => {
+            let map = helperNameMap[key]
+            push(`${map} as ${key}, `)
+        })
+        push(` } from "${targetPath}"`)
+
+    })
+}
+
+
+function genRender(context: CodeGenContext) {
+
+    let { push, nextline } = context;
+
+    let ast = context.getRootAst();
+
+
+    push(`function render(_ctx) {
+            return `)
+
+    genNode(ast.codegenNode!, context)
+
+    nextline();
+
+    push(`}`)
+}
+
+
+
+function genNode(node: CodegenNode, context: CodeGenContext) {
+
+    let { type } = node;
+
+
+    switch (type) {
+
+        case NodeTypes.IF:
+
+            genIfNode(node as IfBranchCodegenNode, context)
+            break;
+
+        case NodeTypes.FOR:
+            genForNode(node as ForBranchCodeGenNode, context)
+            break;
+        case NodeTypes.PROPS:
+            genNodeProps(node as PropsCodegenNode, context)
+            break;
+        case NodeTypes.ROOT:
+        case NodeTypes.ELEMENT:
+        case NodeTypes.TEXT:
+        case NodeTypes.COMMENT:
+        case NodeTypes.INTERPOLATION:
+        case NodeTypes.COMPONENT:
+            genElementNode(node, context)
+            break;
+
+    }
+
+}
+
+
+function generateStyle(context:CodeGenContext) {
 
 }
 
