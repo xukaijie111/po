@@ -5,7 +5,8 @@ import { RootNode,
     ForBranchCodeGenNode,
     PropsCodegenNode,
     ElementCodegenNode,
-    ComponentCodegenNode
+    ComponentCodegenNode,
+    RootCodeGen
 } from "./ast";
 import { CompileResult } from "./parse-sfc";
 
@@ -127,6 +128,8 @@ function genRender(context: CodeGenContext) {
     push(`function render(_ctx) {
             return `)
 
+    
+
     genNode(ast.codegenNode!, context)
 
     nextline();
@@ -155,6 +158,8 @@ function genNode(node: CodegenNode, context: CodeGenContext) {
             genNodeProps(node as PropsCodegenNode, context)
             break;
         case NodeTypes.ROOT:
+            genRootNode(node as RootCodeGen,context);
+            break;
         case NodeTypes.ELEMENT:
         case NodeTypes.TEXT:
         case NodeTypes.COMMENT:
@@ -164,6 +169,17 @@ function genNode(node: CodegenNode, context: CodeGenContext) {
             break;
 
     }
+
+}
+
+function genRootNode(node:RootCodeGen,context:CodeGenContext) {
+
+    let { children } = node;
+
+    children.forEach(element => {
+        genNode(element,context)
+        context.nextline();
+    });
 
 }
 
@@ -189,7 +205,7 @@ function genElementNode(node: CodegenNode, context: CodeGenContext) {
 function getElementNodeParams(codegenNode: CodegenNode) {
 
 
-    let { tag, propsCodeGenNode, children,type } = codegenNode as ElementCodegenNode | ComponentCodegenNode
+    let { tag, propsCodeGenNode, children } = codegenNode as ElementCodegenNode | ComponentCodegenNode
 
     let source = [
         tag,

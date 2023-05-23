@@ -56,6 +56,7 @@ export type sfcOptions = {
     template: string,
     json: string,
     style: string,
+    file:string
 }
 
 
@@ -65,7 +66,8 @@ function parseInputCode(template: string) {
     let res = {
         template: readFileSync(template),
         json: readFileSync(jsonPath),
-        style: fileIsExist(stylePath) ? readFileSync(stylePath) : ""
+        style: fileIsExist(stylePath) ? readFileSync(stylePath) : "",
+        file:template
     }
 
     return res;
@@ -127,7 +129,7 @@ export type CompileResult = {
 
 async function pickContext(context: SfcContext): Promise<CompileResult> {
 
-    let file = context.options.template;
+    let file = context.options.file;
     let { ext, name } = Path.parse(file)
     return {
 

@@ -13,7 +13,7 @@ let file = path.resolve(__dirname,'./components/index.pxml')
 async function a(){
     let res = await compilerSfc(file)
 
-    console.log(res)
+    console.log(res.code)
 }
 
 a()

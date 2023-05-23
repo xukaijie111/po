@@ -118,6 +118,7 @@ export type BaseCodegenNode = {
 export interface RootCodeGen extends BaseCodegenNode {
     type: NodeTypes.ROOT,
     tag: 'div',
+    children?: CodegenNode[]
 }
 
 export interface ElementCodegenNode extends BaseCodegenNode {

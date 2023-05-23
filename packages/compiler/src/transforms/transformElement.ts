@@ -74,17 +74,18 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
 
         let { type, props , tag} = node as ElementNode;
-
-        if (type !== NodeTypes.ELEMENT ) return ;
-
-
         
+
+         //@ts-ignore
+        if (type !== NodeTypes.ELEMENT && type !== NodeTypes.ROOT ) return ;
 
 
         return () => {
 
+            
             //@ts-ignore
             if (node.type === NodeTypes.ROOT) return processRootNode(node,transformContext);
+
 
             let hasIf,hasElseIf,hasElse
 

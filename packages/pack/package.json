@@ -1,0 +1,6 @@
+{
+    "name": "@po/pack",
+    "main": "dist/pack.cjs.js",
+    "module":"dist/pack.es.js",
+    "types": "dist/index.d.ts"
+}
