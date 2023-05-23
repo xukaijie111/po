@@ -12,9 +12,7 @@ import {
 import _ from 'lodash'
 
 import {
-
     isNil,
-
 } from '@po/shared'
 
 
@@ -203,6 +201,7 @@ export function processElemnetCodegenChild(node: TemplateNode,codegenNode:Elemen
   
     if (ElementNodeHasOnlyTextChild(node)) {
   
+        //@ts-ignore
       codegenNode!.children = children[0].codegenNode?.children;
     } else {
       //@ts-ignore
@@ -225,4 +224,3 @@ export function processElemnetCodegenChild(node: TemplateNode,codegenNode:Elemen
 
 
 
-  

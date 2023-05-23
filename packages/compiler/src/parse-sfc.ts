@@ -9,6 +9,12 @@ import {
 import { RootNode } from './ast'
 
 import {
+    generateMixed
+} from '@po/shared'
+
+import Path from 'path'
+
+import {
     parseJson,
     JsonResult
 } from './parse-json'
@@ -47,31 +53,31 @@ import {
 } from './code-gen'
 
 export type sfcOptions = {
-    template:string,
-    json:string,
-    style:string,
+    template: string,
+    json: string,
+    style: string,
 }
 
 
-function parseInputCode(template:string) {
-    let jsonPath = GetSameDirectoryFile(template,'.json')
-    let stylePath = GetSameDirectoryFile(template,'.less')
-     let res = {
-        template:readFileSync(template),
-        json:readFileSync(jsonPath),
-        style:fileIsExist(stylePath)?readFileSync(stylePath):""
-     }   
+function parseInputCode(template: string) {
+    let jsonPath = GetSameDirectoryFile(template, '.json')
+    let stylePath = GetSameDirectoryFile(template, '.less')
+    let res = {
+        template: readFileSync(template),
+        json: readFileSync(jsonPath),
+        style: fileIsExist(stylePath) ? readFileSync(stylePath) : ""
+    }
 
-     return res;
+    return res;
 }
 
-function getSfcOptions(input:string | sfcOptions) {
-    let res :sfcOptions = input as sfcOptions
+function getSfcOptions(input: string | sfcOptions) {
+    let res: sfcOptions = input as sfcOptions
 
     if (typeof input === "string") {
         if (!isComponentFile) {
             console.warn(`file ${relativeId(input)} is not a component file`)
-            return ;
+            return;
         }
         res = parseInputCode(input)
     }
@@ -81,56 +87,67 @@ function getSfcOptions(input:string | sfcOptions) {
 }
 
 export type SfcContext = {
-    options:sfcOptions,
-    parsedJson?:JsonResult,
-    ast?:RootNode
+    options: sfcOptions,
+    parsedJson?: JsonResult,
+    ast?: RootNode
 }
 
-export function createSfcContext(options:sfcOptions):SfcContext {
+export function createSfcContext(options: sfcOptions): SfcContext {
 
     return {
         options,
-       
+
     }
 }
 
 
 export type CompileResult = {
 
-    json:{
-        rawCode:string,
-        parsed:JsonResult
+    json: {
+        rawCode: string,
+        parsed: JsonResult
     },
 
-    template:{
-        rawCode:string,
-        ast:RootNode
+    template: {
+        rawCode: string,
+        ast: RootNode
     },
 
-    style:{
-        rawCode:string,
-        parsed:StyleResult
-    }
+    style: {
+        rawCode: string,
+        parsed: StyleResult
+    },
+
+    basename: string,
+    id: string,
+    dir: string,
+    code: string
 
 }
 
-async function pickContext(context:SfcContext) : Promise<CompileResult> {
+async function pickContext(context: SfcContext): Promise<CompileResult> {
 
+    let file = context.options.template;
+    let { ext, name } = Path.parse(file)
     return {
 
-        json:{
-            rawCode:context.options.json,
-            parsed:context.parsedJson  
+        json: {
+            rawCode: context.options.json,
+            parsed: context.parsedJson
         },
-        template:{
-            rawCode:context.options.template,
-            ast:context.ast
+        template: {
+            rawCode: context.options.template,
+            ast: context.ast
         },
 
-        style:{
-            rawCode:context.options.style,
-            parsed:await compileStyle({code:context.options.style})
-        }
+        style: {
+            rawCode: context.options.style,
+            parsed: await compileStyle({ code: context.options.style })
+        },
+        dir: ext,
+        basename: name,
+        id: generateMixed(),
+        code: ""
     }
 
 }
@@ -140,9 +157,9 @@ async function pickContext(context:SfcContext) : Promise<CompileResult> {
  * @param input 
  * template path or code
  */
-export async function compilerSfc(input:string | sfcOptions):Promise<CompileResult> {
+export async function compilerSfc(input: string | sfcOptions): Promise<CompileResult> {
 
-   
+
     let options = getSfcOptions(input)
 
     let context = createSfcContext(options)
@@ -154,30 +171,30 @@ export async function compilerSfc(input:string | sfcOptions):Promise<CompileResu
     let res = await pickContext(context)
     let code = generate(res)
 
-    console.log(`###code is `,code);
+    res.code = code;
 
     return res;
-    
+
 }
 
 
 
-function compileTemplate(context:SfcContext) {
+function compileTemplate(context: SfcContext) {
 
     let ast = baseParse(context.options.template)
 
-      transform(ast, {
+    transform(ast, {
 
-        transforms:[
+        transforms: [
             createTransfromElement(context),
             transformText,
             transformInterpolation
         ],
-        directives:{
-            on:processOnExpression
+        directives: {
+            on: processOnExpression
         }
     })
 
     context.ast = ast;
-    
+
 }

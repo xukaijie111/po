@@ -107,7 +107,7 @@ export type CodegenNode =
     | CommentCodegenNode | IfBranchCodegenNode 
     | ForBranchCodeGenNode
     | ComponentCodegenNode
-    | PropsCodegenNode
+    | PropsCodegenNode | RootCodeGen
 
 export type BaseCodegenNode = {
     type: NodeTypes,
@@ -123,7 +123,7 @@ export interface RootCodeGen extends BaseCodegenNode {
 export interface ElementCodegenNode extends BaseCodegenNode {
     type: NodeTypes.ELEMENT,
     tag: string,
-    propsCodeGenNode?: Array<PropsCodegenNode>,
+    propsCodeGenNode?: PropsCodegenNode,
 
 }
 
@@ -131,7 +131,7 @@ export interface ElementCodegenNode extends BaseCodegenNode {
 export interface ComponentCodegenNode extends BaseCodegenNode {
     type: NodeTypes.COMPONENT,
     tag: string,
-    propsCodeGenNode?: Array<PropsCodegenNode>,
+    propsCodeGenNode?: PropsCodegenNode,
     options:string, // 自定义组件导出的配置
 }
 
@@ -163,9 +163,9 @@ export interface CommentCodegenNode extends BaseCodegenNode {
 }
 
 export interface PropsCodegenNode  {
-    type:NodeTypes.PROPS
-    key: string,
-    value: string | undefined
+    type:NodeTypes.PROPS,
+    props:CodeGenProp[]
+
 }
 
 export type CodeGenProp = {

@@ -13,7 +13,8 @@ import {
     IfBranchCodegenNode,
     ForBranchCodeGenNode,
     ComponentCodegenNode,
-    RootNode
+    RootNode,
+    CodeGenProp
 } from '../ast'
 
 import _ from 'lodash'
@@ -211,9 +212,9 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
 
 
-            function buildPropsCodeGen() {
+            function buildPropsCodeGen():PropsCodegenNode {
 
-                let properties:Array<PropsCodegenNode> = []
+                let properties:Array<CodeGenProp> = []
                 let ignoreProps = [
                     'if','for','else:if','else','for-item','for-index'
                 ]
@@ -231,7 +232,6 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
                     if (type === NodeTypes.ATTRIBUTE_CONSTANT) {
                         properties.push({
-                            type:NodeTypes.PROPS,
                             key,
                             value:`"${value}"`
                         })
@@ -245,7 +245,6 @@ export function createTransfromElement(sfcContext:SfcContext) {
                         properties.push(res)
                     }else {
                         properties.push({
-                            type:NodeTypes.PROPS,
                             key,
                              //@ts-ignore
                             value: `"${transformExpression(value!,node,context)}"`
@@ -254,7 +253,10 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
                 }
 
-                return properties
+                return {
+                    type:NodeTypes.PROPS,
+                    props:properties
+                }
 
             }
 

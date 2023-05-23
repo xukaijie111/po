@@ -17,7 +17,6 @@ export function processOnExpression(prop:AttributeDirectiveNode,node: TemplateNo
     let { dirname , value } = prop
 
     let result = {
-        type:NodeTypes.PROPS,
         key:dirname,
         value
     }

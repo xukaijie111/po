@@ -3,12 +3,18 @@ import { RootNode,
     CodegenNode,
     IfBranchCodegenNode,
     ForBranchCodeGenNode,
-    PropsCodegenNode
+    PropsCodegenNode,
+    ElementCodegenNode,
+    ComponentCodegenNode
 } from "./ast";
 import { CompileResult } from "./parse-sfc";
 
 import {
-    helperNameMap
+    CREATE_COMMENT_VNODE,
+    RENDER_LIST,
+    helperNameMap,
+    isString,
+    isObject
 } from '@po/shared'
 
 export type CodeGenContext = {
@@ -54,7 +60,7 @@ export function generate(input:CompileResult):string {
 
     let context = createContext(input)
 
-    generateTemplate(context)
+    generateTemplate(context) 
     generateStyle(context)
 
     return context.code;
@@ -71,6 +77,7 @@ function generateTemplate(context:CodeGenContext) {
     context.nextline()
 
     genImportComponents(context);
+    genRender(context)
 
 }
 
@@ -160,9 +167,153 @@ function genNode(node: CodegenNode, context: CodeGenContext) {
 
 }
 
+function genElementNode(node: CodegenNode, context: CodeGenContext) {
+
+    let { push } = context
+
+    let { tagKey } = node as ElementCodegenNode
+
+    push(`${tagKey}(`)
+    let list = getElementNodeParams(node)
+    list.forEach((param, index) => {
+        genElementNodeParams(param, context),
+            index !== list.length - 1 && push(',')
+    })
+    push(`)`)
+    
+
+}
+
+
+
+function getElementNodeParams(codegenNode: CodegenNode) {
+
+
+    let { tag, propsCodeGenNode, children,type } = codegenNode as ElementCodegenNode | ComponentCodegenNode
+
+    let source = [
+        tag,
+        propsCodeGenNode,
+        isString(children) ? children : children && children.length ? children : undefined
+    ]
+
+    // if (type === NodeTypes.COMPONENT) {
+    //     //@ts-ignore
+    //     source[1] = codegenNode.options
+    // }
+
+    return source.map((s) => {
+        //@ts-ignore
+        return s ? (isString(s) ? s.replace(/\"/g, "'") : s) : "undefined"
+    })
+
+}
+
+
+
+function genElementNodeParams(node: any, context: CodeGenContext) {
+
+    let { push } = context
+    if (isString(node)) {
+        return push(node)
+    } else {
+
+        if (Array.isArray(node)) {
+            push(`[\n`)
+            node.forEach((n, index) => {
+                genNode(n, context);
+                arrayDelimter(node, index, context)
+            })
+            push(`]`)
+        } else if (isObject(node)) {
+            genNode(node as CodegenNode, context)
+        } else {
+            console.error(`what is this?`, node)
+        }
+    }
+}
+
+
+
+function genIfNode(node: IfBranchCodegenNode, context: CodeGenContext) {
+
+    let { push } = context
+    let { condition, trueBranch, falseBranch } = node
+
+    push(condition)
+    push(' ? ')
+
+    genNode(trueBranch, context)
+
+    push(':')
+
+    if (falseBranch) genNode(falseBranch, context)
+    else push(getCommentVnodeString(`条件为false`))
+
+}
+
+
+
+function genForNode(node: ForBranchCodeGenNode, context: CodeGenContext) {
+
+    let { push } = context
+    let { list, item, itemName, indexName } = node;
+
+
+    push(`...${RENDER_LIST}(${list},function(${itemName},${indexName}){
+        
+                return `)
+
+    genNode(item, context)
+
+
+
+    push('})\n')
+
+}
+
+
+
+function genNodeProps(node: PropsCodegenNode, context: CodeGenContext) {
+
+    let { push } = context
+    let { type, props = [] } = node;
+
+    if (type !== NodeTypes.PROPS) return push("undefined");
+
+    let str = `{\n`
+
+    props.forEach((prop) => {
+        let { key, value } = prop
+        value = value?.replace(/\"/g, "'")
+        str += `${key}: ${value},\n`
+    })
+
+    str += `}\n`
+
+    return push(str);
+
+}
+
+
+
+function arrayDelimter(list: unknown[], index: number, context: CodeGenContext) {
+    list.length - 1 !== index && context.push(',')
+}
+
+
+
+
+function getCommentVnodeString(comment: string) {
+    return `${CREATE_COMMENT_VNODE}(undefined,undefined,"${comment}")`
+}
+
 
 function generateStyle(context:CodeGenContext) {
 
+
+
 }
+
 
 
