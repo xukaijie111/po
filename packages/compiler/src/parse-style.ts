@@ -183,6 +183,7 @@ export type StyleResult = {
 }
 
 export async function compileStyle(options:ParseStyleOptions) {
+    if (!options.code) return ;
 
     let context = createParseStyleContext(options)
 

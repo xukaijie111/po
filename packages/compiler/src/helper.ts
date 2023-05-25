@@ -21,6 +21,7 @@ import {
     walkNode
 } from '@po/cjs-utils'
 
+import resolve from "enhanced-resolve"
 
 export function isPxsModule(name:string,node:RootNode) {
     let { imports } = node;
@@ -223,4 +224,33 @@ export function processElemnetCodegenChild(node: TemplateNode,codegenNode:Elemen
 
 
 
+  export type ResolveOptions = {
+    resolve?:{
+        alias?:Record<string,string>,
+        modules?:Array<string>
+    }
+  }
 
+
+
+
+
+
+
+export type CreateResolveOptions = {
+  extensions:string[],
+  modules?:Array<string>
+  alias?:Record<any,any>
+}
+export function createResolver(options:CreateResolveOptions) {
+
+  const myResolve = resolve.create.sync({
+    modules:["node_modules"],
+    mainFields: ['module', 'main'],
+    symlinks: false,
+   ...options,
+
+  });
+
+  return myResolve;
+}

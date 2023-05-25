@@ -1,1 +1,1 @@
-console.log(1)
+export * from './Compilation'
