@@ -1,11 +1,13 @@
 {
     "name": "@po/cjs-utils",
+    "version": "1.0.0",
     "main": "dist/cjs-util.cjs.js",
     "module": "dist/cjs-util.es.js",
     "types": "dist/index.d.ts",
     "dependencies": {
         "@types/node": "^18.14.0",
         "fs-extra": "^10.1.0",
-        "relative": "^3.0.2"
+        "relative": "^3.0.2",
+        "enhanced-resolve": "^5.12.0"
     }
 }

@@ -153,3 +153,10 @@ export function isPxsFile(path: string) {
   export function copyFile(src:string,dest:string) {
     fse.copySync(src,dest)
   }
+
+
+  export function ignoreExt(file:string) {
+    let { dir , name } = path.parse(file)
+
+    return `${dir}/${name}`
+  }

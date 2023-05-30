@@ -6,7 +6,12 @@ const postcss = require("postcss");
 const postcssLess = require("postcss-less");
 
 import less  from "less";
+import { ResolveOptions } from "./helper";
 
+
+import {
+    createResolver
+} from '@po/cjs-utils'
 
 
 
@@ -14,14 +19,16 @@ let lessImportReg = /(?<!(?:\/\/|\/\*)\s*)@import\s+(["'][a-z0-9./\-_@]+(\.(less
 
 
 export type ParseStyleContext = {
+    options:ParseStyleOptions
     code: string,
     rawCode: string,
     imports: any[],
-    addImports: (key: string) => unknown
+    addImports: (key: string) => unknown,
+    resolver:any
 }
 
 
-export type ParseStyleOptions = {
+export interface ParseStyleOptions extends ResolveOptions {
     code:string,
 }
 
@@ -31,7 +38,8 @@ function createParseStyleContext(options:ParseStyleOptions) {
     let {  code } = options
 
     let context :ParseStyleContext = {
-   
+        
+        options,
         code,
         rawCode:code,
         imports:[],
@@ -39,7 +47,11 @@ function createParseStyleContext(options:ParseStyleOptions) {
         addImports:(key:string) => {
             if (context.imports.includes(key as never)) return ;
             context.imports.push(key)
-        }
+        },
+        resolver:createResolver({
+            extensions:['.less'],
+            alias:options.resolve?.alias || {}
+        })
     }
 
     return context
@@ -177,12 +189,12 @@ async function walkStyle(context:ParseStyleContext) {
 }
 
 
-export type StyleResult = {
+export interface StyleResult  {
     code:string,
     imports:string[]
 }
 
-export async function compileStyle(options:ParseStyleOptions) {
+export async function parseStyle(options:ParseStyleOptions) {
     if (!options.code) return ;
 
     let context = createParseStyleContext(options)

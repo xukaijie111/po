@@ -19,8 +19,11 @@ import {
 
 
 import _ from 'lodash'
+import { ResolveOptions } from './helper'
 
-export type ParseOptions = {
+
+
+export interface ParseOptions extends ResolveOptions{
 
     isIgnoreTag: (tag: string) => boolean
 
@@ -199,7 +202,8 @@ export function createParseRoot(context:ParseContext): RootNode {
         codegenNode: undefined,
         components: [],
         data: context.data,
-        hoists: []
+        hoists: [],
+        code:context.code
     }
 
     context.children.forEach((child) => child.parent = root)

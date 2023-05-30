@@ -94,10 +94,12 @@ importers:
   packages/cjs-utils:
     specifiers:
       '@types/node': ^18.14.0
+      enhanced-resolve: ^5.12.0
       fs-extra: ^10.1.0
       relative: ^3.0.2
     dependencies:
       '@types/node': 18.16.9
+      enhanced-resolve: 5.14.0
       fs-extra: 10.1.0
       relative: 3.0.2
 
@@ -114,6 +116,7 @@ importers:
       '@babel/template': ^7.20.7
       '@babel/traverse': ^7.21.0
       '@babel/types': ^7.21.0
+      '@po/cjs-utils': workspace:1.0.0
       '@po/shared': workspace:1.0.0
       '@types/less': ^3.0.3
       '@types/node': ^18.14.0
@@ -148,6 +151,7 @@ importers:
       '@babel/template': 7.20.7
       '@babel/traverse': 7.21.5
       '@babel/types': 7.21.5
+      '@po/cjs-utils': link:../cjs-utils
       '@po/shared': link:../shared
       '@types/less': 3.0.3
       '@types/node': 18.16.9
@@ -170,6 +174,12 @@ importers:
       tsconfig-paths: 3.14.2
       watchpack: 2.4.0
       xtend: 4.0.2
+
+  packages/pack:
+    specifiers:
+      '@po/compiler': workspace:1.0.0
+    dependencies:
+      '@po/compiler': link:../compiler
 
   packages/shared:
     specifiers: {}

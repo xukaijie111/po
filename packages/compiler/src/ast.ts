@@ -186,7 +186,8 @@ export interface RootNode extends Node {
     methods: string[],
     data: string[],
     hoists: CodegenNode[],
-    codegenNode?: any
+    codegenNode?: any,
+    code:string , //原始code
 }
 
 

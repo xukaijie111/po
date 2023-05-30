@@ -45,7 +45,7 @@ function createContext(compileResult:CompileResult):CodeGenContext {
             },
 
             getRootAst() {
-                return context.compileResult.template.ast
+                return context.compileResult.template
             }
 
         }

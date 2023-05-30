@@ -2,26 +2,35 @@
 import {
     fileIsExist,
     throwError,
-    readFileSync
+    readFileSync,
+    relativeId
 } from '@po/cjs-utils'
+
+import {
+    compileSfc,
+    CompileResult,
+    ResolveOptions
+} from '@po/compiler'
 
 
 export class Compilation {
     projectDir: string
-    appJson: Record<string, string>
-    projectConfig:Record<string, string>
+    appJson: Record<string, any>
+    projectConfig:Record<string, any>
+    componentFiles:Map<string,CompileResult>
     dist:string
     constructor(options: Compilation.options) {
         this.projectDir = options.dir || process.cwd()
         this.dist = options.dist;
+        this.componentFiles = new Map();
     }
 
 
 
-    run() {
+    async run() {
         this.parseAppJson()
         this.parseProjectConfig();
-        this.parseFiles()
+        await this.parseFiles()
     }
 
 
@@ -31,7 +40,7 @@ export class Compilation {
 
     _parseJson(file: string) {
         if (!fileIsExist(file)) {
-            throwError(`File app.json no exsit`)
+            throwError(`File ${relativeId(file)} no exsit`)
         }
         let content = readFileSync(file)
 
@@ -51,23 +60,47 @@ export class Compilation {
 
         let file = `${this.projectDir}/project.config.json`
         this.projectConfig = this._parseJson(file)
+        if (!this.projectConfig.resolve) {
+            this.projectConfig.resolve = {}
+        }
     }
 
 
-    parseComponents() {
+    async parseComponents() {
 
         let { appJson } = this
-        let { pages } = appJson
+        let { pages = [] } = appJson
+        for (let page of pages) {
+            await  this.parseComponent(`${page}`)
+        }
+      
+    }
+
+    async parseComponent(file:string) {
+
+        if (this.componentFiles.has(file)) return ;
+        let res = await compileSfc(`${file}.pxml`, { resolve : { alias : {}}})
         
+        this.componentFiles.set(file,res)
+
+        let { components } = res.json
+
+        for (let comp of components) {
+            let { path } = comp;
+
+            await this.parseComponent(path)
+        }
 
     }
+
+
 
 }
 
 
 export namespace Compilation {
 
-    export type options = {
+    export interface options extends ResolveOptions {
         dir?: string,
         dist:string
     }

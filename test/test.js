@@ -1,21 +1,16 @@
 
 
-
 let {
-    compilerSfc
-} = require('../packages/compiler/dist/compiler.cjs.js')
+    Compilation
+} = require('../packages/pack/dist/pack.cjs')
 
-let path = require('path')
+let Path = require('path')
 
-let file = path.resolve(__dirname,'./components/index.pxml')
-
-
-async function a(){
-    let res = await compilerSfc(file)
-
-    console.log(res.code)
-}
-
-a()
+let comp = new Compilation({
+    dist:Path.resolve(__dirname,'./dist')
+});
 
 
+comp.run();
+
+console.log(1)

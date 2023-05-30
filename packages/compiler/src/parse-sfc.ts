@@ -1,10 +1,8 @@
 
 import {
-    GetSameDirectoryFile,
-    isComponentFile,
-    relativeId,
+
     readFileSync,
-    fileIsExist
+
 } from '@po/cjs-utils'
 import { RootNode } from './ast'
 
@@ -12,7 +10,7 @@ import {
     generateMixed
 } from '@po/shared'
 
-import Path from 'path'
+
 
 import {
     parseJson,
@@ -25,7 +23,7 @@ import {
 
 import {
     StyleResult,
-    compileStyle
+    parseStyle
 } from './parse-style'
 
 import {
@@ -51,103 +49,62 @@ import {
 import {
     generate
 } from './code-gen'
+import { ResolveOptions } from './helper'
 
-export type sfcOptions = {
-    template: string,
-    json: string,
-    style: string,
-    file:string
-}
+import path from 'path'
 
 
-function parseInputCode(template: string) {
-    let jsonPath = GetSameDirectoryFile(template, '.json')
-    let stylePath = GetSameDirectoryFile(template, '.less')
-    let res = {
-        template: readFileSync(template),
-        json: readFileSync(jsonPath),
-        style: fileIsExist(stylePath) ? readFileSync(stylePath) : "",
-        file:template
-    }
 
-    return res;
-}
-
-function getSfcOptions(input: string | sfcOptions) {
-    let res: sfcOptions = input as sfcOptions
-
-    if (typeof input === "string") {
-        if (!isComponentFile) {
-            console.warn(`file ${relativeId(input)} is not a component file`)
-            return;
-        }
-        res = parseInputCode(input)
-    }
-
-    return res;
+export interface SfcOptions extends ResolveOptions {
 
 }
 
-export type SfcContext = {
-    options: sfcOptions,
-    parsedJson?: JsonResult,
-    ast?: RootNode
+
+
+
+
+export interface SfcContext  {
+    file:string,
+    json?:JsonResult,
+    template?:RootNode,
+    style?:StyleResult,
+    options?:SfcOptions,
+    getResolveOptions:(file:string) => ResolveOptions
 }
 
-export function createSfcContext(options: sfcOptions): SfcContext {
+export function createSfcContext(file: string,options:SfcOptions): SfcContext {
 
-    return {
+    let context = {
+        file,
         options,
+        getResolveOptions(file:string):ResolveOptions {
 
+            let { dir } = path.parse(file)
+
+            return {
+                context:dir,
+                resolve:options.resolve
+            }
+        }
     }
+    return context
 }
 
 
-export type CompileResult = {
-
-    json: {
-        rawCode: string,
-        parsed: JsonResult
-    },
-
-    template: {
-        rawCode: string,
-        ast: RootNode
-    },
-
-    style: {
-        rawCode: string,
-        parsed: StyleResult
-    },
-
-    basename: string,
-    id: string,
-    dir: string,
-    code: string
-
+export interface CompileResult extends Pick<SfcContext,'json' | 'template' | 'style' | 'file'>{
+    id:string,
+    code:string
 }
 
 async function pickContext(context: SfcContext): Promise<CompileResult> {
 
-    let file = context.options.file;
-    let { ext, name } = Path.parse(file)
+
     return {
 
-        json: {
-            rawCode: context.options.json,
-            parsed: context.parsedJson
-        },
-        template: {
-            rawCode: context.options.template,
-            ast: context.ast
-        },
-
-        style: {
-            rawCode: context.options.style,
-            parsed: await compileStyle({ code: context.options.style })
-        },
-        dir: ext,
-        basename: name,
+        json:context.json,
+        template:context.template,
+        style:context.style,
+        file:context.file,
         id: generateMixed(),
         code: ""
     }
@@ -157,16 +114,15 @@ async function pickContext(context: SfcContext): Promise<CompileResult> {
 /**
  * 
  * @param input 
- * template path or code
+ * template path 
  */
-export async function compilerSfc(input: string | sfcOptions): Promise<CompileResult> {
+export async function compileSfc(file: string ,options:SfcOptions): Promise<CompileResult> {
 
+    let context = createSfcContext(file,options)
 
-    let options = getSfcOptions(input)
+    compileJson(context);
 
-    let context = createSfcContext(options)
-
-    context.parsedJson = parseJson(context.options.json)
+    await compileStyle(context)
 
     compileTemplate(context)
 
@@ -181,9 +137,41 @@ export async function compilerSfc(input: string | sfcOptions): Promise<CompileRe
 
 
 
+
+async function compileStyle(context:SfcContext) {
+
+    let { file } = context
+
+    let styleFile = `${file}.less`
+    let code = readFileSync(styleFile)
+    let resolveOptions = context.getResolveOptions(styleFile)
+
+    let parsed = await parseStyle({ code , ...resolveOptions})
+    context.style = parsed;
+}
+function compileJson(context:SfcContext) {
+
+    let { file } = context
+
+    let jsonFile = `${file}.json`
+    let code = readFileSync(jsonFile)
+    let resolveOptions = context.getResolveOptions(jsonFile)
+
+    let parsed = parseJson(code,resolveOptions)
+    context.json = parsed;
+
+}
+
+
+
 function compileTemplate(context: SfcContext) {
 
-    let ast = baseParse(context.options.template)
+    let { file } = context
+
+    let templateFile = `${file}.pxml`
+    let code = readFileSync(templateFile)
+
+    let ast = baseParse(code)
 
     transform(ast, {
 
@@ -197,6 +185,6 @@ function compileTemplate(context: SfcContext) {
         }
     })
 
-    context.ast = ast;
+    context.template = ast;
 
 }
