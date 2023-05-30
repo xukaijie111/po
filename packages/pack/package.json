@@ -5,6 +5,7 @@
     "module":"dist/pack.es.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@po/compiler": "workspace:1.0.0"
+        "@po/compiler": "workspace:1.0.0",
+        "@po/cjs-utils": "workspace:1.0.0"
     }
 }

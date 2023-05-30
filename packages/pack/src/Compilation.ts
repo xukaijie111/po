@@ -30,13 +30,11 @@ export class Compilation {
     async run() {
         this.parseAppJson()
         this.parseProjectConfig();
-        await this.parseFiles()
+        await this.parseComponents()
     }
 
 
-    parseFiles() {
-        this.parseComponents()
-    }
+
 
     _parseJson(file: string) {
         if (!fileIsExist(file)) {
@@ -79,7 +77,8 @@ export class Compilation {
     async parseComponent(file:string) {
 
         if (this.componentFiles.has(file)) return ;
-        let res = await compileSfc(`${file}.pxml`, { resolve : { alias : {}}})
+        let { projectDir } = this
+        let res = await compileSfc(`${projectDir}/${file}`, { resolve : { alias : {}}})
         
         this.componentFiles.set(file,res)
 

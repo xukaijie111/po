@@ -62,8 +62,8 @@ function processRootNode(node:RootNode,context: TransformContext) {
 
 export function createTransfromElement(sfcContext:SfcContext) {
 
-    let { parsedJson } = sfcContext
-    let { components } = parsedJson
+    let { json } = sfcContext
+    let { components } = json
     function isComponentTag(name:string) {
         return !!_.find(components, { name })
     }
