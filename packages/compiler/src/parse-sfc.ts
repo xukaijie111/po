@@ -56,7 +56,7 @@ import path from 'path'
 
 
 export interface SfcOptions extends ResolveOptions {
-
+        pageName:string
 }
 
 
@@ -93,11 +93,14 @@ export function createSfcContext(file: string,options:SfcOptions): SfcContext {
 
 export interface CompileResult extends Pick<SfcContext,'json' | 'template' | 'style' | 'file'>{
     id:string,
-    code:string
+    code:string,
+    name:string,
+    isPage:boolean
 }
 
 async function pickContext(context: SfcContext): Promise<CompileResult> {
 
+    let name = context.options.pageName.split('/').map((sub) => sub.toUpperCase()).join("")
 
     return {
 
@@ -106,7 +109,9 @@ async function pickContext(context: SfcContext): Promise<CompileResult> {
         style:context.style,
         file:context.file,
         id: generateMixed(),
-        code: ""
+        code: "",
+        name,
+        isPage:!context.json.component
     }
 
 }

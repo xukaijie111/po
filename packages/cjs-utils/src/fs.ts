@@ -7,6 +7,8 @@ let fse = require('fs-extra')
 const relative = require("relative");
 
 
+const prettier = require("prettier");
+
 
 const absolutePath = /^(?:\/|(?:[A-Za-z]:)?[\\|/])/;
 
@@ -81,6 +83,7 @@ export function removeFile(path:string) {
 }
 
   export function emitFile(path: string, code: string) {
+    code = prettier.format(code, { semi: true, parser: "babel" })
     fse.removeSync(path);
     fse.outputFileSync(path, code);
   }

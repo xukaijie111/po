@@ -12,8 +12,6 @@ let comp = new Compilation({
 });
 
 
-comp.run().then(() => {
-    console.log(comp)
-})
-
+comp.run()
+.then(() => {})
 

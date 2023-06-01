@@ -63,6 +63,7 @@ export function generate(input:CompileResult):string {
 
     generateTemplate(context) 
     generateStyle(context)
+    generateExport(context)
 
     return context.code;
 
@@ -333,3 +334,20 @@ function generateStyle(context:CodeGenContext) {
 
 
 
+
+
+function generateExport(context:CodeGenContext) {
+
+
+        let { push ,compileResult  } = context;
+        let { name,id } = compileResult
+
+        push(`
+            export const ${name} = {
+                name: "${name}",
+                render,
+                id:"${id}"
+            }
+        `)
+
+}

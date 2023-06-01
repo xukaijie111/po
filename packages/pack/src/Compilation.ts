@@ -3,12 +3,13 @@ import {
     fileIsExist,
     throwError,
     readFileSync,
-    relativeId
+    relativeId,
+    emitFile,
+    getRelativePath
 } from '@po/cjs-utils'
 
 import {
     compileSfc,
-    CompileResult,
     ResolveOptions
 } from '@po/compiler'
 
@@ -17,11 +18,17 @@ export class Compilation {
     projectDir: string
     appJson: Record<string, any>
     projectConfig:Record<string, any>
-    componentFiles:Map<string,CompileResult>
+    componentFiles:Map<string,Record<any,any>>
     dist:string
+    webviewDist:string
+    jsCoreDist:string
+    pageExportFile:string
     constructor(options: Compilation.options) {
         this.projectDir = options.dir || process.cwd()
         this.dist = options.dist;
+        this.webviewDist = `${this.dist}/webview`
+        this.pageExportFile = `${this.dist}/webview/pages.js`
+        this.jsCoreDist = `${this.dist}/jscore`
         this.componentFiles = new Map();
     }
 
@@ -31,6 +38,8 @@ export class Compilation {
         this.parseAppJson()
         this.parseProjectConfig();
         await this.parseComponents()
+        this.emitFiles()
+
     }
 
 
@@ -78,9 +87,14 @@ export class Compilation {
 
         if (this.componentFiles.has(file)) return ;
         let { projectDir } = this
-        let res = await compileSfc(`${projectDir}/${file}`, { resolve : { alias : {}}})
+        let res = await compileSfc(`${projectDir}/${file}`, {
+             pageName:file,
+             resolve : { alias : {}}
+            })
         
-        this.componentFiles.set(file,res)
+        this.componentFiles.set(file,{
+            compileResult:res
+        })
 
         let { components } = res.json
 
@@ -89,6 +103,80 @@ export class Compilation {
 
             await this.parseComponent(path)
         }
+
+    }
+
+
+    emitFiles() {
+
+        this.emitWebviewFiles();
+
+    }
+
+    emitWebviewFiles() {
+
+        let { componentFiles,webviewDist } = this;
+
+        componentFiles.forEach((res,file) => {
+            let { code } = res.compileResult;
+            let fileDistPath = this.getDistPath(webviewDist, file);
+            fileDistPath = `${fileDistPath}.js`
+            res.dist = fileDistPath;
+            emitFile(`${fileDistPath}`, code);
+       
+        })
+
+        this.addWebviewPageEntry();
+    }
+
+
+    addWebviewPageEntry() {
+        
+        let { pageExportFile,appJson } = this;
+        let names = [
+        ]
+        let entryCode = ``
+
+        this.componentFiles.forEach((res,file) => {
+            let { compileResult , dist } = res
+
+            let { isPage ,name  }  = compileResult
+            if (!isPage) return ;
+
+            if (!appJson.pages?.includes(file)) {
+                throwError(`page ${relativeId(file)} no defined in app.json pages field`)
+            }
+
+            let rel = getRelativePath(pageExportFile,dist)
+
+            entryCode += `
+                import { ${name} } from "${rel}"; \n
+            `
+            names.push(name)
+            
+        })
+
+        entryCode += `
+        
+            export default  pages =  {
+                ${names.join(',')}
+            }
+        
+        `
+
+        emitFile(pageExportFile,entryCode)
+        
+    }
+
+
+    getDistPath(distPath:string,file:string) {
+
+        let { projectDir } = this;
+
+        let relPath = file.replace(projectDir,'')
+
+        return `${distPath}/${relPath}`
+
 
     }
 
