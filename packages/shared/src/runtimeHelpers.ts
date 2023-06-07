@@ -40,3 +40,14 @@ export const helperNameMap: any = {
 
 
 export const RUNTIME_WEBVIEW_NPM = "@po/runtime-webview"
+
+export const RUNTIME_JSCORE_NPM = "@po/runtime-jscore"
+
+export const JSCORE_COMPONENT_NAME = "Component"
+export const JSCORE_PAGE_NAME = "Page"
+
+export const JSCORE_APP_NAME = "App"
+
+
+
+export const PACK_APPSERVICE_NAME = "poScriptDistFile.js"

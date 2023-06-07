@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node scripts/dev.js",
     "build": "node scripts/build.js",
-    "clean":"rm -rf packages/*/dist"
+    "clean": "rm -rf packages/*/dist"
   },
   "keywords": [],
   "author": "",
@@ -52,6 +52,7 @@
     "@babel/plugin-transform-arrow-functions": "^7.20.7",
     "@babel/plugin-transform-modules-commonjs": "^7.20.11",
     "@babel/plugin-transform-typescript": "^7.21.0",
+    "@babel/template": "^7.20.7",
     "@babel/traverse": "^7.21.0",
     "@babel/types": "^7.21.0",
     "@types/babel__core": "^7.20.0",

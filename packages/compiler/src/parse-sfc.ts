@@ -56,7 +56,7 @@ import path from 'path'
 
 
 export interface SfcOptions extends ResolveOptions {
-        pageName:string
+        pathWithProject:string
 }
 
 
@@ -95,12 +95,13 @@ export interface CompileResult extends Pick<SfcContext,'json' | 'template' | 'st
     id:string,
     code:string,
     name:string,
-    isPage:boolean
+    isPage:boolean,
+    pathWithProject:string
 }
 
 async function pickContext(context: SfcContext): Promise<CompileResult> {
 
-    let name = context.options.pageName.split('/').map((sub) => sub.toUpperCase()).join("")
+    let name = context.options.pathWithProject.split('/').map((sub) => sub.toLowerCase()).join("")
 
     return {
 
@@ -111,7 +112,8 @@ async function pickContext(context: SfcContext): Promise<CompileResult> {
         id: generateMixed(),
         code: "",
         name,
-        isPage:!context.json.component
+        isPage:!context.json.component,
+        pathWithProject:context.options.pathWithProject
     }
 
 }

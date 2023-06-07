@@ -5,13 +5,26 @@ import {
     readFileSync,
     relativeId,
     emitFile,
-    getRelativePath
+    getRelativePath,
+    
 } from '@po/cjs-utils'
 
 import {
     compileSfc,
     ResolveOptions
 } from '@po/compiler'
+
+
+import {
+    EsbuildCompiler 
+} from './esbuild'
+
+
+import {
+    PACK_APPSERVICE_NAME
+} from '@po/shared'
+
+import glob from 'glob'
 
 
 export class Compilation {
@@ -43,6 +56,10 @@ export class Compilation {
     }
 
 
+    getPathOppositeProject(path:string) {
+
+        return path.replace(`${this.projectDir}/`,'')
+    }
 
 
     _parseJson(file: string) {
@@ -75,10 +92,10 @@ export class Compilation {
 
     async parseComponents() {
 
-        let { appJson } = this
+        let { appJson,projectDir } = this
         let { pages = [] } = appJson
         for (let page of pages) {
-            await  this.parseComponent(`${page}`)
+            await  this.parseComponent(`${projectDir}/${page}`)
         }
       
     }
@@ -86,9 +103,9 @@ export class Compilation {
     async parseComponent(file:string) {
 
         if (this.componentFiles.has(file)) return ;
-        let { projectDir } = this
-        let res = await compileSfc(`${projectDir}/${file}`, {
-             pageName:file,
+    
+        let res = await compileSfc(file, {
+            pathWithProject:this.getPathOppositeProject(file),
              resolve : { alias : {}}
             })
         
@@ -107,9 +124,10 @@ export class Compilation {
     }
 
 
-    emitFiles() {
+    async emitFiles() {
 
         this.emitWebviewFiles();
+        await this.emitJsCoreFiles();
 
     }
 
@@ -122,6 +140,11 @@ export class Compilation {
             let fileDistPath = this.getDistPath(webviewDist, file);
             fileDistPath = `${fileDistPath}.js`
             res.dist = fileDistPath;
+            res.file = glob.sync(`${file}.{j,t}s`)[0]
+            if (!res.file) {
+                throwError(`component/page ${relativeId(file)} no find`)
+
+            }
             emitFile(`${fileDistPath}`, code);
        
         })
@@ -132,7 +155,7 @@ export class Compilation {
 
     addWebviewPageEntry() {
         
-        let { pageExportFile,appJson } = this;
+        let { pageExportFile,appJson,projectDir } = this;
         let names = [
         ]
         let entryCode = ``
@@ -143,7 +166,7 @@ export class Compilation {
             let { isPage ,name  }  = compileResult
             if (!isPage) return ;
 
-            if (!appJson.pages?.includes(file)) {
+            if (!appJson.pages?.includes(file.replace(`${projectDir}/`,''))) {
                 throwError(`page ${relativeId(file)} no defined in app.json pages field`)
             }
 
@@ -180,6 +203,42 @@ export class Compilation {
 
     }
 
+
+    async emitJsCoreFiles() {
+
+
+        let { projectDir,dist  } = this;
+        
+        let appJsPath = `${projectDir}/app.js`
+
+        let appTsPath = `${projectDir}/app.ts`
+
+        if (!fileIsExist(appJsPath) && !fileIsExist(appTsPath)) {
+            throwError(`app.(j/t)s without`)
+        }
+
+        let appScriptPath = appJsPath || appTsPath
+
+        let jsDist = `${dist}/jsCore/${PACK_APPSERVICE_NAME}.js`
+       
+
+        let  esbuildCompiler = new EsbuildCompiler({
+            dist:jsDist,
+            alias:this.getAlias(),
+            entry:appScriptPath,
+            componentFiles:this.componentFiles
+        })
+
+        await esbuildCompiler.run();
+
+    }
+
+    getAlias() {
+        return this.projectConfig.resolve?.alias
+    }
+
+
+   
 
 
 }

@@ -2,10 +2,15 @@
     "name": "@po/pack",
     "version": "1.0.0",
     "main": "dist/pack.cjs.js",
-    "module":"dist/pack.es.js",
+    "module": "dist/pack.es.js",
     "types": "dist/index.d.ts",
     "dependencies": {
+        "@babel/template": "^7.20.7",
+        "@po/cjs-utils": "workspace:1.0.0",
         "@po/compiler": "workspace:1.0.0",
-        "@po/cjs-utils": "workspace:1.0.0"
+        "@po/shared": "workspace:1.0.0",
+        "@types/babel__template": "^7.4.1",
+        "esbuild": "^0.17.10",
+        "glob": "^7.2.3"
     }
 }

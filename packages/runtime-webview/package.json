@@ -1,6 +1,7 @@
 {
 
     "name": "@po/runtime-webview",
+    "version":"1.0.0",
     "module":"dist/runtime-webview.es.js",
     "types": "dist/index.d.ts",
     "dependencies": {

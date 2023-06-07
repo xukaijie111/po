@@ -75,6 +75,7 @@ async function buildAll(targets) {
 
   
   function checkAllSizes(targets) {
+    return ;
     console.log()
     for (const target of targets) {
       checkSize(target)

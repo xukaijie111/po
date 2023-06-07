@@ -42,6 +42,9 @@ export function GetSameDirectoryFile(path: string, replace: string) {
   export function getRelativePath(src: string, dist: string) {
     let rel = relative(src, dist);
     if (!/^\./.test(rel)) rel = `./${rel}`;
+
+    /\.ts$/.test(rel);
+    rel = ignoreExt(rel);
     return rel;
   }
   
