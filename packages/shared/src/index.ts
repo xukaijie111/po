@@ -35,6 +35,19 @@ export const isObject = (value: any) => {
 }
 
 
+export enum ShapeFlags  {
+
+    ELEMENT = 1,
+    COMPONENT = 1 << 1,
+    COMMENT = 1 << 2,
+
+    TEXT_CHILDREN = 1 << 3,
+    ARRAY_CHILDREN = 1 << 4,
+    TEXT = 1 << 5,
+    FRAGMENT = 1<< 6
+}
+
+
 export * from './runtimeHelpers'
 
 
