@@ -24,10 +24,7 @@
       }
     },
     "include": [
-     "packages/*/src",
-  ],
-    "exclude": [
-      "packages/*/__tests__",
-    ]
+     "src",
+  ]
   }
   
