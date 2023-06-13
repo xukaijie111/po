@@ -32,6 +32,9 @@ export class RpcClient {
         this.ws = new WebSocket(`wx://${host}:${port}`);
         this.ws.on('open',() => {
             console.log(`rpc connect success`)
+            this.ws.on(RPC_FUNCTION_NAME,(data:BridgeDataBase) => {
+                this.client.on(data)
+            })
         })
     }
 
@@ -43,4 +46,6 @@ export class RpcClient {
     async send(data:BridgeDataBase) {
         return await this.ws.call(RPC_FUNCTION_NAME,data)
     }
+
+
 }

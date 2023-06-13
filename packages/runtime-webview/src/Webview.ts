@@ -9,6 +9,7 @@ import {
 import {
     serialPageName
 } from '@po/shared'
+
 import {
     Component
 } from './component'
@@ -50,6 +51,8 @@ export class Webview {
 
         await this.bridge.init();
 
+        let { page } = options
+
         let rootComponent = this.rootComponent = new Component(this.pageOptions,{})
 
         await rootComponent.init();
@@ -61,7 +64,7 @@ export class Webview {
 
 
     listenDataUpdate(){
-        this.bridge.regi(PROTOCOL_CMD.S2C_SET_DATA,(params:BRIDGE_COMPONENT_SET_DATA_DATA) => {
+        this.bridge.register(PROTOCOL_CMD.S2C_SET_DATA,(params:BRIDGE_COMPONENT_SET_DATA_DATA) => {
 
             let { data } = params
             let { componentId ,data:res } = data
