@@ -2,7 +2,7 @@
 小程序技术，模仿微信小程序
 
 
-## 主要技术点
+## 主要特点
 1. view 和 js 编译成独立两套
 2. view 可运行在浏览器，electron 的webview等
 3. js 运行在node下

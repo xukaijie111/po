@@ -14,6 +14,8 @@ import {
     Component
 } from './component'
 
+//@ts-ignore
+import pages from '@pages'
 
 export type ExposeComponentOptions = {
     render: Function,
@@ -52,8 +54,15 @@ export class Webview {
         await this.bridge.init();
 
         let { page } = options
+        let name = serialPageName(page)
 
-        let rootComponent = this.rootComponent = new Component(this.pageOptions,{})
+        let pageOptions = pages[name]
+
+        if (!pageOptions) {
+            throw new Error(`No Find Page ${page}`)
+        }
+
+        let rootComponent = this.rootComponent = new Component(pageOptions,{})
 
         await rootComponent.init();
 

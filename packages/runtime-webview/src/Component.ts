@@ -35,4 +35,9 @@ export class Component extends BaseComponent{
     callMethod(name: string): void {
         
     }
+
+
+    amount(elm:Node,refElm:Node = null) {
+        
+    }
 }
