@@ -38,6 +38,10 @@ export function serialPageName(path:string) {
     return path.split('/').map((sub) => sub.toLowerCase()).join("")
 }
 
+export function isUndef(s: any): boolean {
+    return s === undefined;
+  }
+  
 export enum ShapeFlags  {
 
     ELEMENT = 1,
