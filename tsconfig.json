@@ -20,7 +20,9 @@
     "types": ["jest", "node"],
     "rootDir": ".",
       "paths": {
-        "@po/*": ["packages/*/src"]
+        "@po/*": ["packages/*/src"],
+        "@po/bridge-client":["packages/bridge/src/client"],
+        "@po/bridge-server":["packages/bridge/src/server"]
       }
     },
     "include": [

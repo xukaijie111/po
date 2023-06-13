@@ -3,6 +3,8 @@ import {
     RpcServer
 } from '../interfaces/rpc/server'
 
+export * from '../base/protocol'
+
 export class BridgeServer extends Base{
 
     interface:RpcServer

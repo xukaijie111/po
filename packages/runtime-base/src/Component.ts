@@ -6,6 +6,7 @@ import {
 export class BaseComponent {
 
     data:Record<string,any>
+    props:Record<string,any>
     methods:Record<string,Function>
     lifeTimes:Map<LIFEKEYS,Function>
 

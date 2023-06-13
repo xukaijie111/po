@@ -7,6 +7,7 @@ import {
 import { RootNode } from './ast'
 
 import {
+    serialPageName,
     generateMixed
 } from '@po/shared'
 
@@ -101,8 +102,7 @@ export interface CompileResult extends Pick<SfcContext,'json' | 'template' | 'st
 
 async function pickContext(context: SfcContext): Promise<CompileResult> {
 
-    let name = context.options.pathWithProject.split('/').map((sub) => sub.toLowerCase()).join("")
-
+    let name = serialPageName(context.options.pathWithProject);
     return {
 
         json:context.json,

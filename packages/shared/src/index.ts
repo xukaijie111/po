@@ -34,6 +34,9 @@ export const isObject = (value: any) => {
     return true
 }
 
+export function serialPageName(path:string) {
+    return path.split('/').map((sub) => sub.toLowerCase()).join("")
+}
 
 export enum ShapeFlags  {
 

@@ -8,6 +8,8 @@ import {
 } from '../base/protocol'
 import { Base } from '../base';
 
+export * from '../base/protocol'
+
 export class BridgeClient extends Base{
 
     interface:RpcClient
@@ -33,6 +35,7 @@ export class BridgeClient extends Base{
     }
 
 
+    
    
 
 }

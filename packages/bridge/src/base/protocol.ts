@@ -4,7 +4,7 @@ export const RPC_FUNCTION_NAME = "rpcTransformFunc"
 
 
 
-export enum PROTOCOL_TYPES {
+export enum PROTOCOL_CMD {
 
       // c2s
     // 创建一个页面/组件
@@ -22,13 +22,13 @@ export enum PROTOCOL_TYPES {
 
 
 export interface BridgeDataBase {
-    type:PROTOCOL_TYPES,
+    type:PROTOCOL_CMD,
     data:any
 }
 
 
 export interface BRIDGE_CREATE_COMPONENT_DATA extends BridgeDataBase {
-    type:PROTOCOL_TYPES.C2S_INIT_COMPONENT,
+    type:PROTOCOL_CMD.C2S_INIT_COMPONENT,
     data:{
         componentId:string,
         parentId:string,
@@ -38,7 +38,7 @@ export interface BRIDGE_CREATE_COMPONENT_DATA extends BridgeDataBase {
 }
 
 export interface BRIDGE_DOM_ON_CLICK_DATA extends BridgeDataBase {
-    type:PROTOCOL_TYPES.C2S_DOM_ON_CLICK,
+    type:PROTOCOL_CMD.C2S_DOM_ON_CLICK,
     data:{
         componentId:string,
         name:string,
@@ -49,7 +49,7 @@ export interface BRIDGE_DOM_ON_CLICK_DATA extends BridgeDataBase {
 
 export interface BRIDGE_COMPONENT_READY_CMD_DATA extends BridgeDataBase {
 
-    type:PROTOCOL_TYPES.C2S_READY_COMPONENT
+    type:PROTOCOL_CMD.C2S_READY_COMPONENT
     data:{
         componentId:string
     }
@@ -58,7 +58,7 @@ export interface BRIDGE_COMPONENT_READY_CMD_DATA extends BridgeDataBase {
 
 export interface BRIDGE_COMPONENT_SET_DATA_DATA extends BridgeDataBase {
 
-    type:PROTOCOL_TYPES.S2C_SET_DATA,
+    type:PROTOCOL_CMD.S2C_SET_DATA,
     data:{
         componentId:string,
         data:any
