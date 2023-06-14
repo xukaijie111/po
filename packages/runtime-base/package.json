@@ -1,8 +1,0 @@
-{
-
-    "name": "@po/runtime-base",
-    "version":"1.0.0",
-    "module":"dist/runtime-base.es.js",
-    "types": "dist/index.d.ts"
-
-}

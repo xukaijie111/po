@@ -340,13 +340,14 @@ function generateExport(context:CodeGenContext) {
 
 
         let { push ,compileResult  } = context;
-        let { name,id } = compileResult
+        let { name,id,pathWithProject } = compileResult
 
         push(`
             export const ${name} = {
                 name: "${name}",
                 render,
-                id:"${id}"
+                templateId:"${id}",
+                path:"${pathWithProject}"
             }
         `)
 

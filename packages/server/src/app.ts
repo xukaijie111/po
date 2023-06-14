@@ -8,6 +8,9 @@ import corsMiddleware from "./middleware/cors.middleware"
 import { IndexContoller } from './controller/index'
 
 
+import {
+    BridgeServerConnect
+} from './bridge-connect/index'
 
 let controllers = [
     IndexContoller
@@ -21,17 +24,21 @@ export class Application {
 
         this.app = express();
         this.initializeMiddlewares();
-        this.initializeControllers(controllers)
+        this.initializeControllers(controllers);
+        this.initBridgeConnect();
 
     }
 
 
+    initBridgeConnect() {
+        new BridgeServerConnect(this).init();
+    }
 
     private initializeMiddlewares() {
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
         this.app.use(corsMiddleware);
-      }
+    }
     
 
     private initializeControllers(controllers: any[]) {

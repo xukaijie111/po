@@ -144,7 +144,7 @@ export class EsbuildCompiler {
 
                     const registerTemplate = template(`${componentOrPageName}.register({
                     name:"${name}",
-                    id:"${id}",
+                    templateId:"${id}",
                     path:"${pathWithProject}"
                         })`)
 

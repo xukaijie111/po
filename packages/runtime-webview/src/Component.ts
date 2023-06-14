@@ -1,17 +1,16 @@
 
 
-import {
-    BaseComponent
-} from '@po/runtime-base'
+
 
 
 import type {
     Webview,
-    ExposeComponentOptions
+    
 } from './Webview'
 
 import {
-    generateMixed
+    generateMixed,
+    ExposeComponentOptions
 } from '@po/shared'
 
 import {
@@ -26,7 +25,7 @@ import {
 import { VNode  , pushCurrentComponent,popCurrentComponent} from "./node";
 
 
-export class Component extends BaseComponent {
+export class Component {
 
     parent: Component
     children: Array<Component>
@@ -34,8 +33,10 @@ export class Component extends BaseComponent {
     cache: Record<string, any>
     vnode:VNode
     prevVnode:VNode
+    id:string
+    props:Record<string,any>
+    data:Record<string,any>
     constructor(private options: ExposeComponentOptions, props: Record<string, any>) {
-        super()
         this.props = props
         this.id = generateMixed()
         //@ts-ignore
@@ -77,7 +78,7 @@ export class Component extends BaseComponent {
     }
 
 
-    amount(elm: Node, refElm: Node = null) {
+   async amount(elm: Node, refElm: Node = null) {
         return  amountElement(this.vnode,elm,refElm)
     }
 

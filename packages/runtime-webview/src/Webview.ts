@@ -17,11 +17,9 @@ import {
 //@ts-ignore
 import pages from '@pages'
 
-export type ExposeComponentOptions = {
-    render: Function,
-    name: string,
-    id:string
-}
+import {
+    ExposeComponentOptions
+} from '@po/shared'
 
 
 // 统一管理一个webview

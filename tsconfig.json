@@ -1,11 +1,10 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
+  "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "dist",
     "sourceMap": true,
     "target": "es2016",
     "useDefineForClassFields": false,
-
     "module": "esnext",
     "moduleResolution": "node",
     "allowJs": false,
@@ -16,21 +15,32 @@
     "esModuleInterop": true,
     "removeComments": false,
     "jsx": "preserve",
-    "lib": ["esnext", "dom"],
-    "types": ["jest", "node"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "jest",
+      "node"
+    ],
     "rootDir": ".",
-      "paths": {
-        "@po/*": ["packages/*/src"],
-        "@po/bridge-client":["packages/bridge/src/client"],
-        "@po/bridge-server":["packages/bridge/src/server"]
-      }
-    },
-    "include": [
-     "packages/global.d.ts",
-     "packages/*/src",
+    "paths": {
+      "@po/*": [
+        "packages/*/src"
+      ],
+      "@po/bridge-client": [
+        "packages/bridge/src/client"
+      ],
+      "@po/bridge-server": [
+        "packages/bridge/src/server"
+      ]
+    }
+  },
+  "include": [
+    "packages/global.d.ts",
+    "packages/*/src",
   ],
-    "exclude": [
-      "packages/*/__tests__",
-    ]
-  }
-  
+  "exclude": [
+    "packages/*/__tests__",
+  ]
+}

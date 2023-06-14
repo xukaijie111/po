@@ -1,0 +1,8 @@
+{
+
+    "name": "@po/runtime-jscore",
+    "version":"1.0.0",
+    "module":"dist/runtime-jscore.es.js",
+    "types": "dist/index.d.ts"
+
+}

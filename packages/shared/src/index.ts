@@ -41,6 +41,14 @@ export function serialPageName(path:string) {
 export function isUndef(s: any): boolean {
     return s === undefined;
   }
+
+
+  export type ExposeComponentOptions = {
+    render?: Function,
+    name: string,
+    templateId:string,
+    path:string
+}
   
 export enum ShapeFlags  {
 

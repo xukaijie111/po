@@ -1,34 +1,40 @@
 {
-    "ts-node":{
-        "module":"commonjs",
-        "target":"esnext",
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
-        "esModuleInterop": true,
-        "esm":true,
-        "baseUrl": ".",
-        "paths": {
-          "@po/*": ["../*/src"]
-        }
-    },
-
-    "compilerOptions": {
-      "esModuleInterop": true,
-      "experimentalDecorators": true,
-      "moduleResolution": "node",
-      "target":"esnext",
-      "baseUrl": ".",
-      "paths": {
-        "@po/*": ["../*/src"]
-      }
-    },
-
-      "include": [
-        "src/**/*.ts"
+  "ts-node": {
+    "module": "commonjs",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "esm": true,
+    "baseUrl": ".",
+    "paths": {
+      "@po/*": [
+        "../*/src"
       ],
-      "exclude": [
-        "node_modules"
+      "@po/bridge-server": [
+        "../bridge/src/server"
       ]
-
-
+    }
+  },
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "target": "esnext",
+    "baseUrl": ".",
+    "paths": {
+      "@po/*": [
+        "../*/src"
+      ],
+      "@po/bridge-server": [
+        "../bridge/src/server"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
