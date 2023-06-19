@@ -27,9 +27,7 @@ import {
     NodePath
 } from '@babel/core'
 
-import babel from '@babel/core'
 
-let types = babel.types
 
 
 export class EsbuildCompiler {
@@ -145,7 +143,8 @@ export class EsbuildCompiler {
                     const registerTemplate = template(`${componentOrPageName}.register({
                     name:"${name}",
                     templateId:"${id}",
-                    path:"${pathWithProject}"
+                    path:"${pathWithProject}",
+                    isPage:${isPage}
                         })`)
 
                     lastPath.insertAfter(registerTemplate());

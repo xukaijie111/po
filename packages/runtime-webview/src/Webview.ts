@@ -18,7 +18,7 @@ import {
 import pages from '@pages'
 
 import {
-    ExposeComponentOptions
+    CompilerComponentOptions
 } from '@po/shared'
 
 
@@ -26,10 +26,10 @@ import {
 export class Webview {
 
     bridge: BridgeClient
-    pageOptions: ExposeComponentOptions
+    pageOptions: CompilerComponentOptions
     // 根虚拟节点
     rootComponent: Component
-    constructor(options: ExposeComponentOptions) {
+    constructor(options: CompilerComponentOptions) {
         this.pageOptions = options
         //@ts-ignore
         window.webview = this;

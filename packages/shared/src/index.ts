@@ -43,11 +43,12 @@ export function isUndef(s: any): boolean {
   }
 
 
-  export type ExposeComponentOptions = {
+  export type CompilerComponentOptions = {
     render?: Function,
     name: string,
     templateId:string,
-    path:string
+    path:string,
+    isPage:boolean
 }
   
 export enum ShapeFlags  {

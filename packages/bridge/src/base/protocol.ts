@@ -27,14 +27,17 @@ export interface BridgeDataBase {
 }
 
 
+export type INIT_COMPONENT_DATA = {
+    componentId:string,
+    parentId:string,
+    templateId:string,
+    name:string,
+    props?:Record<any,any>
+}
+
 export interface BRIDGE_CREATE_COMPONENT_DATA extends BridgeDataBase {
     type:PROTOCOL_CMD.C2S_INIT_COMPONENT,
-    data:{
-        componentId:string,
-        parentId:string,
-        name:string,
-        props?:Record<any,any>
-    }, 
+    data:INIT_COMPONENT_DATA
 }
 
 export interface BRIDGE_DOM_ON_CLICK_DATA extends BridgeDataBase {

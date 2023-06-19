@@ -10,7 +10,7 @@ import type {
 
 import {
     generateMixed,
-    ExposeComponentOptions
+    CompilerComponentOptions
 } from '@po/shared'
 
 import {
@@ -36,7 +36,7 @@ export class Component {
     id:string
     props:Record<string,any>
     data:Record<string,any>
-    constructor(private options: ExposeComponentOptions, props: Record<string, any>) {
+    constructor(private options: CompilerComponentOptions, props: Record<string, any>) {
         this.props = props
         this.id = generateMixed()
         //@ts-ignore
@@ -64,6 +64,7 @@ export class Component {
             type: PROTOCOL_CMD.C2S_INIT_COMPONENT,
             data: {
                 name: options.name,
+                templateId:options.templateId,
                 componentId:id,
                 parentId:this.parent?.id,
                 props

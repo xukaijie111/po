@@ -347,7 +347,8 @@ function generateExport(context:CodeGenContext) {
                 name: "${name}",
                 render,
                 templateId:"${id}",
-                path:"${pathWithProject}"
+                path:"${pathWithProject}",
+                isPage:${compileResult.isPage}
             }
         `)
 
