@@ -111,3 +111,30 @@ export function deepArrayEqual(prev:Array<any>, next:Array<any>) {
 	}
 	return prev === next;
   }
+
+
+  export function fill(source:any, name:string, replacement:any) {
+	const original = source[name];
+	const wrapped = replacement(original);
+  
+	source[name] = wrapped;
+  }
+
+
+
+export function getDataByPath(value: Record<string, any>, path: string) {
+	let paths = path.split(".");
+  
+	let data: any = value;
+
+	for (let key of paths) {
+		try {
+			data = data[key];
+		} catch (error) {
+			return undefined
+		}
+	}
+  
+  
+	return data;
+  }

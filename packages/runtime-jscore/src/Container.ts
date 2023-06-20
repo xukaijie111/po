@@ -22,17 +22,17 @@ export type CompotionsMap = Map<
     CompilerComponentOptions,
     {
         options: ComponentOptions,
-        list: Set<ComponentInstance | PageInstance>
     }
 >
 
 export class Container {
 
-
+    components:Set<ComponentInstance | PageInstance>
     componentsMap: CompotionsMap
     currentComponentOptions: CompilerComponentOptions | null
 
     constructor() {
+        this.components = new Set();
         this.currentComponentOptions = null;
         this.componentsMap = new Map();
 
@@ -56,7 +56,6 @@ export class Container {
 
         this.componentsMap.set(currentComponentOptions, {
             options,
-            list: new Set()
         })
 
 
@@ -77,7 +76,7 @@ export class Container {
             if (compilerOptions.templateId === templateId) {
                     let res = componentsMap.get(compilerOptions)
                     let { isPage } = compilerOptions;
-                    let { options,list } = res;
+                    let { options } = res;
 
                     let instanceOptions:BaseInstance.options = {
                         initData,
@@ -86,13 +85,28 @@ export class Container {
 
                     }
                     let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
-                    list.add(instance)
+                    this.components.add(instance)
                     this.currentComponentOptions = null;
                     return ;
             }
         }
 
         throw new Error(`No Find TemplateId ${templateId} When Create Component${initData.name}`)
+
+    }
+
+
+    resolveComponent(id:string) {
+        let { components } = this
+
+        let array = Array.from(components)
+        for (let i = 0 ;i < array.length;i++) {
+            if (array[i].id === id) {
+                return array[i]
+            }
+        }
+
+        throw new Error(`Can Not Resolve Component Id : ${id}`)
 
     }
 }

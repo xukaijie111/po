@@ -32,6 +32,7 @@ export type INIT_COMPONENT_DATA = {
     parentId:string,
     templateId:string,
     name:string,
+    query?:Record<string,string>
     props?:Record<any,any>
 }
 
