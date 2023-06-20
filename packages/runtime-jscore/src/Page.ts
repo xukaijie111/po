@@ -1,13 +1,11 @@
+import { BaseInstance } from "./Instance";
 
 
-import {
-    ComponentOptions
-} from './expose'
 
-export class PageInstance {
+export class PageInstance extends BaseInstance{ 
+
+
+
     
-    
-    constructor(options:ComponentOptions) {
-
-    }
 }
+    

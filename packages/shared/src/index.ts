@@ -68,3 +68,20 @@ export * from './runtimeHelpers'
 
 
 export * from './random'
+
+
+export * from './object'
+
+export * from './util'
+
+
+export enum LifeTimes {
+
+    ONCREATED = "onCreated",
+
+    ONSHOW = "onShow",
+
+    ONREADY = "onReady",
+
+    ONDESTROYED = "onDestroyed"
+}

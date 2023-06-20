@@ -16,6 +16,7 @@ import {
 import {
     ComponentOptions
 } from './expose'
+import { BaseInstance } from './Instance';
 
 export type CompotionsMap = Map<
     CompilerComponentOptions,
@@ -41,7 +42,7 @@ export class Container {
     register(options: CompilerComponentOptions) {
 
         if (this.currentComponentOptions) {
-            throw new Error(`path ${this.currentComponentOptions.path} has no Component/Page Register`)
+            throw new Error(`Path ${this.currentComponentOptions.path} Has No Component/Page Register`)
         }
         this.currentComponentOptions = options
     }
@@ -50,7 +51,7 @@ export class Container {
         let { currentComponentOptions } = this;
 
         if (!currentComponentOptions) {
-            throw new Error(`has no Component/Page Register`)
+            throw new Error(`Has No Component/Page Register`)
         }
 
         this.componentsMap.set(currentComponentOptions, {
@@ -63,9 +64,9 @@ export class Container {
 
 
 
-    createComponent(options: INIT_COMPONENT_DATA) {
+    createComponent(initData: INIT_COMPONENT_DATA) {
 
-        let { templateId } = options
+        let { templateId } = initData
 
         let { componentsMap } = this;
 
@@ -78,13 +79,20 @@ export class Container {
                     let { isPage } = compilerOptions;
                     let { options,list } = res;
 
-                    let instance = isPage? new PageInstance(options):new ComponentInstance(options)
+                    let instanceOptions:BaseInstance.options = {
+                        initData,
+                        runOptions:options,
+                        container:this
+
+                    }
+                    let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
                     list.add(instance)
+                    this.currentComponentOptions = null;
                     return ;
             }
         }
 
-        throw new Error(`No Find TemplateId ${templateId} When Create Component${options.name}`)
+        throw new Error(`No Find TemplateId ${templateId} When Create Component${initData.name}`)
 
     }
 }

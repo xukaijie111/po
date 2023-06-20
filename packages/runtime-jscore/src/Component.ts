@@ -1,15 +1,19 @@
 
 
-import {
-    ComponentOptions
-} from './expose'
+import { BaseInstance } from './Instance';
 
 
-export class ComponentInstance {
+export class ComponentInstance extends BaseInstance{
 
-    constructor(options:ComponentInstance) {
-        
 
+
+
+    init(): void {
+        this.initProps()
     }
 
+
+    initProps() {
+
+    }
 }
