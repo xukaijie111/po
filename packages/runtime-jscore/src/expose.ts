@@ -18,8 +18,32 @@ export type ComponentOptions = {
 }
 
 
+import {
+    Container
+} from './container'
+
+
+let container = new Container();
+
 export function Component(options:ComponentOptions) {
 
-        
+    container.addComponent(options)
+
+}
+
+
+Component.prototype.register = container.register
+
+
+
+export function Page(options:ComponentOptions) {
+    container.addComponent(options)
+}
+
+Page.prototype.register = container.register
+
+export function App() {
+
+
 
 }

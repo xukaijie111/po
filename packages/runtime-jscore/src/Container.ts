@@ -39,7 +39,7 @@ export class Container {
     }
 
 
-    register(options: CompilerComponentOptions) {
+    register = (options: CompilerComponentOptions) => {
 
         if (this.currentComponentOptions) {
             throw new Error(`Path ${this.currentComponentOptions.path} Has No Component/Page Register`)
