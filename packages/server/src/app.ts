@@ -14,14 +14,14 @@ import {
 
 let controllers = [
     IndexContoller
-  ]
-  
+]
+
 export class Application {
 
     public app: express.Application;
-
-    constructor() {
-
+    options:Application.options
+    constructor(options:Application.options) {
+        this.options = options
         this.app = express();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
@@ -39,14 +39,23 @@ export class Application {
         this.app.use(cookieParser());
         this.app.use(corsMiddleware);
     }
-    
+
 
     private initializeControllers(controllers: any[]) {
         controllers.forEach((Controller) => {
-          let c = new Controller(this);
-          this.app.use('/', c.router);
+            let c = new Controller(this);
+            this.app.use('/', c.router);
         });
-      }
+    }
+
+
+    getJsCorePath() {
+        return this.options.jsCorePath
+    }
+
+    getWebviewPath() {
+        return this.options.webviewDir
+    }
 
 }
 
@@ -55,7 +64,7 @@ export namespace Application {
 
     export type options = {
 
-        webviewDir:string,
-        jsCoreDir:string
+        webviewDir: string,
+        jsCorePath: string
     }
 }

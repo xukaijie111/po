@@ -36,7 +36,9 @@ export class Compilation {
     webviewDist:string
     jsCoreDist:string
     pageExportFile:string
-    constructor(options: Compilation.options) {
+    options:Compilation.options
+    constructor( options: Compilation.options) {
+        this.options = options
         this.projectDir = options.dir || process.cwd()
         this.dist = options.dist;
         this.webviewDist = `${this.dist}/webview`
@@ -226,7 +228,8 @@ export class Compilation {
             dist:jsDist,
             alias:this.getAlias(),
             entry:appScriptPath,
-            componentFiles:this.componentFiles
+            componentFiles:this.componentFiles,
+            compilation:this
         })
 
         await jsCompiler.run();
@@ -248,6 +251,7 @@ export namespace Compilation {
 
     export interface options extends ResolveOptions {
         dir?: string,
-        dist:string
+        dist:string,
+        alias?:Record<string,any>
     }
 }

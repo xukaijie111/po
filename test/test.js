@@ -8,7 +8,10 @@ let Path = require('path')
 
 let comp = new Compilation({
     dir:__dirname,
-    dist:Path.resolve(__dirname,'./dist')
+    dist:Path.resolve(__dirname,'./dist'),
+    alias:{
+        "@po/runtime-jscore":Path.resolve(__dirname,'../packages/runtime-jscore/src/index.ts')
+    }
 });
 
 

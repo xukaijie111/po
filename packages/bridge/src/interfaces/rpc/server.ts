@@ -28,8 +28,8 @@ export class RpcServer {
         })
 
 
-        this.server.register(RPC_FUNCTION_NAME,(params) => {
-            return this.callback(params)
+        this.server.register(RPC_FUNCTION_NAME,async (params) => {
+            return await this.callback(params)
         })
     }
 

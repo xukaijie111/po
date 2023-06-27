@@ -24,15 +24,7 @@ export function deleteBrackets(value: any) {
 export const isString = (val: unknown): val is string => typeof val === 'string'
 
 
-let toString = Object.prototype.toString
-export const isPlainObject = (val: unknown): val is object =>
-    toString.call(val) === '[object Object]' || toString.call(val) === '[object Array]'
 
-
-export const isObject = (value: any) => {
-    if (value === null || toString.call(value) !== '[object Object]') return false
-    return true
-}
 
 export function serialPageName(path:string) {
     return path.split('/').map((sub) => sub.toLowerCase()).join("")

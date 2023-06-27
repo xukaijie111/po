@@ -29,11 +29,6 @@ export function isFunction(val: any): boolean {
 
 
 
-export function isNil(value: any) {
-    return value === undefined || value === null
-}
-
-
 export function readPropFromProto(source: any, prop: PropertyKey) {
 	const desc = getDescriptorFromProto(source, prop)
 	return desc

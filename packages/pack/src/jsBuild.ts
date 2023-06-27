@@ -7,6 +7,8 @@ import ts from 'rollup-plugin-typescript2'
 
 import resolve from '@rollup/plugin-node-resolve'
 
+import alias from '@rollup/plugin-alias'
+
 import {
     Plugin,
     InputOptions,
@@ -36,6 +38,7 @@ import template from '@babel/template'
 import {
     NodePath
 } from '@babel/core'
+import { Compilation } from './Compilation'
 
 
 
@@ -52,10 +55,12 @@ export class JsCoreCompiler {
 
         let inputOptions:InputOptions = {
             input:this.options.entry,
-            plugins:this.getPlugins()
+            plugins:this.getPlugins(),
+            
         }
         let outputOptions:OutputOptions = {
-            file:this.options.dist
+            file:this.options.dist,
+            format:"cjs"
         }
 
         const bundle = await rollup.rollup(inputOptions);
@@ -86,10 +91,14 @@ export class JsCoreCompiler {
                 enter: (path: NodePath) => {
 
 
-                    let appImportNode = template(`import { ${JSCORE_APP_NAME}} from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
+                    let appImportNode = template(`import { ${JSCORE_APP_NAME} ,container } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
 
+                    let exportContainerNode = template(`export { container }`)
                     //@ts-ignore
                     path.unshiftContainer("body", appImportNode());
+
+                     //@ts-ignore
+                    path.pushContainer('body',exportContainerNode())
 
                     componentFiles.forEach((res) => {
 
@@ -170,7 +179,7 @@ export class JsCoreCompiler {
 
             name:"handle-app-js",
             load(id) {
-                console.log(`###id is`,id)
+                let code = readFileSync(id);
                 if (id === self.options.entry) {
                     return {
                         code:self.handleAppFile()
@@ -200,10 +209,32 @@ export class JsCoreCompiler {
             resolve({
                 extensions:['.ts','.js'],
                 
-            })
+            }),
+            alias(this.getAlias())
         ]
 
         return plugins
+    }
+
+
+    getAlias() {
+
+        let { compilation } = this.options;
+
+        let alias = compilation.options.alias;
+
+        let entries = []
+
+        for (let key in alias) {
+            entries.push({
+                find:key,
+                replacement:alias[key]
+            })
+        }
+
+        return {
+            entries
+        }
     }
 }
 
@@ -215,6 +246,7 @@ export namespace JsCoreCompiler {
         entry: string,
         componentFiles: Map<string, Record<any, any>>,
         dist: string,
-        alias?: Record<any, any>
+        alias?: Record<any, any>,
+        compilation:Compilation
     }
 }
