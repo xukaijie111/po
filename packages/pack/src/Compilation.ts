@@ -19,6 +19,10 @@ import {
     JsCoreCompiler 
 } from './jsBuild'
 
+import {
+    WebviewCompile
+} from './webviewBuild'
+
 
 import {
     PACK_APPSERVICE_NAME
@@ -33,16 +37,21 @@ export class Compilation {
     projectConfig:Record<string, any>
     componentFiles:Map<string,Record<any,any>>
     dist:string
+    finalyWebviewDist:string
     webviewDist:string
+    webviewDistIndex:string
     jsCoreDist:string
     pageExportFile:string
+    
     options:Compilation.options
     constructor( options: Compilation.options) {
         this.options = options
         this.projectDir = options.dir || process.cwd()
         this.dist = options.dist;
-        this.webviewDist = `${this.dist}/webview`
-        this.pageExportFile = `${this.dist}/webview/pages.js`
+        this.finalyWebviewDist = `${this.dist}/webview/index.js`
+        this.webviewDist = `${this.dist}/webviewdraft`
+        this.webviewDistIndex = `${this.webviewDist}/index.js`
+        this.pageExportFile = `${this.webviewDist}/pages.js`
         this.jsCoreDist = `${this.dist}/jscore`
         this.componentFiles = new Map();
     }
@@ -129,8 +138,25 @@ export class Compilation {
     async emitFiles() {
 
         this.emitWebviewFiles();
+        this.buildWebview();
         await this.emitJsCoreFiles();
 
+    }
+
+
+    async buildWebview() {
+
+        let compiler = new WebviewCompile({
+            compilation:this,
+            entry:this.webviewDistIndex,
+            dist:this.finalyWebviewDist,
+            alias:[{
+                find:"@pages",
+                replacement:this.pageExportFile
+            }]
+        })
+
+        await compiler.run();
     }
 
     emitWebviewFiles() {
@@ -151,11 +177,24 @@ export class Compilation {
        
         })
 
-        this.addWebviewPageEntry();
+        this.addWebviewPages();
+        this.addWebviewIndex();
     }
 
 
-    addWebviewPageEntry() {
+    addWebviewIndex() {
+
+        let code = `
+            import { Webview } from "@po/runtime-webview"
+            import pages from "./pages"
+            new Webview(pages)
+        `
+
+        emitFile(this.webviewDistIndex,code)
+
+    }
+
+    addWebviewPages() {
         
         let { pageExportFile,appJson,projectDir } = this;
         let names = [

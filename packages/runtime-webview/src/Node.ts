@@ -1,12 +1,8 @@
 
-import { ShapeFlags,isString } from '@po/shared'
+import { ShapeFlags,isString,CompilerComponentOptions } from '@po/shared'
 import { Component } from './component';
 
-export type ExposeComponentOptions = {
-    render: Function,
-    name: string,
-    id:string
-}
+
 
 
 let currentComponent:Component
@@ -41,7 +37,7 @@ export class VNode {
 
     inlineComponent:Component // 真正的组件
 
-    options:ExposeComponentOptions
+    options:CompilerComponentOptions
     constructor(params:VNode.params) {
         let { tagName ,namespace ,data, children,shapeFlage  } = params
 
@@ -102,7 +98,7 @@ export namespace VNode {
         data?:VNodeData | undefined
         children?:VNodeChildren
         shapeFlage?:ShapeFlags
-        options?:ExposeComponentOptions
+        options?:CompilerComponentOptions
     }
 }
 
@@ -153,7 +149,7 @@ export function createFragmentVNode(tagName:string | undefined,data:VNodeData | 
 
 
 
-export function createComponentVNode(tagName:string,options:ExposeComponentOptions,props:Record<string,any>) {
+export function createComponentVNode(tagName:string,options:CompilerComponentOptions,props:Record<string,any>) {
     return new VNode({
         tagName:tagName,
         data:props,

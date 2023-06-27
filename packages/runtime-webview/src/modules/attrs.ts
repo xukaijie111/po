@@ -1,11 +1,9 @@
 import {
-  isSpecialBooleanAttr,
-  objectHasKey
-} from '@wosai/shared'
+  hasOwn
+} from '@po/shared'
 
 import {
   VNode,
-  VNodeData
 } from '../node'
 
 export const xlinkNS = 'http://www.w3.org/1999/xlink'
@@ -20,11 +18,11 @@ export function patchAttr(
   let oldData = oldNode?.data??{}
   let newData = newNode.data??{}
     
-  let oldHas = objectHasKey(oldData,name)
-  let newHas = objectHasKey(newData,name)
+  let oldHas = hasOwn(oldData,name)
+  let newHas = hasOwn(newData,name)
   let oldValue = oldData[name];
   let newValue = newData[name];
-  const isBoolean = isSpecialBooleanAttr(name)
+  const isBoolean = false
 
   // 老节点有属性名，新节点没有，则直接删除
     if (oldHas && !newHas) {

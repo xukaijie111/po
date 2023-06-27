@@ -14,8 +14,6 @@ import {
     Component
 } from './component'
 
-//@ts-ignore
-import pages from '@pages'
 
 import {
     CompilerComponentOptions
@@ -29,12 +27,11 @@ export class Webview {
     pageOptions: CompilerComponentOptions
     // 根虚拟节点
     rootComponent: Component
-    constructor(options: CompilerComponentOptions) {
-        this.pageOptions = options
+    pages:any
+    constructor(pages) {
+        this.pages = pages;
         //@ts-ignore
         window.webview = this;
-
-
     }
 
 
@@ -54,7 +51,7 @@ export class Webview {
         let { page } = options
         let name = serialPageName(page)
 
-        let pageOptions = pages[name]
+        let pageOptions = this.pageOptions =  this.pages[name]
 
         if (!pageOptions) {
             throw new Error(`No Find Page ${page}`)

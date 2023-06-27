@@ -6,7 +6,7 @@ import {
   pacthElementAttrs
 } from './modules/mergeData'
 
-import {
+import  {
   Component
 } from './component'
 
