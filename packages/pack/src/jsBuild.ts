@@ -1,9 +1,19 @@
 
-import esbuild from 'esbuild'
+
+
+import rollup from 'rollup'
+
+import ts from 'rollup-plugin-typescript2'
+
+import resolve from '@rollup/plugin-node-resolve'
 
 import {
-    Plugin
-} from 'esbuild'
+    Plugin,
+    InputOptions,
+    OutputOptions
+} from 'rollup'
+
+
 
 import {
     readFileSync,
@@ -29,35 +39,27 @@ import {
 
 
 
+export class JsCoreCompiler {
 
-export class EsbuildCompiler {
 
-
-    constructor(private options: EsbuildCompiler.options) {
+    constructor(private options: JsCoreCompiler.options) {
 
     }
 
 
 
     async run() {
-        try {
-            await esbuild
-                .build({
-                    entryPoints: [this.options.entry],
-                    outfile: this.options.dist,
-                    bundle: true,
-                    format: "cjs",
-                    platform: "node",
-                    alias: this.options.alias || {},
-                    plugins: this.getPlugins(),
-                    external: [
-                        RUNTIME_JSCORE_NPM
-                    ]
-                })
-        } catch (err) {
-            console.log(err)
-            throw new Error(err)
+
+        let inputOptions:InputOptions = {
+            input:this.options.entry,
+            plugins:this.getPlugins()
         }
+        let outputOptions:OutputOptions = {
+            file:this.options.dist
+        }
+
+        const bundle = await rollup.rollup(inputOptions);
+        await bundle.write(outputOptions);
 
     }
 
@@ -156,50 +158,57 @@ export class EsbuildCompiler {
             }
         })
 
-        console.log(`code is `,generateCodeByAst(ast))
 
         return generateCodeByAst(ast)
 
     }
 
-    getAppJsPlugin(): Plugin {
 
+    getAppJsPlugin():Plugin {
+        let self = this;
         return {
 
-            name: "Entry",
-            setup: (build) => {
-                build.onLoad({ filter: /\.(j|t)s$/ }, (args) => {
-
-                    let { path } = args;
-                    let code = readFileSync(path)
-
-                    if (path === this.options.entry) {
-                        code = this.handleAppFile()
-                    } else if (this.options.componentFiles.has(ignoreExt(path))) {
-                        code = this.handleComponentFile(path)
-                    }
-
+            name:"handle-app-js",
+            load(id) {
+                console.log(`###id is`,id)
+                if (id === self.options.entry) {
                     return {
-                        contents: code,
-                        loader: "js"
+                        code:self.handleAppFile()
                     }
+                }
+                if (self.options.componentFiles.has(ignoreExt(id))) {
+                    return  {
+                        code:  self.handleComponentFile(id)
+                    }
+                  
+                }
 
-                })
+                return null
+                
             }
         }
     }
 
+ 
     getPlugins() {
 
-        let plugins = []
-        plugins.push(this.getAppJsPlugin())
+        let plugins = [
+            this.getAppJsPlugin(),
+            ts({
+                check:false
+            }),
+            resolve({
+                extensions:['.ts','.js'],
+                
+            })
+        ]
 
         return plugins
     }
 }
 
 
-export namespace EsbuildCompiler {
+export namespace JsCoreCompiler {
 
     export type options = {
 

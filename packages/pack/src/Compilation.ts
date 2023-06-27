@@ -16,8 +16,8 @@ import {
 
 
 import {
-    EsbuildCompiler 
-} from './esbuild'
+    JsCoreCompiler 
+} from './jsBuild'
 
 
 import {
@@ -222,14 +222,14 @@ export class Compilation {
         let jsDist = `${dist}/jsCore/${PACK_APPSERVICE_NAME}.js`
        
 
-        let  esbuildCompiler = new EsbuildCompiler({
+        let  jsCompiler = new JsCoreCompiler({
             dist:jsDist,
             alias:this.getAlias(),
             entry:appScriptPath,
             componentFiles:this.componentFiles
         })
 
-        await esbuildCompiler.run();
+        await jsCompiler.run();
 
     }
 

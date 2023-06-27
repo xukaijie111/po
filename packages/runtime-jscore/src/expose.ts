@@ -1,14 +1,17 @@
 
 
-type PropValue = {
-    type:any,
-    value:any
-}
+
+import {
+    Container
+} from './Container'
+
+
+
 export type ComponentOptions = {
 
     data?:Record<string,any>
     methods?:Record<string,Function>
-    props:Record<string,PropValue>
+    props:Record<string,any>
     observers?:Record<string,Function>
 
     onCreated?:Function,
@@ -18,9 +21,6 @@ export type ComponentOptions = {
 }
 
 
-import {
-    Container
-} from './container'
 
 
 let container = new Container();

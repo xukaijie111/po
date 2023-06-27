@@ -9,8 +9,11 @@
         "@po/cjs-utils": "workspace:1.0.0",
         "@po/compiler": "workspace:1.0.0",
         "@po/shared": "workspace:1.0.0",
+        "@po/runtime-jscore": "workspace:1.0.0",
         "@types/babel__template": "^7.4.1",
         "esbuild": "^0.17.10",
-        "glob": "^7.2.3"
+        "glob": "^7.2.3",
+        "rollup": "~2.38.5",
+        "rollup-plugin-typescript2": "^0.27.3"
     }
 }

@@ -5,7 +5,7 @@
     "module":"dist/runtime-webview.es.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@po/runtime-base": "workspace:1.0.0"
+
     }
 
 }
