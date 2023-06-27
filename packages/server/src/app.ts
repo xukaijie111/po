@@ -54,7 +54,7 @@ export class Application {
     }
 
     getWebviewPath() {
-        return this.options.webviewDir
+        return this.options.webviewPath
     }
 
 }
@@ -64,7 +64,7 @@ export namespace Application {
 
     export type options = {
 
-        webviewDir: string,
+        webviewPath: string,
         jsCorePath: string
     }
 }

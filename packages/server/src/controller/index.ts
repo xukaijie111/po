@@ -54,7 +54,7 @@ export class IndexContoller {
                     </div>
                     </script>
                 </body>
-                <script type="module"></script>
+                <script type="module" src = "webview"></script>
                 </html>`
 
         response.set("Content-Type", "text/html");

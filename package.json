@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node scripts/dev.js",
     "build": "node scripts/build.js",
-    "clean": "rm -rf packages/*/dist"
+    "clean": "rm -rf packages/*/dist",
+    "server":"npm run dev --prefix packages/server"
   },
   "keywords": [],
   "author": "",
