@@ -77,3 +77,5 @@ export enum LifeTimes {
 
     ONDESTROYED = "onDestroyed"
 }
+
+export * from './protocol'

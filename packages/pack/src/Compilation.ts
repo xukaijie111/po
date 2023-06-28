@@ -231,10 +231,12 @@ export class Compilation {
         })
 
         entryCode += `
-        
-            export default  pages =  {
+
+           const pages =  {
                 ${names.join(',')}
-            }
+            };
+
+            export default pages;
         
         `
 

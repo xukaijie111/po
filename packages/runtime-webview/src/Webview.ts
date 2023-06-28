@@ -1,11 +1,14 @@
 
 
 import {
-   BridgeClient,
    PROTOCOL_CMD,
    BRIDGE_COMPONENT_SET_DATA_DATA,
-} from '@po/bridge-client'
+   BridgeDataBase,
+} from '@po/shared'
 
+import {
+    Socket
+} from './ws/index'
 import {
     serialPageName
 } from '@po/shared'
@@ -23,7 +26,7 @@ import {
 // 统一管理一个webview
 export class Webview {
 
-    bridge: BridgeClient
+    bridge: Socket
     pageOptions: CompilerComponentOptions
     // 根虚拟节点
     rootComponent: Component
@@ -41,7 +44,7 @@ export class Webview {
 
     async start(options:Webview.startOptions) {
 
-        this.bridge = new BridgeClient({
+        this.bridge = new Socket({
             host:"localhost",
             port:8080
         });
@@ -68,7 +71,7 @@ export class Webview {
 
 
     listenDataUpdate(){
-        this.bridge.register(PROTOCOL_CMD.S2C_SET_DATA,(params:BRIDGE_COMPONENT_SET_DATA_DATA) => {
+        this.bridge.use(PROTOCOL_CMD.S2C_SET_DATA,(params:BRIDGE_COMPONENT_SET_DATA_DATA) => {
 
             let { data } = params
             let { componentId ,data:res } = data
@@ -81,6 +84,9 @@ export class Webview {
             component.update(res)
         })
     }
+
+
+
 
 
 

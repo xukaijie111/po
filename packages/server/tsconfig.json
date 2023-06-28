@@ -10,9 +10,6 @@
     "paths": {
       "@po/*": [
         "../*/src"
-      ],
-      "@po/bridge-server": [
-        "../bridge/src/server"
       ]
     }
   },
@@ -25,9 +22,6 @@
     "paths": {
       "@po/*": [
         "../*/src"
-      ],
-      "@po/bridge-server": [
-        "../bridge/src/server"
       ]
     }
   },

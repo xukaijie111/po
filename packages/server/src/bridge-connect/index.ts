@@ -5,8 +5,8 @@ import {
     Container
 } from '@po/runtime-jscore'
 import {
-    BridgeServer
-} from "@po/bridge-server"
+    Socket
+} from "./socket"
 
 type JsCoreExport = {
     container:Container
@@ -15,20 +15,24 @@ type JsCoreExport = {
 export class BridgeServerConnect {
 
     app:Application
-    bridge:BridgeServer
+    bridge:Socket
     jsCore:JsCoreExport
     constructor(app:Application) {
         this.app = app;
     }
 
     init() {
-        this.bridge = new BridgeServer({
-            host:"loclhost",
-            port:3000
-        })
-
+        this.initBridge();
         this.requireJsCore();
         this.registerCallback()
+    }
+
+
+    initBridge() {
+        this.bridge = new Socket({
+            port:this.app.getSocketPort()
+        })
+        this.bridge.start()
     }
 
     requireJsCore() {

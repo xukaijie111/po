@@ -16,7 +16,7 @@ import {
 import {
     BRIDGE_DOM_ON_CLICK_DATA,
     PROTOCOL_CMD
-} from '@po/bridge-client'
+} from '@po/shared'
 
 import {
     amountElement, patch
@@ -58,9 +58,9 @@ export class Component {
     // 执行组件生命周期created/show
     async callHookCreate() {
         let { webview,options,id,props } = this;
-        let { bridge } = webview
+ 
 
-        this.data = await bridge.send({
+        this.data = await webview.send({
             type: PROTOCOL_CMD.C2S_INIT_COMPONENT,
             data: {
                 name: options.name,

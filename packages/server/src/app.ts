@@ -78,6 +78,11 @@ export class Application {
         return this.options.webviewPath
     }
 
+
+    getSocketPort() {
+        return 8080
+    }
+
 }
 
 

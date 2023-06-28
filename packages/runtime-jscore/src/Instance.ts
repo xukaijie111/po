@@ -7,7 +7,7 @@ import {
     getDataByPath
 } from '@po/shared'
 import { Container } from "./container";
-import { INIT_COMPONENT_DATA } from "@po/bridge-client";
+import { INIT_COMPONENT_DATA } from "@po/shared";
 
 export class BaseInstance {
 

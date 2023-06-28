@@ -10,7 +10,7 @@ import { PageInstance } from './Page'
 
 import {
     INIT_COMPONENT_DATA
-} from '@po/bridge-server'
+} from '@po/shared'
 
 
 import {

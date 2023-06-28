@@ -32,9 +32,17 @@ export class IndexContoller {
 
 
     getIndexRouter = async (request: Request, response: Response, next: NextFunction) => {
-        console.log("query is",request.query)
+      
         let webviewPath = this.app.getWebviewPath();
         let code = readFileSync(webviewPath)
+
+
+        let immediateCode = ""
+
+        let { query } = request;
+        if (query && query.page) {
+            immediateCode = `window.webview.start({port:${this.app.getSocketPort()},page:"${query.page}"})`
+        }
 
         let body = `
                 <html>
@@ -60,7 +68,8 @@ export class IndexContoller {
                     </script>
                 </body>
                 <script type = "module">
-                    ${code}
+                    ${code};
+                    ${immediateCode}
                 </script>
                 </html>`
 
