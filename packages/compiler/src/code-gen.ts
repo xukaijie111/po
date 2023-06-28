@@ -62,7 +62,6 @@ export function generate(input:CompileResult):string {
     let context = createContext(input)
 
     generateTemplate(context) 
-    generateStyle(context)
     generateExport(context)
 
     return context.code;
@@ -326,11 +325,6 @@ function getCommentVnodeString(comment: string) {
 }
 
 
-function generateStyle(context:CodeGenContext) {
-
-
-
-}
 
 
 

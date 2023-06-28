@@ -30,6 +30,7 @@ export class Webview {
     constructor(options:Webview.options) {
         this.options = options
         this.jsCore = this.options.bridgeServerConnect.jsCore
+        this.components = new Map()
         this.init();
     }
 

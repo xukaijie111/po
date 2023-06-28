@@ -146,8 +146,8 @@ export class Compilation {
 
 
     async emitFiles() {
-
-         this.emitWebviewFiles();
+        
+        this.emitWebviewFiles();
         await this.buildWebview();
         await this.emitJsCoreFiles();
 

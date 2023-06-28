@@ -1,1 +1,4 @@
+<view class="container">
 <view>page/home</view>
+<view>{{message}}</view>
+</view>
