@@ -15,8 +15,18 @@ export class Socket {
 
 
    options:Socket.options
+
+   hooks:Record<any,any>
    constructor(options:Socket.options) {
     this.options = options
+    this.hooks = {
+        'connected':null
+      }
+   }
+
+
+ addConnectedHook(fn) {
+    this.hooks['connected'] = fn
    }
 
    
@@ -39,6 +49,8 @@ export class Socket {
 
        server.on('connection',(ws) => {
            console.log(`socket onnected`)
+
+           this.hooks['connected'](ws)
 
            ws.on('message',(_params:string) => {
              let params = JSON.parse(_params)

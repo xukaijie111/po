@@ -18,12 +18,19 @@ export class BaseInstance {
     isPage:boolean
     options:BaseInstance.options
     id:string
+    webview:any
+    onCreated:Function
+    onShow:Function
+    onReady:Function
+    onDestroyed:Function
+    children:Set<BaseInstance>
     constructor(options:BaseInstance.options) {
         this.options = options
         this.data = {}
         this.methods = new Map();
         this.observers = new Map();
         this.lifetimes = new Map();
+        this.children = new Set();
         this.init();
     }
 
@@ -128,6 +135,10 @@ export class BaseInstance {
 
     }
 
+    getUserData(){
+        return this.data;
+    }
+
 
     initRender() {
 
@@ -136,6 +147,29 @@ export class BaseInstance {
 
     getData() {
         return this.data
+    }
+
+
+    callHookCreate() {
+        try{
+            this.onCreated();
+        }catch(err) {
+            console.error(err)
+        }
+    }
+
+
+    callHookReady() {
+        try{
+            this.onReady();
+        }catch(err) {
+            console.error(err)
+        }
+    }
+
+
+    addChild(child) {
+        this.children.add(child)
     }
 
 

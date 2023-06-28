@@ -8,31 +8,47 @@ import {
     Socket
 } from "./socket"
 
-type JsCoreExport = {
+import {
+    PROTOCOL_CMD
+} from '@po/shared'
+
+import {
+    Webview
+} from './webview'
+
+export type JsCoreExport = {
     container:Container
 }
 
 export class BridgeServerConnect {
 
     app:Application
-    bridge:Socket
+    socket:Socket
     jsCore:JsCoreExport
     constructor(app:Application) {
         this.app = app;
     }
 
     init() {
-        this.initBridge();
         this.requireJsCore();
-        this.registerCallback()
+        this.initBridge();
+
     }
 
 
     initBridge() {
-        this.bridge = new Socket({
+        this.socket = new Socket({
             port:this.app.getSocketPort()
         })
-        this.bridge.start()
+        this.socket.addConnectedHook(this.addNewWebview)
+        this.socket.start()
+    }
+
+    addNewWebview = (ws) => {
+        new Webview({
+            ws,
+            bridgeServerConnect:this
+        })
     }
 
     requireJsCore() {
@@ -41,10 +57,9 @@ export class BridgeServerConnect {
     }
 
 
-    registerCallback(){
-
-        let { bridge } = this;
-
+    registerCallback(ws,type,func){
+        let { socket } = this;
+        socket.use(ws,type,func)
        
     }
 

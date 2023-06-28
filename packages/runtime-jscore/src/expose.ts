@@ -54,3 +54,7 @@ export {
 }
 
 
+
+export * from './Page'
+
+export * from './Component'

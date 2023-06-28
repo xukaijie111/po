@@ -88,7 +88,7 @@ export class Container {
                     }
                     let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
                     this.components.add(instance)
-                    return ;
+                    return instance ;
             }
         }
 
