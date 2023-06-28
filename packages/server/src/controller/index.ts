@@ -2,7 +2,9 @@
 import { Request, Response, NextFunction, Router } from 'express';
 import { Application } from '../app';
 
-
+import {
+    readFileSync
+} from '@po/cjs-utils'
 
 export type ProcessResult = {
     code:string,
@@ -30,6 +32,9 @@ export class IndexContoller {
 
 
     getIndexRouter = async (request: Request, response: Response, next: NextFunction) => {
+        console.log("query is",request.query)
+        let webviewPath = this.app.getWebviewPath();
+        let code = readFileSync(webviewPath)
 
         let body = `
                 <html>
@@ -54,7 +59,9 @@ export class IndexContoller {
                     </div>
                     </script>
                 </body>
-                <script type="module" src = "webview"></script>
+                <script type = "module">
+                    ${code}
+                </script>
                 </html>`
 
         response.set("Content-Type", "text/html");
