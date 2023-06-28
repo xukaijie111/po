@@ -32,7 +32,7 @@ export function Component(options:ComponentOptions) {
 }
 
 
-Component.prototype.register = container.register
+Component.register = container.register
 
 
 
@@ -40,7 +40,7 @@ export function Page(options:ComponentOptions) {
     container.addComponent(options)
 }
 
-Page.prototype.register = container.register
+Page.register = container.register
 
 export function App() {
 

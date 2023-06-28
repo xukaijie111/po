@@ -52,17 +52,27 @@ export class Compilation {
         this.webviewDist = `${this.dist}/webviewdraft`
         this.webviewDistIndex = `${this.webviewDist}/index.js`
         this.pageExportFile = `${this.webviewDist}/pages.js`
-        this.jsCoreDist = `${this.dist}/jscore`
+        this.jsCoreDist = `${this.dist}/jscore/${PACK_APPSERVICE_NAME}.js`
         this.componentFiles = new Map();
     }
 
+
+
+    getWebviewDistPath(){
+        return this.finalyWebviewDist;
+    }
+
+
+    getJsCoreDistPath () {
+        return this.jsCoreDist
+    }
 
 
     async run() {
         this.parseAppJson()
         this.parseProjectConfig();
         await this.parseComponents()
-        this.emitFiles()
+        await this.emitFiles()
 
     }
 
@@ -137,8 +147,8 @@ export class Compilation {
 
     async emitFiles() {
 
-        this.emitWebviewFiles();
-        this.buildWebview();
+         this.emitWebviewFiles();
+        await this.buildWebview();
         await this.emitJsCoreFiles();
 
     }
@@ -248,7 +258,7 @@ export class Compilation {
     async emitJsCoreFiles() {
 
 
-        let { projectDir,dist  } = this;
+        let { projectDir  } = this;
         
         let appJsPath = `${projectDir}/app.js`
 
@@ -260,11 +270,11 @@ export class Compilation {
 
         let appScriptPath = appJsPath || appTsPath
 
-        let jsDist = `${dist}/jsCore/${PACK_APPSERVICE_NAME}.js`
+      
        
 
         let  jsCompiler = new JsCoreCompiler({
-            dist:jsDist,
+            dist:this.jsCoreDist,
             alias:this.getAlias(),
             entry:appScriptPath,
             componentFiles:this.componentFiles,

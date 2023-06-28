@@ -59,6 +59,8 @@ export class Container {
         })
 
 
+        this.currentComponentOptions = null;
+
     }
 
 
@@ -86,7 +88,6 @@ export class Container {
                     }
                     let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
                     this.components.add(instance)
-                    this.currentComponentOptions = null;
                     return ;
             }
         }

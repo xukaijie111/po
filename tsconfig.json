@@ -38,6 +38,7 @@
   },
   "include": [
     "packages/global.d.ts",
+    "test/*",
     "packages/*/src",
   ],
   "exclude": [

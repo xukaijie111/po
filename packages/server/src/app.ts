@@ -15,18 +15,39 @@ import {
 let controllers = [
     IndexContoller
 ]
+const PORT = 3456
 
 export class Application {
 
     public app: express.Application;
-    options:Application.options
-    constructor(options:Application.options) {
+    options: Application.options
+    constructor(options: Application.options) {
         this.options = options
         this.app = express();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
         this.initBridgeConnect();
 
+    }
+
+
+    run() {
+        this.listen()
+    }
+
+
+
+    public listen() {
+        const server = this.app.listen(PORT, '0.0.0.0', function () {
+            //@ts-ignore
+            const host = server.address().address
+            //@ts-ignore
+            const port = server.address().port
+            console.log("访问地址为 http://%s:%s", host, port)
+        })
+        // this.app.listen(PORT, () => {
+        //   console.log(`App listening on the port ${PORT}`);
+        // });
     }
 
 
