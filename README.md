@@ -16,6 +16,6 @@
 
 
 ### 浏览器实例
-[img](assets/browser.simple.png)
+![image](assets/browser.simple.png)
 
 在浏览器中运行，webview 运行在浏览器中,js部分运行在node中
