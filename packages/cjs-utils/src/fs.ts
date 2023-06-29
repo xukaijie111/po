@@ -71,9 +71,7 @@ export function GetSameDirectoryFile(path: string, replace: string) {
     let jsFile = GetSameDirectoryFile(path, ".js");
     let tsFile = GetSameDirectoryFile(path, ".ts");
     let pxmlFile = GetSameDirectoryFile(path, ".pxml");
-
     let jsonFile = GetSameDirectoryFile(path, ".json");
-  
     return (
       fileIsExist(jsonFile) &&
       (fileIsExist(jsFile) || fileIsExist(tsFile)) &&
