@@ -16,9 +16,9 @@ const absolutePath = /^(?:\/|(?:[A-Za-z]:)?[\\|/])/;
 	return absolutePath.test(path);
 }
 
-export function relativeId(id:string) {
+export function relativeId(id:string,rootPath?:string) {
 	if (typeof process === 'undefined' || !isAbsolute(id)) return id;
-	return path.relative(process.cwd(), id);
+	return path.relative(rootPath || process.cwd(), id);
 }
 
 

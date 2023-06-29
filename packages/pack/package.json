@@ -17,6 +17,7 @@
         "esbuild": "^0.17.10",
         "glob": "^7.2.3",
         "rollup": "~2.38.5",
-        "rollup-plugin-typescript2": "^0.27.3"
+        "rollup-plugin-typescript2": "^0.27.3",
+        "enhanced-resolve": "^5.12.0"
     }
 }
