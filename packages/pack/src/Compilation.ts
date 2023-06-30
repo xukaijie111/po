@@ -22,9 +22,21 @@ const moduleMatches = {
 
 }
 
+export const enum HOOKNAMES  {
+
+    LOAD ="load",
+    TRANSFORM ="transform",
+    GENERATE ="generate",
+    BEFOREEMIT ="beforeEmit",
+   EMIT= "emit",
+   AFTEREMIT = "afterEmit"
+}
+
 import {
     ComponentShareInfo
 } from './helper'
+
+import defaultPlugins from "./plugins/index"
 
 
 export class Compilation {
@@ -32,35 +44,74 @@ export class Compilation {
     rootPath: string
     modules: Map<string, Base>
     shareMap:Map<string,ComponentShareInfo>
+    hooks:Record<HOOKNAMES,any>
+    rawDist:string
+    draftDist:string
     constructor(options: Compilation.options) {
         this.options = options
+        this.rawDist = this.options.dist;
+        this.draftDist = `${this.rawDist}/draft`
         this.rootPath = options.rootPath || process.cwd()
         this.modules = new Map()
         this.shareMap = new Map()
+        this.hooks = {
+            [HOOKNAMES.LOAD]:[],
+            [HOOKNAMES.TRANSFORM]:[],
+            [HOOKNAMES.GENERATE]:[],
+            [HOOKNAMES.BEFOREEMIT]:[],
+            [HOOKNAMES.EMIT]:[],
+            [HOOKNAMES.AFTEREMIT]:[]
+
+        }
+
+        this.initPlugins();
 
         this.loadEntries()
     }
 
 
-    async callHook(name: string, module?: Base) {
+    initPlugins() {
+
+        defaultPlugins.forEach((Plugin) => {
+            new Plugin(this).apply()
+
+        })
+
+    }
+
+
+    registerHook(name:string,fn:Function) {
+        this.hooks[name].push(fn)
+    }
+
+    async callModuleHook(name: string, module?: Base) {
         await module[name]();
     }
 
 
-    async runHook(name:string) {
-
+    async runModuleHook(name:string) {
         for (let module of this.modules.values()) {
-            await this.callHook(name, module)
+            await this.runGlobalHook(name,module)
+            await this.callModuleHook(name, module)
         }
 
     }
 
+    async runGlobalHook(name:string,...args:any) {
+        let { hooks } = this;
+        let processes = hooks[name]
+        for (let process of processes) {
+            await process(...args)
+        }
+    }
+
     async run() {
-        await this.runHook('load');
-        await this.runHook('transform');
-        await this.runHook('generate');
-        await this.runHook('beforeEmit');
-        await this.runHook('emit')
+        await this.runModuleHook(HOOKNAMES.LOAD);
+        await this.runModuleHook(HOOKNAMES.TRANSFORM);
+        await this.runModuleHook(HOOKNAMES.GENERATE);
+        await this.runModuleHook(HOOKNAMES.BEFOREEMIT);
+        await this.runModuleHook(HOOKNAMES.EMIT)
+        await this.runGlobalHook(HOOKNAMES.AFTEREMIT)
     }
 
     addModule(module: Base) {
@@ -89,10 +140,8 @@ export class Compilation {
     }
 
     getFileDistPath(path: string) {
-        let { rootPath } = this
-        let { dist } = this.options
-
-        return path.replace(rootPath, dist)
+        let { rootPath,draftDist } = this
+        return path.replace(rootPath, draftDist)
 
     }
 
