@@ -1,4 +1,4 @@
-import { SfcContext } from "../parse-sfc";
+
 import {
     TransformContext
 } from '../transform'
@@ -60,17 +60,8 @@ function processRootNode(node:RootNode,context: TransformContext) {
 }
 
 
-export function createTransfromElement(sfcContext:SfcContext) {
+export function transfromElement(node:ElementNode,context:TransformContext) {
 
-    let { json } = sfcContext
-    let { components } = json
-    function isComponentTag(name:string) {
-        return !!_.find(components, { name })
-    }
-
-    
-
-    return function(node:ElementNode,transformContext:TransformContext) {
 
 
         let { type, props , tag} = node as ElementNode;
@@ -84,7 +75,7 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
             
             //@ts-ignore
-            if (node.type === NodeTypes.ROOT) return processRootNode(node,transformContext);
+            if (node.type === NodeTypes.ROOT) return processRootNode(node,context);
 
 
             let hasIf,hasElseIf,hasElse
@@ -133,7 +124,7 @@ export function createTransfromElement(sfcContext:SfcContext) {
     
                 processElemnetCodegenChild(node as TemplateNode,elementCodegenNode);
                // elementCodegenNode!.hosited  = patchFlag ? undefined:context.hostied(elementCodegenNode)
-               transformContext.helper(CREATE_ELEMENT_VNODE)
+               context.helper(CREATE_ELEMENT_VNODE)
     
                 return elementCodegenNode
 
@@ -142,8 +133,8 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
             function buildComponentCodegen(): ComponentCodegenNode{
 
-                if (isComponentTag(tag)) return ;
-                transformContext.helper(CREATE_COMPONENT_VNODE)
+                if (context.isComponentTag(tag)) return ;
+                context.helper(CREATE_COMPONENT_VNODE)
 
                 return {
                     type:NodeTypes.COMPONENT,
@@ -166,9 +157,9 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
                 let { itemName,indexName, } = forInfo;
                 let value = _.find(props,{ dirname :'for'}).value;
-                let list = transformExpression(value!,node,transformContext,false)
+                let list = transformExpression(value!,node,context,false)
 
-                transformContext.helper(RENDER_LIST)
+                context.helper(RENDER_LIST)
 
                 return {
                     type:NodeTypes.FOR,
@@ -198,7 +189,7 @@ export function createTransfromElement(sfcContext:SfcContext) {
 
                 if (hasIf || hasElseIf) {
 
-                    transformContext.helper(CREATE_COMMENT_VNODE)
+                    context.helper(CREATE_COMMENT_VNODE)
                     return  {
                         type:NodeTypes.IF,
                         condition:hasIf || hasElseIf,
@@ -240,9 +231,9 @@ export function createTransfromElement(sfcContext:SfcContext) {
                     }
 
 
-                    let directiveProcessor = transformContext.options?.directives[dirname]
+                    let directiveProcessor = context.options?.directives[dirname]
                     if (directiveProcessor) {
-                        let res = directiveProcessor(prop,node,transformContext)
+                        let res = directiveProcessor(prop,node,context)
                         properties.push(res)
                     }else {
                         properties.push({
@@ -267,4 +258,3 @@ export function createTransfromElement(sfcContext:SfcContext) {
     }
 
 
-}

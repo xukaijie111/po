@@ -8,7 +8,8 @@ import {
 } from './modules/index'
 
 import Path from "path"
-import { relativeId } from "@po/cjs-utils"
+import { getRelativePath, relativeId } from "@po/cjs-utils"
+import { generateMixed, serialPageName } from "@po/shared"
 
 
 const moduleMatches = {
@@ -21,15 +22,21 @@ const moduleMatches = {
 
 }
 
+import {
+    ComponentShareInfo
+} from './helper'
+
 
 export class Compilation {
     options: Compilation.options
     rootPath: string
     modules: Map<string, Base>
+    shareMap:Map<string,ComponentShareInfo>
     constructor(options: Compilation.options) {
         this.options = options
         this.rootPath = options.rootPath || process.cwd()
         this.modules = new Map()
+        this.shareMap = new Map()
 
         this.loadEntries()
     }
@@ -51,6 +58,7 @@ export class Compilation {
     async run() {
         await this.runHook('load');
         await this.runHook('transform');
+        await this.runHook('generate');
         await this.runHook('beforeEmit');
         await this.runHook('emit')
     }
@@ -111,6 +119,46 @@ export class Compilation {
 
     getAlias() {
         return this.options.alias
+    }
+
+
+    getDistRelativePath(src:string,target:string) {
+
+        let srcModule = this.getModule(src)
+        let targetModule = this.getModule(target)
+
+        let { dist : srcDist } = srcModule
+
+        let { dist: targetDist } = targetModule
+
+
+        return getRelativePath(srcDist,targetDist)
+    }
+
+
+    getComponentShareInfo(src:string):ComponentShareInfo {
+
+        let { dir , name } = Path.parse(src)
+        let file = `${dir}/${name}`
+
+        if (this.shareMap.has(file)) return this.shareMap.get(file)
+
+
+        let id = generateMixed();
+
+        let { rootPath } = this;
+
+        let pathWidthProject = file.replace(`${rootPath}/`,'')
+
+        let compName = serialPageName(pathWidthProject)
+
+        return {
+            name:compName,
+            pathWidthProject,
+            id
+        }
+
+
     }
 }
 

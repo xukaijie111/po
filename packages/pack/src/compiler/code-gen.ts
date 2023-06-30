@@ -8,7 +8,6 @@ import { RootNode,
     ComponentCodegenNode,
     RootCodeGen
 } from "./ast";
-import { CompileResult } from "./parse-sfc";
 
 import {
     CREATE_COMMENT_VNODE,
@@ -18,9 +17,19 @@ import {
     isObject
 } from '@po/shared'
 
-export type CodeGenContext = {
+import {
+    ComponentShareInfo
+} from '../helper'
 
-    compileResult:CompileResult,
+export type GenerateOptions = {
+
+    getComponentShareInfo:() => ComponentShareInfo
+
+}
+
+export type CodeGenContext = {
+    options:GenerateOptions
+    root:RootNode,
     code:string
     push: (p: any) => any,
     nextline: (num?: number) => void,
@@ -28,10 +37,11 @@ export type CodeGenContext = {
 }
 
 
-function createContext(compileResult:CompileResult):CodeGenContext {
+function createContext(root:RootNode,options:GenerateOptions):CodeGenContext {
 
         let context:CodeGenContext =  {
-            compileResult,
+            options,
+            root,
             code:"",
             push(str: string) {
                 context.code += str
@@ -45,7 +55,7 @@ function createContext(compileResult:CompileResult):CodeGenContext {
             },
 
             getRootAst() {
-                return context.compileResult.template
+                return context.root
             }
 
         }
@@ -57,9 +67,9 @@ function createContext(compileResult:CompileResult):CodeGenContext {
 
 
 
-export function generate(input:CompileResult):string {
+export function generate(root:RootNode,options:GenerateOptions):string {
 
-    let context = createContext(input)
+    let context = createContext(root,options)
 
     generateTemplate(context) 
     generateExport(context)
@@ -326,23 +336,19 @@ function getCommentVnodeString(comment: string) {
 
 
 
-
-
-
-
 function generateExport(context:CodeGenContext) {
 
 
-        let { push ,compileResult  } = context;
-        let { name,id,pathWithProject } = compileResult
+        let { push ,options  } = context;
+        let shareInfo = options.getComponentShareInfo()
+        let { name,id,pathWidthProject } = shareInfo
 
         push(`
             export const ${name} = {
                 name: "${name}",
                 render,
                 templateId:"${id}",
-                path:"${pathWithProject}",
-                isPage:${compileResult.isPage}
+                path:"${pathWidthProject}"
             }
         `)
 

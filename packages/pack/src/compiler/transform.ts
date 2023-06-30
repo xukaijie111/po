@@ -8,6 +8,21 @@ import {
 import _ from 'lodash'
 
 import {
+    processOnExpression
+} from './transforms/on'
+import {
+    transfromElement
+} from './transforms/transformElement'
+
+import {
+    transformInterpolation
+} from './transforms/transformInterpolation'
+
+import {
+    transformText
+} from './transforms/transformText'
+
+import {
     RUNTIME_WEBVIEW_NPM
 } from '@po/shared'
 
@@ -15,7 +30,10 @@ import {
 export type TransformOptions = {
 
     transforms?:Array<any>,
-    directives?:Record<any,any>
+    directives?:Record<any,any>,
+    context?:{
+        isComponentTag:(tag:string) => boolean
+    }
 
 
 }
@@ -29,6 +47,7 @@ export type TransformContext = {
     data:(key:string) => unknown,
     components:(key:string,value:string) => unknown
     clearComponents:() => unknown
+    isComponentTag:(tag:string) => boolean
 }
 
 
@@ -74,12 +93,35 @@ function createTransformContext(ast: RootNode,options:TransformOptions) {
 
         clearComponents() {
             ast.components = []
+        },
+
+        isComponentTag(tag:string) {
+            if (options.context.isComponentTag) {
+                return options.context.isComponentTag(tag)
+            }
+            return false;
         }
 
     }
 }
 
+function mergeTransforms(options:TransformOptions) {
+
+    options.transforms = options
+                        .transforms
+                        .concat([
+                            transform,
+                            transformText,
+                            transformInterpolation
+                        ])
+
+
+    options.directives = Object.assign(options.directives || {}, {   on: processOnExpression } )
+}
+
 export function transform(ast: RootNode,options:TransformOptions) {
+
+    mergeTransforms(options)
 
     let context = createTransformContext(ast,options)
 

@@ -67,4 +67,9 @@ export class JsonModule extends Base {
         })
 
     }
+
+
+    getParsedResult(){
+        return this.result
+    }
 }
