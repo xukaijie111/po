@@ -7,6 +7,7 @@ import {
 import _ from 'lodash'
 
 import Path from "path"
+
 import { JsonModule } from "./json";
 
 export class TemplateModule extends Base {
@@ -23,9 +24,11 @@ export class TemplateModule extends Base {
     }
     async load() {
         let { src } = this
+
         let code = readFileSync(src)
         this.rootNode = baseParse(code)
     }
+
 
 
     getComponentJsonResult() {

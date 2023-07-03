@@ -107,10 +107,10 @@ function createTransformContext(ast: RootNode,options:TransformOptions) {
 
 function mergeTransforms(options:TransformOptions) {
 
-    options.transforms = options
-                        .transforms
+    options.transforms =  (options
+                        .transforms || [])
                         .concat([
-                            transform,
+                            transfromElement,
                             transformText,
                             transformInterpolation
                         ])
@@ -144,8 +144,8 @@ export function traverseNode(node:RootNode | TemplateNode,context:TransformConte
     let exits = []
 
     for (let i = 0 ; i < transforms.length;i++) {
-        let transform = transforms[i];
-        let exit  = transform(node,context)
+        let trans = transforms[i];
+        let exit  = trans(node,context)
          if (exit) exits.push(exit)
         
     }

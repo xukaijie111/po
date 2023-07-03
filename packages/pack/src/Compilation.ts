@@ -8,9 +8,10 @@ import {
 } from './modules/index'
 
 import Path from "path"
-import { getRelativePath, relativeId } from "@po/cjs-utils"
+import { getRelativePath, readFileSync, relativeId } from "@po/cjs-utils"
 import { generateMixed, serialPageName } from "@po/shared"
 
+import glob from 'glob'
 
 const moduleMatches = {
 
@@ -47,11 +48,13 @@ export class Compilation {
     hooks:Record<HOOKNAMES,any>
     rawDist:string
     draftDist:string
+    entries:Array<string>
     constructor(options: Compilation.options) {
+        options.rootPath = options.rootPath || process.cwd()
         this.options = options
         this.rawDist = this.options.dist;
         this.draftDist = `${this.rawDist}/draft`
-        this.rootPath = options.rootPath || process.cwd()
+        this.rootPath = options.rootPath
         this.modules = new Map()
         this.shareMap = new Map()
         this.hooks = {
@@ -66,7 +69,6 @@ export class Compilation {
 
         this.initPlugins();
 
-        this.loadEntries()
     }
 
 
@@ -106,6 +108,7 @@ export class Compilation {
     }
 
     async run() {
+        await this.loadEntries();
         await this.runModuleHook(HOOKNAMES.LOAD);
         await this.runModuleHook(HOOKNAMES.TRANSFORM);
         await this.runModuleHook(HOOKNAMES.GENERATE);
@@ -158,9 +161,38 @@ export class Compilation {
 
     }
 
-    loadEntries() {
-        let { entries } = this.options
-        entries.forEach((file) => {
+    async loadEntries() {
+
+        let { appJson , rootPath  } = this.options;
+
+        let parsed
+
+        let entries = [
+
+        ];
+
+        try {
+            let code = readFileSync(appJson)
+            parsed = JSON.parse(code)
+        } catch (error) {
+            throw new Error(error)
+        }
+        for (let page of parsed.pages)  {
+            let files = await glob.sync(`${rootPath}/${page}.{t,j}s`);
+            if (!files || !files.length) {
+                throw new Error(`No Find Page ${page}`)
+            }
+            entries = entries.concat(files)
+        }
+
+        let appFile = await glob.sync(`${rootPath}/app.{t,j}s`)
+        if (!appFile || !appFile.length) {
+            throw new Error(`No Find app.{t,j}s`)
+        }
+
+        this.entries = entries.concat(appFile);
+
+        this.entries.forEach((file) => {
             this.createModule(file)
         })
 
@@ -216,7 +248,7 @@ export namespace Compilation {
 
     export type options = {
         alias: Record<string, any>
-        entries: string[]
+        appJson:string,
         dist: string,
         rootPath?: string
     }

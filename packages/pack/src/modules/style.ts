@@ -12,7 +12,7 @@ let lessImportReg = /(?<!(?:\/\/|\/\*)\s*)@import\s+(["'][a-z0-9./\-_@]+(\.(less
 export class StyleModule extends Base {
 
 
-    imports: string[]
+    imports: string[] = []
 
 
     init() {
@@ -95,8 +95,6 @@ export class StyleModule extends Base {
         })
 
         this.code = currentCode + res.code
-
-
 
     }
 

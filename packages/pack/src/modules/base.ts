@@ -3,7 +3,8 @@ import { Compilation } from "../Compilation"
 import {
     getContext,
     isComponentFile,
-    emitFile
+    emitFile,
+    readFileSync
 } from '@po/cjs-utils'
 
 import {
@@ -30,6 +31,7 @@ export class Base {
     constructor(options:Base.options) {
         this.dist = options.dist;
         this.src = options.src;
+        this.code = this.rawCode = readFileSync(this.src)
         this.id = generateMixed();
         this.compilation = options.compilation
         this.isComponentFile = isComponentFile(this.src)
