@@ -269,11 +269,15 @@ export class Compilation {
 
         let compName = serialPageName(pathWidthProject)
 
-        return {
+        let shareInfo = {
             name:compName,
             pathWidthProject,
             id
         }
+
+        this.shareMap.set(file,shareInfo)
+
+        return shareInfo
 
 
     }
