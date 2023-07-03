@@ -3,7 +3,8 @@ import {
     createResolver,
     getAst,
     walkNode,
-    relativeId
+    relativeId,
+    generateCodeByAst
  } from "@po/cjs-utils";
 import { Base } from "./base";
 
@@ -12,9 +13,11 @@ import glob from "glob"
 import Path  from "path";
 
 import isCore from "is-core-module"
+
 export class ScriptModule extends Base {
     ast:File
     init(): void {
+        this.dist = this.dist.replace(/\.ts$/,'.js')
         if (this.isComponentFile) {
             this.shareInfo =  this.compilation.getComponentShareInfo(this.src)
         }
@@ -60,6 +63,8 @@ export class ScriptModule extends Base {
 
     async transform(): Promise<void> {
         
+               
+
 
     }
 
@@ -98,6 +103,8 @@ export class ScriptModule extends Base {
               },
 
         })
+
+        this.code = generateCodeByAst(this.ast)
 
     }
 

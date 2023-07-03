@@ -5,6 +5,7 @@ import postcssLess from "postcss-less";
 
 import less from "less";
 import { createResolver } from "@po/cjs-utils";
+import { RUNTIME_JSCORE_NPM } from "@po/shared";
 
 let lessImportReg = /(?<!(?:\/\/|\/\*)\s*)@import\s+(["'][a-z0-9./\-_@]+(\.(less|scss))?(["'].*))/gi;
 
@@ -13,7 +14,6 @@ export class StyleModule extends Base {
 
 
     imports: string[] = []
-
 
     init() {
         this.resolver = createResolver({
@@ -89,13 +89,17 @@ export class StyleModule extends Base {
         imports.forEach((file) => {
 
             let rel = this.compilation.getDistRelativePath(this.dist,file)
-
             currentCode += `import ${rel};\n`
 
         })
 
-        this.code = currentCode + res.code
 
+        this.code = `
+        import { injectStyle } from "${RUNTIME_JSCORE_NPM};"
+        ${currentCode}
+            let style = "${res.css}";
+            injectStyle(style,"${this.shareInfo? this.shareInfo.id : this.id}")
+        `
     }
 
 

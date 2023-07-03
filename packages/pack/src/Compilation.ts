@@ -48,12 +48,20 @@ export class Compilation {
     hooks:Record<HOOKNAMES,any>
     rawDist:string
     draftDist:string
+    webviewDist:string
+    webviewPagesDist:string
+    webviewIndexDist:string
     entries:Array<string>
+    appFile:string
     constructor(options: Compilation.options) {
         options.rootPath = options.rootPath || process.cwd()
         this.options = options
         this.rawDist = this.options.dist;
         this.draftDist = `${this.rawDist}/draft`
+        this.webviewPagesDist = `${this.draftDist}/webviewPages.js`
+        this.webviewIndexDist  = `${this.draftDist}/webviewIndex.js`
+        this.webviewDist = `${this.rawDist}/webview/index.js`
+
         this.rootPath = options.rootPath
         this.modules = new Map()
         this.shareMap = new Map()
@@ -69,6 +77,23 @@ export class Compilation {
 
         this.initPlugins();
 
+    }
+
+    getJsCoreDistPath() {
+        return `${this.rawDist}/jsCore/index.js`
+    }
+
+    getWebViewDistPath() {
+        return this.webviewDist
+    }
+
+
+    getWebviewDraftIndexPath() {
+        return this.webviewIndexDist
+    }
+
+    getWebviewExportPagesPath(){
+        return this.webviewPagesDist
     }
 
 
@@ -190,12 +215,23 @@ export class Compilation {
             throw new Error(`No Find app.{t,j}s`)
         }
 
+        this.appFile = appFile[0]
+
         this.entries = entries.concat(appFile);
 
         this.entries.forEach((file) => {
             this.createModule(file)
         })
 
+    }
+
+
+    getAppFile() {
+        return this.appFile
+    }
+
+    getModules() {
+        return this.modules
     }
 
     getAlias() {

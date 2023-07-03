@@ -17,6 +17,9 @@ import {
     ComponentShareInfo
 } from '../helper'
 
+
+import prettier from "prettier";
+
 export class Base {
     dist:string
     src:string
@@ -28,6 +31,7 @@ export class Base {
     id:string
     resolver:resolve.ResolveFunction
     shareInfo:ComponentShareInfo
+    pretty = true
     constructor(options:Base.options) {
         this.dist = options.dist;
         this.src = options.src;
@@ -73,13 +77,16 @@ export class Base {
 
 
     async emit() {
-        if (this.shouldBeGenerate) {
-            emitFile(this.dist,this.code)
+        if (this.shouldBeEmit()) {
+            let code = this.code
+            if (this.pretty)
+                code = prettier.format(this.code, { semi: true, parser: "babel" })
+            emitFile(this.dist,code)
         }
        
     }
 
-    shouldBeGenerate() {
+    shouldBeEmit() {
         return true
     }
 }

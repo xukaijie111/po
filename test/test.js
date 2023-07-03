@@ -37,15 +37,15 @@ rm(dist,() => {
     comp.run()
     .then(() => {
     
-        // let webviewDist = comp.getWebviewDistPath();
-        // let jscoreDist = comp.getJsCoreDistPath();
+        let webviewDist = comp.getWebViewDistPath();
+        let jscoreDist = comp.getJsCoreDistPath();
     
-        // let app = new Application({
-        //     webviewPath:webviewDist,
-        //     jsCorePath:jscoreDist
-        // })
+        let app = new Application({
+            webviewPath:webviewDist,
+            jsCorePath:jscoreDist
+        })
 
-        // app.run()
+        app.run()
     
     })
 })

@@ -16,6 +16,11 @@ export class JsonModule extends Base {
     init(): void {
         let { compilation } = this;
 
+        if (this.isComponentFile) {
+            this.shareInfo = this.compilation.getComponentShareInfo(this.src);
+
+        }
+
         let alias = compilation.getAlias();
 
         this.resolver = createResolver({
@@ -26,7 +31,7 @@ export class JsonModule extends Base {
 
     }
 
-    shouldBeGenerate(): boolean {
+    shouldBeEmit(): boolean {
         return false
     }
 
@@ -44,8 +49,11 @@ export class JsonModule extends Base {
             component:false,
             components:[]
         }
+
     
         parsed.component = !!res.component;
+
+        this.shareInfo.isPage = !parsed.component
     
         let usingComponents = res.usingComponents || {}
     

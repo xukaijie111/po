@@ -44,7 +44,7 @@ Page.register = container.register
 
 export function App() {
 
-
+    console.log(`App Start`)
 
 }
 

@@ -1,8 +1,18 @@
 
 import {
-    GenerateEndPlugin
-}  from './GenerateEndPlugin'
+    GenerateJsCorePlugin
+} from './GenerateJsCorePlugin'
+
+import {
+    GenerateWebviewEntryPlugin
+} from './GenerateWebviewEntryPlugin'
+
+import {
+    GenerateWebviewPlugin
+} from './GenrateWebviewPlugin'
 
 export default [
-    GenerateEndPlugin
+    GenerateWebviewEntryPlugin,
+    GenerateWebviewPlugin,
+    GenerateJsCorePlugin
 ]
