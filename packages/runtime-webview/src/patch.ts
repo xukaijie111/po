@@ -1,16 +1,10 @@
 import { isUndef, ShapeFlags } from "@po/shared";
 import { htmlDomApi } from "./htmldomapi";
-import { VNode , assignNode } from "./node";
+import { VNode , assignNode } from "./Node";
 
 import {
   pacthElementAttrs
 } from './modules/mergeData'
-
-import  {
-  Component
-} from './component'
-
-
 
 
 
@@ -286,9 +280,13 @@ export async function amountElement(vnode: VNode, parentElm: Node, refElm: Node 
   else if (vnode.isComponent()) {
     let { data, options,component } = vnode
 
-    console.log(`组件是`, vnode.tagName)
 
-    let comp = new Component(options, data)
+    console.log(`组件是`, vnode,vnode.tagName)
+
+    //@ts-ignore
+    let Ctor = component.__proto__.constructor;
+
+    let comp = new Ctor(options, data)
 
 
     component.addChildren(comp)

@@ -1,7 +1,7 @@
 
 
 
-import { VNode, VNodeData } from '../node'
+import { VNode, VNodeData } from '../Node'
 import {
     patchAttr
 } from './attrs'

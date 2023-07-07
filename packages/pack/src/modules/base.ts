@@ -4,12 +4,17 @@ import {
     getContext,
     isComponentFile,
     emitFile,
-    readFileSync
+    readFileSync,
+    relativeId
 } from '@po/cjs-utils'
 
 import {
     generateMixed
 } from '@po/shared'
+
+import glob from "glob"
+
+import Path from "path"
 
 import resolve from "enhanced-resolve"
 
@@ -42,6 +47,8 @@ export class Base {
         this.context = getContext(this.src)
         this.compilation.addModule(this)
         this.init()
+
+        
     }
 
     getSrc(){
@@ -53,11 +60,32 @@ export class Base {
        
     }
 
+    async load() :Promise<void>{
+        await this.loadComponentFiles();
+    }
 
-    async load() {
 
+    async loadComponentFiles() {
+
+        if (!this.isComponentFile) return ;
+        let { dir ,name } = Path.parse(this.src)
+
+        let suffixs = ['.pxml','.less','.json',"{.t,.j}s"];
+
+        for (let suffix of suffixs) {
+            let file = await glob.sync(`${dir}/${name}${suffix}`)
+            if (!file || !file.length) {
+                throw new Error(`component ${relativeId(this.src)} has no file ${name}${suffix}`)
+
+            }
+            if (file[0] === this.src) continue;
+            this.compilation.createModule(file[0])
+        }
 
     }
+
+
+ 
 
 
     async transform() {

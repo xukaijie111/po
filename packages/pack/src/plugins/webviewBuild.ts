@@ -31,6 +31,7 @@ export class WebviewBuild {
         let inputOptions:InputOptions = {
             input:compilation.getWebviewDraftIndexPath(),
             plugins:this.getPlugins(),
+            treeshake:false
             
         }
         let outputOptions:OutputOptions = {
@@ -39,6 +40,7 @@ export class WebviewBuild {
         }
 
         const bundle = await rollup.rollup(inputOptions);
+
         await bundle.write(outputOptions);
 
     }

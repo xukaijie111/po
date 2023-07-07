@@ -2,7 +2,7 @@
 
 import {
   VNode
-} from '../node'
+} from '../Node'
 
 export function patchClass(el: Element,   
   name:string,

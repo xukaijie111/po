@@ -4,7 +4,7 @@ import {
 
 import {
   VNode,
-} from '../node'
+} from '../Node'
 
 export const xlinkNS = 'http://www.w3.org/1999/xlink'
 

@@ -25,6 +25,7 @@ export class StyleModule extends Base {
 
 
     async load(): Promise<void> {
+        await super.load()
         this.parseImports();
     }
 

@@ -2,7 +2,7 @@
 
 import {
   VNode
-} from '../node'
+} from '../Node'
 
 let map = {
   'on':"click"

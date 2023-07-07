@@ -1,11 +1,13 @@
-import { createResolver, readFileSync } from "@po/cjs-utils";
+import { createResolver, readFileSync ,serialComponentTageName} from "@po/cjs-utils";
 import { Base } from "./base";
+
+
 
 
 export type JsonResult = {
     code:string,
     component:boolean,
-    components:Array<{ name :string,path:string }>
+    components:Array<{ name :string,path:string,rawName:string }>
 }
 
 
@@ -36,6 +38,7 @@ export class JsonModule extends Base {
     }
 
     async load(): Promise<void> {
+        await super.load()
         let code = readFileSync(this.src)
         let res:Record<any,any>;
         try {
@@ -62,7 +65,8 @@ export class JsonModule extends Base {
             let target = this.resolver(this.context,path) as string;
     
             parsed.components.push({
-                name,
+                rawName:name,
+                name:serialComponentTageName(name),
                 path:target
             })
 

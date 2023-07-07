@@ -1,7 +1,8 @@
 import { RootNode, baseParse, transform, generate} from "../compiler/index";
 import { Base } from "./base";
 import {
-    readFileSync
+    readFileSync,
+    serialComponentTageName
 } from '@po/cjs-utils'
 
 import _ from 'lodash'
@@ -23,6 +24,7 @@ export class TemplateModule extends Base {
         this.dist = this.dist.replace(/\.pxml/, '.pxml.js')
     }
     async load() {
+        await super.load()
         let { src } = this
 
         let code = readFileSync(src)
@@ -36,7 +38,10 @@ export class TemplateModule extends Base {
         let { dir, name } = Path.parse(src)
         let jsonFile = `${dir}/${name}.json`
 
+       
+
         let jsonModule = this.compilation.getModule(jsonFile) as JsonModule
+
 
         return jsonModule.getParsedResult();
 
@@ -52,7 +57,16 @@ export class TemplateModule extends Base {
         this.rootNode = transform(this.rootNode, {
             context: {
                 isComponentTag(tag) {
-                    return !!_.find(components, { name: tag })
+                    return !!_.find(components, { rawName: tag })
+                },
+
+                getImportComponentLocalName(tag:string) {
+                    return serialComponentTageName(tag)
+                },
+
+
+                getComponentTageName(tag:string) {
+                    return serialComponentTageName(tag)
                 }
             }
         })
@@ -72,7 +86,7 @@ export class TemplateModule extends Base {
         components.forEach((item) => {
             let { name,path } = item
 
-            code += `import ${_.camelCase(name)} from ${this.compilation.getDistRelativePath(this.src,path)};\n`
+            code += `import   ${serialComponentTageName(name)}  from "${this.compilation.getDistRelativePath(this.src,path)}";\n`
 
         })
 

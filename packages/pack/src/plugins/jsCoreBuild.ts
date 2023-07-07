@@ -58,12 +58,13 @@ export class JsCoreBuild {
         let inputOptions: InputOptions = {
             input: this.appFile,
             plugins: this.getPlugins(),
-
+            treeshake:false
         }
 
         let outputOptions: OutputOptions = {
             file: this.getJsCoreDist(),
-            format: "cjs"
+            format: "cjs",
+            
         }
 
         const bundle = await rollup.rollup(inputOptions);

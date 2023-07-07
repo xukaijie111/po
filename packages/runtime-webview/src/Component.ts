@@ -22,7 +22,7 @@ import {
     amountElement, patch
 } from './patch'
 
-import { VNode  , pushCurrentComponent,popCurrentComponent} from "./node";
+import { VNode  , pushCurrentComponent,popCurrentComponent} from "./Node";
 
 
 export class Component {
@@ -39,6 +39,7 @@ export class Component {
     constructor(private options: CompilerComponentOptions, props: Record<string, any>) {
         this.props = props
         this.id = generateMixed()
+        this.children = [];
         //@ts-ignore
         this.webview = window.webview
         this.cache = {};// 缓存DOM事件

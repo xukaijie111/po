@@ -48,7 +48,7 @@ export class GenerateWebviewEntryPlugin {
                 let rel = getRelativePath(pageExportFile, dist)
 
                 entryCode += `
-                import { ${name} } from "${rel}"; \n
+                import  ${name}  from "${rel}"; \n
             `
                 names.push(name)
 

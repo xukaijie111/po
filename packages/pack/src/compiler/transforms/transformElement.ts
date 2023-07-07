@@ -109,11 +109,12 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
 
 
             function getCurrentCodeGenNode() {
-                return conditionCodeGenNode || forCodeGenNode || elementCodegenNode || componentCodeGenNode
+                return conditionCodeGenNode || forCodeGenNode || componentCodeGenNode || elementCodegenNode 
             }
 
             function buildElementCodeGen():ElementCodegenNode {
 
+                if (context.isComponentTag(tag)) return ;
                 let elementCodegenNode:ElementCodegenNode = {
                     type: NodeTypes.ELEMENT,
                     //@ts-ignore
@@ -133,7 +134,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
 
             function buildComponentCodegen(): ComponentCodegenNode{
 
-                if (context.isComponentTag(tag)) return ;
+                if (!context.isComponentTag(tag)) return ;
                 context.helper(CREATE_COMPONENT_VNODE)
 
                 return {

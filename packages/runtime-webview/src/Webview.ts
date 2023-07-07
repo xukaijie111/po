@@ -3,7 +3,6 @@
 import {
    PROTOCOL_CMD,
    BRIDGE_COMPONENT_SET_DATA_DATA,
-   BridgeDataBase,
 } from '@po/shared'
 
 import {
@@ -15,7 +14,7 @@ import {
 
 import {
     Component
-} from './component'
+} from './Component'
 
 
 import {

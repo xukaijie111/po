@@ -1,3 +1,5 @@
 {
-    
+    "usingComponents":{
+        "test-comp":"../../components/index"
+    }
 }

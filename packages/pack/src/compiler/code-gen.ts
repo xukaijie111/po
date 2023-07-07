@@ -215,7 +215,7 @@ function genElementNode(node: CodegenNode, context: CodeGenContext) {
 function getElementNodeParams(codegenNode: CodegenNode) {
 
 
-    let { tag, propsCodeGenNode, children } = codegenNode as ElementCodegenNode | ComponentCodegenNode
+    let { tag, propsCodeGenNode, children,type } = codegenNode as ElementCodegenNode | ComponentCodegenNode
 
     let source = [
         tag,
@@ -223,10 +223,10 @@ function getElementNodeParams(codegenNode: CodegenNode) {
         isString(children) ? children : children && children.length ? children : undefined
     ]
 
-    // if (type === NodeTypes.COMPONENT) {
-    //     //@ts-ignore
-    //     source[1] = codegenNode.options
-    // }
+    if (type === NodeTypes.COMPONENT) {
+        //@ts-ignore
+        source[1] = codegenNode.options
+    }
 
     return source.map((s) => {
         //@ts-ignore
@@ -344,12 +344,14 @@ function generateExport(context:CodeGenContext) {
         let { name,id,pathWidthProject } = shareInfo
 
         push(`
-            export const ${name} = {
+            const ${name} = {
                 name: "${name}",
                 render,
                 templateId:"${id}",
                 path:"${pathWidthProject}"
-            }
+            };
+
+            export default ${name};
         `)
 
 }

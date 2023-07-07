@@ -1,13 +1,13 @@
 
 import { ShapeFlags,isString,CompilerComponentOptions } from '@po/shared'
-import { Component } from './component';
+import type { Component } from './Component';
 
 
 
 
 let currentComponent:Component
 
-export function pushCurrentComponent(instance) {
+export function pushCurrentComponent(instance:Component) {
     currentComponent = instance
 }
 

@@ -135,6 +135,7 @@ function createConfig(format, plugins = []) {
       ...plugins
     ],
     output,
+    treeshake:false,
     onwarn: (msg, warn) => {
       if (!/Circular/.test(msg)) {
         warn(msg)

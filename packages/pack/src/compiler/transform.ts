@@ -32,7 +32,9 @@ export type TransformOptions = {
     transforms?:Array<any>,
     directives?:Record<any,any>,
     context?:{
-        isComponentTag:(tag:string) => boolean
+        isComponentTag:(tag:string) => boolean,
+        getImportComponentLocalName:(tag:string) => string
+        getComponentTageName:(tag:string) => string
     }
 
 
