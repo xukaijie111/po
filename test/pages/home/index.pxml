@@ -1,5 +1,5 @@
 <view class="container">
 <view>page/home</view>
 <view>{{message}}</view>
-<test-comp />
+<test-comp name = "{{name}}"/>
 </view>

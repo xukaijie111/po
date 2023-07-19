@@ -33,7 +33,7 @@ export type INIT_COMPONENT_DATA = {
     templateId:string,
     name:string,
     query?:Record<string,string>
-    props?:Record<any,any>
+    propKeys:Array<string>
 }
 
 export interface BRIDGE_CREATE_COMPONENT_DATA extends BridgeDataBase {

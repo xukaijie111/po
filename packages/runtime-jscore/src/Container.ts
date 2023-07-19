@@ -8,15 +8,14 @@ import { ComponentInstance } from './Component';
 
 import { PageInstance } from './Page'
 
-import {
-    INIT_COMPONENT_DATA
-} from '@po/shared'
 
 
 import {
     ComponentOptions
 } from './expose'
-import { BaseInstance } from './Instance';
+import { BaseInstance,CreateComponentData } from './Instance';
+
+
 
 export type CompotionsMap = Map<
     CompilerComponentOptions,
@@ -65,7 +64,7 @@ export class Container {
 
 
 
-    createComponent(initData: INIT_COMPONENT_DATA) {
+    createComponent(initData: CreateComponentData) {
 
         let { templateId } = initData
 

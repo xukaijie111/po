@@ -4,10 +4,17 @@ import { ComponentOptions } from "./expose";
 import {
     LifeTimes,
     diffAndClone,
-    getDataByPath
+    getDataByPath,
+    hasOwn
 } from '@po/shared'
 import { Container } from "./container";
-import { INIT_COMPONENT_DATA } from "@po/shared";
+import { 
+
+    INIT_COMPONENT_DATA,
+    isSpecialKey
+ } from "@po/shared";
+
+ export type CreateComponentData = Omit<INIT_COMPONENT_DATA,"propKeys"> & { props : Record<string,any>}
 
 export class BaseInstance {
 
@@ -90,7 +97,6 @@ export class BaseInstance {
 
         let { onCreated,onReady,onShow } = runOptions
         
-
         this['onCreated'] = () => {
             if (onCreated) {
                 onCreated.call(this,query)
@@ -150,6 +156,19 @@ export class BaseInstance {
     }
 
 
+    getDataByKeys(keys:string[]) {
+        let data = {}
+        keys.forEach((key) => {
+            if (isSpecialKey(key)) return ;
+            if (hasOwn(this.data,key)) {
+                data[key] = this.data[key]
+            }
+        })
+
+        return data;
+    }
+
+
     callHookCreate() {
         try{
             this.onCreated();
@@ -179,7 +198,7 @@ export class BaseInstance {
 export namespace BaseInstance {
 
     export type options = {
-        initData:INIT_COMPONENT_DATA,
+        initData:CreateComponentData,
         runOptions:ComponentOptions,
         container:Container
 

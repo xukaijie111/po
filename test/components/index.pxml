@@ -1,3 +1,3 @@
 
 
-<view > I am an children </view>
+<view > I am an children {{name}}</view>

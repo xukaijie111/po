@@ -23,6 +23,7 @@ import {
 } from './patch'
 
 import { VNode  , pushCurrentComponent,popCurrentComponent} from "./Node";
+import { getCustomPropKeys } from './helper';
 
 
 export class Component {
@@ -37,7 +38,7 @@ export class Component {
     props:Record<string,any>
     data:Record<string,any>
     constructor(private options: CompilerComponentOptions, props: Record<string, any>) {
-        this.props = props
+        this.props = props || {}
         this.id = generateMixed()
         this.children = [];
         //@ts-ignore
@@ -68,7 +69,7 @@ export class Component {
                 templateId:options.templateId,
                 componentId:id,
                 parentId:this.parent?.id,
-                props
+                propKeys:getCustomPropKeys(props)
             }
         })
 

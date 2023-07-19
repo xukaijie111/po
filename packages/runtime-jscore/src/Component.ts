@@ -29,4 +29,8 @@ export class ComponentInstance extends BaseInstance {
 
         Object.assign(this.data,diffAndClone(values, {}).clone)
     }
+
+
+
+    
 }

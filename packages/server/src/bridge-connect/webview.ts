@@ -36,6 +36,10 @@ export class Webview {
 
 
 
+    getComponentById(id:string) {
+        return this.components.get(id)
+    }
+
     init(){
 
         let { bridgeServerConnect ,ws} = this.options
@@ -57,10 +61,16 @@ export class Webview {
         let { jsCore } = this;
         let { container } = jsCore
         let { data } = params;
-        let { name ,componentId ,props = {} ,parentId } = data;
+        let { name ,componentId ,propKeys = [] ,parentId } = data;
     
+        let parant = this.getComponentById(parentId);
+        let props = { }
 
-        let component  = container.createComponent(data);
+        propKeys.forEach((key) => {
+            props[key] = parant.data[key]
+        })
+        let initData = { ...data , props}
+        let component  = container.createComponent(initData);
 
         component.webview = this;
 

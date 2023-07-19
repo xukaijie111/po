@@ -14,12 +14,14 @@ import {
     RENDER_LIST,
     helperNameMap,
     isString,
-    isObject
+    isObject,
 } from '@po/shared'
 
 import {
+
     ComponentShareInfo
 } from '../helper'
+
 
 export type GenerateOptions = {
 
@@ -224,6 +226,9 @@ function getElementNodeParams(codegenNode: CodegenNode) {
     ]
 
     if (type === NodeTypes.COMPONENT) {
+
+        console.log(`####component node `,codegenNode);
+
         //@ts-ignore
         source[1] = codegenNode.options
     }
@@ -339,9 +344,11 @@ function getCommentVnodeString(comment: string) {
 function generateExport(context:CodeGenContext) {
 
 
-        let { push ,options  } = context;
+        let { push ,options } = context;
         let shareInfo = options.getComponentShareInfo()
         let { name,id,pathWidthProject } = shareInfo
+
+
 
         push(`
             const ${name} = {

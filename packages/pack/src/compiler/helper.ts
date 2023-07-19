@@ -5,7 +5,9 @@ import {
     TemplateNode,
     NodeTypes,
     TextNode,
+    Node,
     ElementCodegenNode,
+    PlaiElement,
     InterpolationNode
 } from './ast'
 
@@ -13,6 +15,7 @@ import _ from 'lodash'
 
 import {
     isNil,
+    isNativePropKey,
 } from '@po/shared'
 
 
@@ -220,6 +223,9 @@ export function processElemnetCodegenChild(node: TemplateNode,codegenNode:Elemen
   export function normalizeComponentName(name:string) {
     return `sqb-${name}`
   }
+
+
+
 
 
 

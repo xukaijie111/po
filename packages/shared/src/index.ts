@@ -58,6 +58,8 @@ export enum ShapeFlags  {
 }
 
 
+
+
 export * from './runtimeHelpers'
 
 
@@ -81,3 +83,18 @@ export enum LifeTimes {
 }
 
 export * from './protocol'
+
+
+export function isSpecialKey(key:string) {
+
+    let lists = ["on","class","style"]
+
+    return lists.includes(key)
+}
+
+
+
+export function isNativePropKey(key:string) {
+    let lists = ["catch","tap","po:","bind"]
+    return lists.some((item) => key.startsWith(item))
+}
