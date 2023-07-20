@@ -2,10 +2,7 @@ Component({
 
 
     props:{
-        name : {
-            type:String,
-            value:"bajie"
-        }
+        name : "baijie"
     },
     onCreated() {
 

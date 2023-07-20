@@ -227,10 +227,14 @@ function getElementNodeParams(codegenNode: CodegenNode) {
 
     if (type === NodeTypes.COMPONENT) {
 
-        console.log(`####component node `,codegenNode);
 
-        //@ts-ignore
-        source[1] = codegenNode.options
+
+        source = [
+            tag,
+            //@ts-ignore
+            codegenNode.options,
+            propsCodeGenNode
+        ]
     }
 
     return source.map((s) => {

@@ -80,6 +80,8 @@ export class Webview {
 
         let userData = component.getUserData();
 
+        console.log(`###user data is`,userData)
+
         ctx.reply(userData)
 
         this.components.set(componentId,component)

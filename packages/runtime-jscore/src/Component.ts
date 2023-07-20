@@ -19,15 +19,19 @@ export class ComponentInstance extends BaseInstance {
 
         let { runOptions, initData } = this.options
 
+        let { props : parentProps } = initData
+
         let { props = {} } = runOptions
 
         let values = {}
 
         for (let key in props) {
-            values[key] = hasOwn(initData, key) ? initData[key] : props[key]
+            values[key] = hasOwn(parentProps, key) ? parentProps[key] : props[key]
         }
 
         Object.assign(this.data,diffAndClone(values, {}).clone)
+
+        console.log(`###values this data  is`,values,this.data)
     }
 
 

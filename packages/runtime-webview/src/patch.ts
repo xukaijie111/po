@@ -289,7 +289,7 @@ export async function amountElement(vnode: VNode, parentElm: Node, refElm: Node 
     console.log(`###new comp props is`,data)
     let comp = new Ctor(options, data)
 
-
+    
 
     component.addChildren(comp)
     comp.parent = component;
