@@ -1,0 +1,11 @@
+{
+
+    "name": "@po/dsbridge",
+    "version":"1.0.0",
+    "module":"dist/dsbridge.es.js",
+    "types": "dist/index.d.ts",
+    "dependencies": {
+
+    }
+
+}
