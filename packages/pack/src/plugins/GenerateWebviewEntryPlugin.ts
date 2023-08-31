@@ -77,11 +77,12 @@ export class GenerateWebviewEntryPlugin {
         let dist = this.compilation.getWebviewDraftIndexPath();
         let rel = getRelativePath(dist, this.compilation.getWebviewExportPagesPath())
         let code = `
-        import { Webview } from "@po/runtime-webview"
-        import pages from "${rel}"
-        new Webview(pages)
-    `
+                import { Container } from "@po/runtime-webview"
+                import pages from "${rel}"
+                let container = new Container(pages)
+                window.container = container;
 
+            `
         emitFile(dist, code)
 
     }

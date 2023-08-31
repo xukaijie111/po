@@ -8,7 +8,7 @@
     "dev": "node scripts/dev.js",
     "build": "node scripts/build.js",
     "clean": "rm -rf packages/*/dist",
-    "server":"npm run dev --prefix packages/server"
+    "server": "npm run dev --prefix packages/server"
   },
   "keywords": [],
   "author": "",
@@ -57,6 +57,7 @@
     "@babel/traverse": "^7.21.0",
     "@babel/types": "^7.21.0",
     "@types/babel__core": "^7.20.0",
-    "@types/babel__generator": "7.6.4"
+    "@types/babel__generator": "7.6.4",
+    "electron": "^26.0.0"
   }
 }

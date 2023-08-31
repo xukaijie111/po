@@ -7,7 +7,7 @@ export class PageInstance extends BaseInstance{
     isPage: boolean = true
 
     
-
+    
 
 }
     

@@ -17,7 +17,7 @@ const resolve = (value) => Path.resolve(__dirname,value)
 let dist = Path.resolve(__dirname,'./dist')
 
 let appJson =  resolve('app.json')
-console.log(`appjson is`,appJson)
+
 rm(dist,() => {
 
     let Path = require('path')
@@ -29,7 +29,8 @@ rm(dist,() => {
         alias:{
             "@po/runtime-jscore":Path.resolve(__dirname,'../packages/runtime-jscore/src/index.ts'),
             "@po/runtime-webview":Path.resolve(__dirname,'../packages/runtime-webview/src/index.ts'),
-            "@po/shared":Path.resolve(__dirname,'../packages/shared/src/index.ts')
+            "@po/shared":Path.resolve(__dirname,'../packages/shared/src/index.ts'),
+            "@po/dsbridge":Path.resolve(__dirname,'../packages/dsbridge/src/index.ts')
         }
     });
     

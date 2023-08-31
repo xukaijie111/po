@@ -7,7 +7,7 @@ import {
     getDataByPath,
     hasOwn
 } from '@po/shared'
-import { Container } from "./container";
+import { Application } from "./Application";
 import { 
 
     INIT_COMPONENT_DATA,
@@ -200,7 +200,7 @@ export namespace BaseInstance {
     export type options = {
         initData:CreateComponentData,
         runOptions:ComponentOptions,
-        container:Container
+        application:Application
 
     }
 }

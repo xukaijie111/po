@@ -48,9 +48,10 @@ export class Compilation {
     hooks:Record<HOOKNAMES,any>
     rawDist:string
     draftDist:string
-    webviewDist:string
-    webviewPagesDist:string
     webviewIndexDist:string
+    webviewHtmlDist:string
+    webviewDraftPagesDist:string
+    webviewDraftIndexDist:string
     entries:Array<string>
     appFile:string
     constructor(options: Compilation.options) {
@@ -58,10 +59,10 @@ export class Compilation {
         this.options = options
         this.rawDist = this.options.dist;
         this.draftDist = `${this.rawDist}/draft`
-        this.webviewPagesDist = `${this.draftDist}/webviewPages.js`
-        this.webviewIndexDist  = `${this.draftDist}/webviewIndex.js`
-        this.webviewDist = `${this.rawDist}/webview/index.js`
-
+        this.webviewDraftPagesDist = `${this.draftDist}/webviewPages.js`
+        this.webviewDraftIndexDist  = `${this.draftDist}/webviewIndex.js`
+        this.webviewIndexDist = `${this.rawDist}/webview/index.js`
+        this.webviewHtmlDist = `${this.rawDist}/webview/index.html`
         this.rootPath = options.rootPath
         this.modules = new Map()
         this.shareMap = new Map()
@@ -83,17 +84,21 @@ export class Compilation {
         return `${this.rawDist}/jsCore/index.js`
     }
 
+
+    getWebviewHtmlDistPath() {
+        return this.webviewHtmlDist
+    }
     getWebViewDistPath() {
-        return this.webviewDist
+        return this.webviewIndexDist
     }
 
 
     getWebviewDraftIndexPath() {
-        return this.webviewIndexDist
+        return this.webviewDraftIndexDist
     }
 
     getWebviewExportPagesPath(){
-        return this.webviewPagesDist
+        return this.webviewDraftPagesDist
     }
 
 

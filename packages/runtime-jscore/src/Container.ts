@@ -1,112 +1,127 @@
 
 
+import {
+    MessageDataBase,
+    PROTOCOL_CMD,
+    MESSAGE_CREATE_COMPONENT_DATA,
+    MESSAGE_DOM_ON_CLICK_DATA,
+    MESSAGE_COMPONENT_READY_CMD_DATA
+} from "@po/shared"
 
 import {
-    CompilerComponentOptions
-} from '@po/shared'
-import { ComponentInstance } from './Component';
-
-import { PageInstance } from './Page'
-
-
+    ComponentInstance
+} from "./Component"
 
 import {
-    ComponentOptions
-} from './expose'
-import { BaseInstance,CreateComponentData } from './Instance';
+    PageInstance
+} from "./Page"
+import {
+    Application
+} from "./Application"
 
-
-
-export type CompotionsMap = Map<
-    CompilerComponentOptions,
-    {
-        options: ComponentOptions,
-    }
->
+type Instance = PageInstance | ComponentInstance
 
 export class Container {
 
-    components:Set<ComponentInstance | PageInstance>
-    componentsMap: CompotionsMap
-    currentComponentOptions: CompilerComponentOptions | null
+    application:Application
+    components:Map<string,Instance>
+    constructor( application:Application) {
+        this.application = application;
+    }
 
-    constructor() {
-        this.components = new Set();
-        this.currentComponentOptions = null;
-        this.componentsMap = new Map();
+    processMessageFromNative(data:MessageDataBase) {
+
+
+        let { type } = data;
+
+        switch(type) {
+
+
+            case PROTOCOL_CMD.C2S_INIT_COMPONENT:
+
+                return this.cmdCreateComponent(data as MESSAGE_CREATE_COMPONENT_DATA)
+
+            case PROTOCOL_CMD.C2S_DOM_ON_CLICK:
+                this.cmdDomOnClick(data as MESSAGE_DOM_ON_CLICK_DATA)
+                break;
+
+            case PROTOCOL_CMD.C2S_READY_COMPONENT:
+                this.cmdComponentReady(data as MESSAGE_COMPONENT_READY_CMD_DATA)
+                break;
+
+        }
 
     }
 
 
-    register = (options: CompilerComponentOptions) => {
-
-        if (this.currentComponentOptions) {
-            throw new Error(`Path ${this.currentComponentOptions.path} Has No Component/Page Register`)
-        }
-        this.currentComponentOptions = options
+    getComponentById(id:string) {
+        return this.components.get(id)
     }
 
-    addComponent(options: ComponentOptions) {
-        let { currentComponentOptions } = this;
 
-        if (!currentComponentOptions) {
-            throw new Error(`Has No Component/Page Register`)
-        }
 
-        this.componentsMap.set(currentComponentOptions, {
-            options,
+    cmdCreateComponent = (params:MESSAGE_CREATE_COMPONENT_DATA) =>  {
+
+        let { application } = this
+        let { data } = params;
+        let { name ,componentId ,propKeys = [] ,parentId } = data;
+    
+        let parant = this.getComponentById(parentId);
+        let props = { }
+
+        propKeys.forEach((key) => {
+            props[key] = parant.data[key]
         })
+        let initData = { ...data , props}
+        let component  = application.createComponent(initData);
+
+        component.webview = this;
 
 
-        this.currentComponentOptions = null;
 
-    }
+        component.callHookCreate();
 
-
-
-    createComponent(initData: CreateComponentData) {
-
-        let { templateId } = initData
-
-        let { componentsMap } = this;
-
-        let keys = Array.from(componentsMap.keys());
-
-        for (let i = 0; i < keys.length;i++) {
-            let compilerOptions = keys[i];
-            if (compilerOptions.templateId === templateId) {
-                    let res = componentsMap.get(compilerOptions)
-                    let { isPage } = compilerOptions;
-                    let { options } = res;
-
-                    let instanceOptions:BaseInstance.options = {
-                        initData,
-                        runOptions:options,
-                        container:this
-
-                    }
-                    let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
-                    this.components.add(instance)
-                    return instance ;
-            }
+        this.components.set(componentId,component)
+        if (parentId) {
+            let parent = this.components.get(parentId)
+            parent.addChild(component);
         }
 
-        throw new Error(`No Find TemplateId ${templateId} When Create Component${initData.name}`)
+        let userData = component.getUserData();
 
+        console.log(`###user data is`,userData)
+        return userData
+
+       
+      
     }
 
+    cmdDomOnClick = (params:MESSAGE_DOM_ON_CLICK_DATA) => {
 
-    resolveComponent(id:string) {
-        let { components } = this
+        let { data } = params;
+        let { componentId ,name ,params:eventParams} = data
 
-        let array = Array.from(components)
-        for (let i = 0 ;i < array.length;i++) {
-            if (array[i].id === id) {
-                return array[i]
-            }
+        let component = this.components.get(componentId)
+
+        try {
+            component[name](eventParams)
+        } catch (error) {
+            console.log(error)
         }
 
-        throw new Error(`Can Not Resolve Component Id : ${id}`)
+    }
+
+
+    cmdComponentReady = (params:MESSAGE_COMPONENT_READY_CMD_DATA) => {
+        let { data } = params
+
+        let { componentId } = data
+
+        let component = this.components.get(componentId)
+
+        component.callHookReady()
 
     }
+    
+
 }

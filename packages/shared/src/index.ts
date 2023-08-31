@@ -84,6 +84,8 @@ export enum LifeTimes {
 
 export * from './protocol'
 
+export * from "./const"
+
 
 export function isSpecialKey(key:string) {
 

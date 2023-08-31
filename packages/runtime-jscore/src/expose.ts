@@ -2,8 +2,8 @@
 
 
 import {
-    Container
-} from './Container'
+    Application
+} from './Application'
 
 
 
@@ -23,24 +23,24 @@ export type ComponentOptions = {
 
 
 
-let container = new Container();
+let application = new Application();
 
 export function Component(options:ComponentOptions) {
 
-    container.addComponent(options)
+    application.addComponent(options)
 
 }
 
 
-Component.register = container.register
+Component.register = application.register
 
 
 
 export function Page(options:ComponentOptions) {
-    container.addComponent(options)
+    application.addComponent(options)
 }
 
-Page.register = container.register
+Page.register = application.register
 
 export function App() {
 
@@ -49,8 +49,8 @@ export function App() {
 }
 
 export {
-    container,
-    Container
+    application,
+    Application
 }
 
 
