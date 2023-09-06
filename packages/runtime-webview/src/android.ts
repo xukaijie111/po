@@ -35,16 +35,13 @@ export class Android implements DsBridgeInterface {
 
             arg = JSON.stringify(arg);
    
+     
            if(window._dsbridge){
                console.log(`####arg is `,arg);
-               ret=  _dsbridge.call(JsCallNativeFuncName, arg)
+               _dsbridge.call(JsCallNativeFuncName, arg)
             }else if(window._dswk||navigator.userAgent.indexOf("_dsbridge")!=-1){
-               ret = prompt("_dsbridge=" + JsCallNativeFuncName, arg);
+                prompt("_dsbridge=" + JsCallNativeFuncName, arg);
             }
-
-            console.log(`####return is`,ret);
-   
-            return  JSON.parse(ret||'{}').data
         })
 
        

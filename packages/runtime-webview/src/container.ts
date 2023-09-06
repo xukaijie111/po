@@ -28,6 +28,7 @@ export class Container {
 
     constructor( compilerPageOptions:Record<any,any>) {
         this.compilerPageOptions = compilerPageOptions
+        this.pages = [];
         this.init();
     }
 

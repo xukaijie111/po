@@ -82,6 +82,8 @@ export class Component {
             }
         })
 
+        console.log(`####this.data is `,JSON.stringify(this.data));
+
         return ;
     }
 

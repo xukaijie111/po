@@ -26,6 +26,7 @@ export class Container {
     application:Application
     components:Map<string,Instance>
     constructor( application:Application) {
+        this.components = new Map();
         this.application = application;
     }
 
@@ -66,16 +67,17 @@ export class Container {
         let { data } = params;
         let { name ,componentId ,propKeys = [] ,parentId } = data;
     
-        let parant = this.getComponentById(parentId);
+        let parent = this.getComponentById(parentId);
         let props = { }
 
         propKeys.forEach((key) => {
-            props[key] = parant.data[key]
+            if (parent)
+                props[key] = parent.data[key]
         })
         let initData = { ...data , props}
         let component  = application.createComponent(initData);
 
-        component.webview = this;
+        component.container = this;
 
 
 
