@@ -4,15 +4,15 @@
 
 ## 主要特点
 1. view 和 js 编译成独立两套
-2. view 可运行在浏览器，electron 的webview等
-3. js 运行在node下
-4. view 和 js 通过bridge通信
+2. view 可运行在浏览器，electron/android/ios 的webview等
+3. js 可运行在android的j2v8，electron和nodejs
+4. view 和 js 通过bridge通信,bridge在不同介质(android/ios/electron)下分别实现
 
 
 ### 涉及知识点
 1. 虚拟DOM
 2. 编译相关知识, ast/code-gen等等
-3. 等等...
+3. bridge
 
 
 ### 项目结构
