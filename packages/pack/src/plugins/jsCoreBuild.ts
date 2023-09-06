@@ -5,19 +5,13 @@ import {
 } from '../Compilation'
 import { ScriptModule } from '../modules'
 
-import rollup from 'rollup'
-
-import ts from 'rollup-plugin-typescript2'
-
-import resolve from '@rollup/plugin-node-resolve'
-
-import alias from '@rollup/plugin-alias'
 
 import {
     RUNTIME_JSCORE_NPM,
     JSCORE_APP_NAME,
     JSCORE_PAGE_NAME,
-    JSCORE_COMPONENT_NAME
+    JSCORE_COMPONENT_NAME,
+    NATIVECALLJSFUNCNAME
 } from '@po/shared'
 
 import {
@@ -25,7 +19,8 @@ import {
     walkNode,
     getAst,
     generateCodeByAst,
-    getRelativePath
+    getRelativePath,
+    fileIsExist
 } from '@po/cjs-utils'
 
 import {
@@ -35,11 +30,13 @@ import {
 
 import template from '@babel/template'
 
+
+
+import esbuild from 'esbuild'
+
 import {
-    Plugin,
-    InputOptions,
-    OutputOptions
-} from 'rollup'
+    Plugin
+} from 'esbuild'
 
 import _ from "lodash"
 export class JsCoreBuild {
@@ -55,20 +52,26 @@ export class JsCoreBuild {
 
     async run() {
 
-        let inputOptions: InputOptions = {
-            input: this.appFile,
-            plugins: this.getPlugins(),
-            treeshake:false
-        }
 
-        let outputOptions: OutputOptions = {
-            file: this.getJsCoreDist(),
-            format: "cjs",
-            
+        try {
+            await esbuild
+                .build({
+                    entryPoints: [this.appFile],
+                    outfile:this.getJsCoreDist(),
+                    bundle: true,
+                    format: "cjs",
+                    platform: "node",
+                    alias: this.getAlias(),
+                    plugins: this.getPlugins(),
+                    treeShaking:false,
+                    // external: [
+                    //     RUNTIME_JSCORE_NPM
+                    // ]
+                })
+        } catch (err) {
+            console.log(err)
+            throw new Error(err)
         }
-
-        const bundle = await rollup.rollup(inputOptions);
-        await bundle.write(outputOptions);
 
     }
 
@@ -107,14 +110,14 @@ export class JsCoreBuild {
                 enter: (path: NodePath) => {
 
 
-                    let appImportNode = template(`import { ${JSCORE_APP_NAME} ,container } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
+                    let appImportNode = template(`import { ${JSCORE_APP_NAME}  } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
 
-                    let exportContainerNode = template(`export { container }`)
+                  //  let exportContainerNode = template(`export { container , ${NATIVECALLJSFUNCNAME} }`)
                     //@ts-ignore
                     path.unshiftContainer("body", appImportNode());
 
                     //@ts-ignore
-                    path.pushContainer('body', exportContainerNode())
+                 //   path.pushContainer('body', exportContainerNode())
 
     
                     componentFiles.forEach((file) => {
@@ -128,7 +131,7 @@ export class JsCoreBuild {
                         let lastPath = this.getLastImportPath(path)
 
 
-                        const myImport = template(`import {  ${shareInfo.name} } from "${rel}";`, { sourceType: 'module' });
+                        const myImport = template(`import  "${rel}";`, { sourceType: 'module' });
 
                         lastPath.insertAfter(myImport());
 
@@ -138,7 +141,7 @@ export class JsCoreBuild {
             }
         })
 
-
+        console.log(`###gene code is`,generateCodeByAst(ast))
 
         return generateCodeByAst(ast)
 
@@ -192,45 +195,71 @@ export class JsCoreBuild {
 
     }
 
+    getAppJsPlugin(): Plugin {
 
-    getJsPlugin(): Plugin {
-        let self = this;
         return {
 
-            name: "handle-js",
-            load(id) {
-                if (id === self.appFile) {
-                    return {
-                        code: self.handleAppFile()
+            name: "Entry",
+            setup: (build) => {
+                build.onLoad({ filter: /\.(j|t)s$/ }, (args) => {
+
+                    let { path } = args;
+                    let code = readFileSync(path)
+
+                    if (path === this.appFile) {
+                        code = this.handleAppFile()
+                    } else if (this.componentFiles.has(path)) {
+                        code = this.handleComponentFile(path)
                     }
-                }
-                if (self.componentFiles.has(id)) {
+
                     return {
-                        code: self.handleComponentFile(id)
+                        contents: code,
+                        loader: "ts"
                     }
 
-                }
+                });
 
-                return null
+                build.onEnd(() => {
+                    
+                    
 
+                })
             }
         }
     }
 
 
+
+
+    // processDistFile() {
+    //     let code = readFileSync(this.getJsCoreDist());
+
+    //     let ast = getAst(code);
+
+    //     walkNode(ast, {
+
+
+    //         Program: {
+
+    //             leave:(path) => {
+
+    //                 let { node } = path;
+
+    //                 if (node.)
+    //             }
+    //         }
+    //     })
+
+
+    // }
+    
+
+
     getPlugins() {
 
-        let plugins = [
-            this.getJsPlugin(),
-            ts({
-                check: false
-            }),
-            resolve({
-                extensions: ['.ts', '.js'],
-
-            }),
-            alias(this.getAlias())
-        ]
+       
+        let plugins = []
+        plugins.push(this.getAppJsPlugin())
 
         return plugins
     }
@@ -239,23 +268,9 @@ export class JsCoreBuild {
 
 
     getAlias() {
+             let { compilation } = this;
 
-        let { compilation } = this;
-
-        let alias = compilation.getAlias() || {}
-
-        let entries = []
-
-        for (let key in alias) {
-            entries.push({
-                find: key,
-                replacement: alias[key]
-            })
-        }
-
-        return {
-            entries
-        }
+        return  compilation.getAlias() || {}
     }
 
 

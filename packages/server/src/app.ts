@@ -6,11 +6,13 @@ import express from 'express';
 import corsMiddleware from "./middleware/cors.middleware"
 
 import { IndexContoller } from './controller/index'
+import { JsCoreContoller }  from "./controller/jsCore"
 
 
 
 let controllers = [
-    IndexContoller
+    IndexContoller,
+    JsCoreContoller
 ]
 const PORT = 3456
 
@@ -58,7 +60,7 @@ export class Application {
     private initializeControllers(controllers: any[]) {
         controllers.forEach((Controller) => {
             let c = new Controller(this);
-            this.app.use('/', c.router);
+            this.app.use("/", c.router);
         });
     }
 

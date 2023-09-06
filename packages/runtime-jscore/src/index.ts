@@ -20,9 +20,12 @@ import {
 let container = new Container(application);
 
 
-
-export function nativeCallJsCoreFuncName(data:MessageDataBase) {
-       return container.processMessageFromNative(data)
+// 供android调用
+export function nativeCallJsCoreFuncName(_data:string) {
+        let data = JSON.parse(_data) as MessageDataBase
+        console.log(`###data is `,_data,JSON.stringify(container.processMessageFromNative(data)))
+      // return JSON.stringify(container.processMessageFromNative(data))
+      return "bajie"
 }
 
 

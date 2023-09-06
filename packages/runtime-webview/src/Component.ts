@@ -44,7 +44,8 @@ export class Component {
     }
 
     setContainer(container:Container) {
-        this.container = container
+        this.container = container;
+        return this;
     }
 
 

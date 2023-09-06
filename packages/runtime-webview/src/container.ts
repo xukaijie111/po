@@ -14,7 +14,8 @@ import {
 
 import {
     MessageDataBase,
-    PROTOCOL_CMD
+    PROTOCOL_CMD,
+    serialPageName
 } from "@po/shared"
 
 export class Container {
@@ -42,12 +43,14 @@ export class Container {
 
    async  start(path:string) {
 
-        let options = this.compilerPageOptions[path];
+        let serialPath = serialPageName(path);
+        let options = this.compilerPageOptions[serialPath];
         if (!options) {
             throw new Error(`cant not find page ${path}`)
         }
 
-        let rootComponent = new Component(options, {})
+        let rootComponent = new Component(options, {}).setContainer(this);
+
 
         await rootComponent.init();
 

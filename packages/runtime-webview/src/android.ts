@@ -1,7 +1,7 @@
 
 //@ts-nocheck
 
-let JsCallNativeFuncName = "dsBridgeWebviewMessage"
+let JsCallNativeFuncName = "dsBridgeWebViewMessage"
 let nativeCallJsFuncName = "dsBridgeJsCall"
 
 
@@ -20,17 +20,34 @@ export class Android implements DsBridgeInterface {
 
     send(data:MessageDataBase) {
 
-        let arg = { data };
+        return new Promise((resolve,reject) => {
 
-        let param = JSON.stringify(arg);
+            let callback = function(ret:string) {
+                console.log(`###jsbridge callback is `,ret);
+                resolve(JSON.parse(ret));
+            }
 
-        if(window._dsbridge){
-            ret=  _dsbridge.call(JsCallNativeFuncName, arg)
-         }else if(window._dswk||navigator.userAgent.indexOf("_dsbridge")!=-1){
-            ret = prompt("_dsbridge=" + JsCallNativeFuncName, arg);
-         }
+            let arg = { data };
 
-         return  JSON.parse(ret||'{}').data
+            let  cbName = 'dscb' + window.dscb++;
+            window[cbName] = callback;
+            arg['_dscbstub'] = cbName;
+
+            arg = JSON.stringify(arg);
+   
+           if(window._dsbridge){
+               console.log(`####arg is `,arg);
+               ret=  _dsbridge.call(JsCallNativeFuncName, arg)
+            }else if(window._dswk||navigator.userAgent.indexOf("_dsbridge")!=-1){
+               ret = prompt("_dsbridge=" + JsCallNativeFuncName, arg);
+            }
+
+            console.log(`####return is`,ret);
+   
+            return  JSON.parse(ret||'{}').data
+        })
+
+       
     }
 
 

@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickOpenMiniProgramActivity(View view) {
-        startActivity(new Intent(this,miniActivity.class));
+        startActivity(new Intent(this, MiniActivity.class));
 
     }
 }

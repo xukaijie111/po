@@ -51,3 +51,5 @@ export const JSCORE_APP_NAME = "App"
 
 
 export const PACK_APPSERVICE_NAME = "poScriptDistFile.js"
+
+export const NATIVECALLJSFUNCNAME = "nativeCallJsCoreFuncName"
