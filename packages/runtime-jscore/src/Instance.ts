@@ -25,7 +25,7 @@ export class BaseInstance {
     isPage:boolean
     options:BaseInstance.options
     id:string
-    webview:any
+    container:any
     onCreated:Function
     onShow:Function
     onReady:Function
