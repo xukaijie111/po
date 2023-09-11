@@ -7,9 +7,9 @@ import {
 
 export interface DsBridgeInterface {
 
-    send(data:MessageDataBase):unknown
+     send(data:MessageDataBase):Promise<any>
 
-    init(data?:any):unknown
+     init(data?:any):Promise<any>
 
-    register(func:Function):unknown
+     register(func:Function):Promise<any>
 }

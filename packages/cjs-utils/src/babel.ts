@@ -8,10 +8,12 @@ import generate from '@babel/generator'
 const traverse = require("@babel/traverse").default;
 
 export function transform(code:string,pl:any) {
-  let plugins = pl || [
+  pl = pl || []
+  let plugins =  [
     ["@babel/plugin-proposal-decorators", { legacy: true }],
     ["@babel/plugin-proposal-class-properties"],
     ["@babel/plugin-transform-typescript", { onlyRemoveTypeImports: true }],
+    ...pl
     
   ];
 

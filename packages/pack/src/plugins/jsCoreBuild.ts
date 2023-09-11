@@ -11,7 +11,7 @@ import {
     JSCORE_APP_NAME,
     JSCORE_PAGE_NAME,
     JSCORE_COMPONENT_NAME,
-    NATIVECALLJSFUNCNAME
+    
 } from '@po/shared'
 
 import {
@@ -20,7 +20,7 @@ import {
     getAst,
     generateCodeByAst,
     getRelativePath,
-    fileIsExist
+    
 } from '@po/cjs-utils'
 
 import {
@@ -52,6 +52,7 @@ export class JsCoreBuild {
 
     async run() {
 
+        console.log(`#####externl is `,this.compilation.getExternals())
 
         try {
             await esbuild
@@ -64,9 +65,10 @@ export class JsCoreBuild {
                     alias: this.getAlias(),
                     plugins: this.getPlugins(),
                     treeShaking:false,
-                    // external: [
-                    //     RUNTIME_JSCORE_NPM
-                    // ]
+                    external:[
+                        ...this.compilation.getExternals()
+                    ]
+                   
                 })
         } catch (err) {
             console.log(err)
@@ -102,7 +104,7 @@ export class JsCoreBuild {
         let componentFiles = this.componentFiles
         let code = readFileSync(entryFile)
 
-        let ast = getAst(code);
+        let ast = getAst(code,this.compilation.getBabelPlugins());
 
         walkNode(ast, {
 
@@ -110,22 +112,28 @@ export class JsCoreBuild {
                 enter: (path: NodePath) => {
 
 
-                    let appImportNode = template(`import { ${JSCORE_APP_NAME}  } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
+                    let appImportNode = template(`import { ${JSCORE_APP_NAME} ,container  } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
 
                   //  let exportContainerNode = template(`export { container , ${NATIVECALLJSFUNCNAME} }`)
                     //@ts-ignore
                     path.unshiftContainer("body", appImportNode());
 
+                    // node平台下，导出
                     //@ts-ignore
-                 //   path.pushContainer('body', exportContainerNode())
+                    if (this.compilation.getTargetPlatform() === "node") {
+                        let exportContainerNode = template(`export { container  }`);
+                        //@ts-ignore
+                        path.pushContainer('body', exportContainerNode())
+                    }
 
-    
+                    // 单输入才能单输出
+                    //@ts-ignore
+  
                     componentFiles.forEach((file) => {
 
                         //@ts-ignore
                         let module = this.getModuleByDistFile(file)
 
-                        let { shareInfo } = module
                         let rel = getRelativePath(entryFile, module.dist)
 
                         let lastPath = this.getLastImportPath(path)
@@ -141,8 +149,6 @@ export class JsCoreBuild {
             }
         })
 
-        console.log(`###gene code is`,generateCodeByAst(ast))
-
         return generateCodeByAst(ast)
 
     }
@@ -153,7 +159,7 @@ export class JsCoreBuild {
         let module = this.getModuleByDistFile(file)
 
         let code = readFileSync(file)
-        let ast = getAst(code)
+        let ast = getAst(code,this.compilation.getBabelPlugins())
 
         //@ts-ignore
         let { shareInfo } = module;
@@ -175,16 +181,13 @@ export class JsCoreBuild {
 
 
                     const registerTemplate = template(`${componentOrPageName}.register({
-                    name:"${name}",
-                    templateId:"${id}",
-                    path:"${pathWidthProject}",
-                    isPage:${isPage}
+                            name:"${name}",
+                            templateId:"${id}",
+                            path:"${pathWidthProject}",
+                            isPage:${isPage}
                         })`)
 
                     lastPath.insertAfter(registerTemplate());
-
-                    const exportTemplate = template(`export const ${name} = {}`)
-                    lastPath.insertAfter(exportTemplate());
 
                 }
             }
@@ -195,7 +198,7 @@ export class JsCoreBuild {
 
     }
 
-    getAppJsPlugin(): Plugin {
+    getJsPlugin(): Plugin {
 
         return {
 
@@ -210,6 +213,8 @@ export class JsCoreBuild {
                         code = this.handleAppFile()
                     } else if (this.componentFiles.has(path)) {
                         code = this.handleComponentFile(path)
+                    }else {
+                        code = this.handleOtherFile(path) // babel plugin
                     }
 
                     return {
@@ -231,27 +236,17 @@ export class JsCoreBuild {
 
 
 
-    // processDistFile() {
-    //     let code = readFileSync(this.getJsCoreDist());
+    handleOtherFile(path) {
 
-    //     let ast = getAst(code);
+        let code = readFileSync(path)
 
-    //     walkNode(ast, {
+        let ast = getAst(code,this.compilation.getBabelPlugins())
 
+        code = generateCodeByAst(ast);
 
-    //         Program: {
+        return code;
 
-    //             leave:(path) => {
-
-    //                 let { node } = path;
-
-    //                 if (node.)
-    //             }
-    //         }
-    //     })
-
-
-    // }
+    }
     
 
 
@@ -259,7 +254,7 @@ export class JsCoreBuild {
 
        
         let plugins = []
-        plugins.push(this.getAppJsPlugin())
+        plugins.push(this.getJsPlugin())
 
         return plugins
     }
@@ -268,8 +263,8 @@ export class JsCoreBuild {
 
 
     getAlias() {
-             let { compilation } = this;
 
+        let { compilation } = this;
         return  compilation.getAlias() || {}
     }
 

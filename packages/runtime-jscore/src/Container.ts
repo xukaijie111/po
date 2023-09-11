@@ -19,18 +19,33 @@ import {
     Application
 } from "./Application"
 
+import {
+    DsBridge
+} from "@po/dsbridge"
+
+//@ts-ignore
+import Interface  from "@po/bridge-interface-jscore"
+
 type Instance = PageInstance | ComponentInstance
 
 export class Container {
 
     application:Application
     components:Map<string,Instance>
+
+    bridge: DsBridge
     constructor( application:Application) {
         this.components = new Map();
         this.application = application;
+        this.bridge = new DsBridge({
+            interface:new Interface()
+        })
+
+        // android/ios平台下，该行无实际作用
+        this.bridge.register(this.processMessageFromNative);
     }
 
-    processMessageFromNative(data:MessageDataBase) {
+    processMessageFromNative = (data:MessageDataBase) =>{
 
 
         let { type } = data;
@@ -123,6 +138,11 @@ export class Container {
 
         component.callHookReady()
 
+    }
+
+
+    send(data:MessageDataBase) {
+        this.bridge.send(data);
     }
     
 

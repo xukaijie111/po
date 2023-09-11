@@ -49,7 +49,7 @@ export class ScriptModule extends Base {
     handleDependency() {
         let { code } = this;
 
-         this.ast = getAst(code)
+         this.ast = getAst(code,this.compilation.getBabelPlugins())
 
         walkNode(this.ast, {
 
@@ -87,7 +87,8 @@ export class ScriptModule extends Base {
 
     addImport(local:string,source:string) {
         if (isCore(source)) return;
-     
+
+        if (this.compilation.isExternal(source)) return ;     
         let file = this.resolver(this.context,source) as string
         this.compilation.createModule(file)
 

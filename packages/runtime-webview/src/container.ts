@@ -8,15 +8,16 @@ import {
     DsBridge
 } from "@po/dsbridge"
 
-import {
-    Android
-} from "./android"
+//@ts-ignore
+import Interface  from "@po/bridge-interface-webview"
 
 import {
     MessageDataBase,
     PROTOCOL_CMD,
     serialPageName
 } from "@po/shared"
+
+
 
 export class Container {
 
@@ -34,7 +35,7 @@ export class Container {
 
 
     init() {
-        this.bride = new DsBridge({ interface : new Android() })
+        this.bride = new DsBridge({ interface : new Interface() })
         this.bride.register(this.registerBridgeCallback);
     }
 

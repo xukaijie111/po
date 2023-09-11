@@ -11,6 +11,8 @@ import Path from "path"
 import { getRelativePath, readFileSync, relativeId } from "@po/cjs-utils"
 import { generateMixed, serialPageName } from "@po/shared"
 
+import _ from "lodash"
+
 import glob from 'glob'
 
 const moduleMatches = {
@@ -40,9 +42,11 @@ import {
 import defaultPlugins from "./plugins/index"
 
 
+export type ITargetPlatform = "node" | "android" | "ios"
+
 export class Compilation {
     options: Compilation.options
-    rootPath: string
+    projectRootPath: string
     modules: Map<string, Base>
     shareMap:Map<string,ComponentShareInfo>
     hooks:Record<HOOKNAMES,any>
@@ -55,7 +59,7 @@ export class Compilation {
     entries:Array<string>
     appFile:string
     constructor(options: Compilation.options) {
-        options.rootPath = options.rootPath || process.cwd()
+        options.projectRootPath = options.projectRootPath || process.cwd()
         this.options = options
         this.rawDist = this.options.dist;
         this.draftDist = `${this.rawDist}/draft`
@@ -63,7 +67,7 @@ export class Compilation {
         this.webviewDraftIndexDist  = `${this.draftDist}/webviewIndex.js`
         this.webviewIndexDist = `${this.rawDist}/webview/index.js`
         this.webviewHtmlDist = `${this.rawDist}/webview/index.html`
-        this.rootPath = options.rootPath
+        this.projectRootPath = options.projectRootPath
         this.modules = new Map()
         this.shareMap = new Map()
         this.hooks = {
@@ -166,15 +170,15 @@ export class Compilation {
         let cotor = moduleMatches[ext]
 
         if (!cotor) {
-            throw new Error(`can not find match module for file ${relativeId(file, this.rootPath)}`)
+            throw new Error(`can not find match module for file ${relativeId(file, this.projectRootPath)}`)
         }
 
         return cotor
     }
 
     getFileDistPath(path: string) {
-        let { rootPath,draftDist } = this
-        return path.replace(rootPath, draftDist)
+        let { projectRootPath,draftDist } = this
+        return path.replace(projectRootPath, draftDist)
 
     }
 
@@ -193,7 +197,7 @@ export class Compilation {
 
     async loadEntries() {
 
-        let { appJson , rootPath  } = this.options;
+        let { appJson , projectRootPath  } = this.options;
 
         let parsed
 
@@ -208,14 +212,14 @@ export class Compilation {
             throw new Error(error)
         }
         for (let page of parsed.pages)  {
-            let files = await glob.sync(`${rootPath}/${page}.{t,j}s`);
+            let files = await glob.sync(`${projectRootPath}/${page}.{t,j}s`);
             if (!files || !files.length) {
                 throw new Error(`No Find Page ${page}`)
             }
             entries = entries.concat(files)
         }
 
-        let appFile = await glob.sync(`${rootPath}/app.{t,j}s`)
+        let appFile = await glob.sync(`${projectRootPath}/app.{t,j}s`)
         if (!appFile || !appFile.length) {
             throw new Error(`No Find app.{t,j}s`)
         }
@@ -230,6 +234,28 @@ export class Compilation {
 
     }
 
+
+    getTargetPlatform():ITargetPlatform {
+
+        return this.options.targetPlatform;
+
+    }
+
+
+    getBabelPlugins() {
+
+        let plugins = [];
+
+        let {replacement } = this.options
+
+        if (!_.isEmpty(replacement)) {
+            plugins.push(["transform-define", {
+                ...replacement
+              }])
+        }
+
+        return plugins;
+    }
 
     getAppFile() {
         return this.appFile
@@ -268,9 +294,9 @@ export class Compilation {
 
         let id = generateMixed();
 
-        let { rootPath } = this;
+        let { projectRootPath } = this;
 
-        let pathWidthProject = file.replace(`${rootPath}/`,'')
+        let pathWidthProject = file.replace(`${projectRootPath}/`,'')
 
         let compName = serialPageName(pathWidthProject)
 
@@ -286,15 +312,28 @@ export class Compilation {
 
 
     }
+
+
+    isExternal(value:string) {
+        let { externals } = this.options
+        return externals && externals.includes(value)
+    }
+
+    getExternals() {
+        return this.options.externals || []
+    }
 }
 
 
 export namespace Compilation {
 
     export type options = {
-        alias: Record<string, any>
+        alias: Record<string, any>,
+        replacement?:Record<string,any>
         appJson:string,
         dist: string,
-        rootPath?: string
+        projectRootPath?: string
+        targetPlatform?:ITargetPlatform,
+        externals?:Array<string>
     }
 }

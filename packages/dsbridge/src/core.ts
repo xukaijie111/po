@@ -13,14 +13,13 @@ export class DsBridge {
     interface:DsBridgeInterface
    callback:Function
     constructor(options:DsBridge.options) {
-
         this.interface = options.interface
     }
 
 
-    init() {
-        this.interface.init(this);
-        this.interface.register(this.processRegisterRequest)
+    async init() {
+        await this.interface.init(this);
+        await this.interface.register(this.processRegisterRequest)
     }
     send(data:MessageDataBase) {
        return this.interface.send(data)

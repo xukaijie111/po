@@ -13,12 +13,12 @@ import {
     DsBridgeInterface
 } from "@po/dsbridge"
 
-export class Android implements DsBridgeInterface {
+export default class Android implements DsBridgeInterface {
 
 
     callback:Function
 
-    send(data:MessageDataBase) {
+    async send(data:MessageDataBase) :Promise<any>{
 
         return new Promise((resolve,reject) => {
 
@@ -48,13 +48,13 @@ export class Android implements DsBridgeInterface {
     }
 
 
-    init() {
+    async init():Promise<any> {
 
         this._register(this.registerCallback)
 
     }
 
-    register(func:Function) {
+    async register(func:Function):Promise<any> {
         this.callback = func
 
     }

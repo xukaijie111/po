@@ -25,7 +25,6 @@ export function nativeCallJsCoreFuncName(_data:string) {
         let data = JSON.parse(_data) as MessageDataBase
       
          return JSON.stringify(container.processMessageFromNative(data))
-     
 }
 
 

@@ -11,7 +11,7 @@ import {
 
 
 
-export class Android implements DsBridgeInterface {
+export default class  Android implements DsBridgeInterface {
 
 
         
@@ -20,19 +20,19 @@ export class Android implements DsBridgeInterface {
             return bridge
         }
 
-        send(data:MessageDataBase) {
+       async send(data:MessageDataBase) {
             return this.bridge.send(data)
         }
 
 
-        init() {
+        async init() {
 
 
         }
 
 
-        register(func:Function) {
-
+        async register(func:Function) {
+            
 
         }
 
