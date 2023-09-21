@@ -24,27 +24,17 @@ import {
  } from "./scheduler"
 
 
- type IMessageFromChild = {
-    type:"destroyed",
-    data:{
-        id:string,
-    } & Record<string,string>
- }
-
-
-
  export type CreateComponentData = Omit<INIT_COMPONENT_DATA,"propKeys"> & { props : Record<string,any>}
 
  export type IChidlren = {
-
     componentId: {
-
         component:BaseInstance,
         propKeys:Array<string>  // children de
-
     }
-
  }
+
+
+ export type INSTANCEHOOKNAME = "onDestroyed"
 
 export class BaseInstance {
 
@@ -62,16 +52,19 @@ export class BaseInstance {
     onDestroyed:Function
     children:Array< { id:string,component:BaseInstance, childDynamticPropExpression:Array<any> }> = [] 
     propKeys = []
-    childDynamticPropExpression = {} //子组件属性的动态表达式
     listenPropSet = {}
     listenDataKeys = new Set<string>
     parent:BaseInstance
+    hooks:Record<INSTANCEHOOKNAME,Array<Function>>
     constructor(options:BaseInstance.options) {
         this.options = options
         this.data = {}
         this.methods = new Map();
         this.observers = new Map();
         this.lifetimes = new Map();
+        this.hooks = {
+            "onDestroyed":[]
+        }
         this.init();
     }
 
@@ -156,12 +149,22 @@ export class BaseInstance {
 
         this["onDestroyed"] = () => {
             if (onDestroyed) {
-                this.doDestroyed();
                 onDestroyed.call(this)
             }
 
         }
 
+
+        this.addHook("onDestroyed", () => {
+            this.unObserveChildrenProps();
+            this.parent?.unObserveChildProps(this.id);
+        })
+
+
+    }
+
+    addHook(name:INSTANCEHOOKNAME,func:Function) {
+        this.hooks[name].push(func)
     }
 
 
@@ -170,32 +173,25 @@ export class BaseInstance {
         // 父组件的属性监听取消
         // 自身的响应式取消
 
-        this.container.removeComponent(this.id);
-        this.parent?.receiveMessageFromChild({
-            type:"destroyed",
-            data:{
-                id:this.id
-            }
+        let { onDestroyed = []  } = this.hooks
+
+        onDestroyed.forEach((hook) => {
+            hook();
         })
+       
 
     }
 
 
-    receiveMessageFromChild(params:IMessageFromChild) {
-        let { type,data } = params;
-        let { id } = data
+    unObserveChildrenProps() {
 
-        switch(type) {
-
-            case "destroyed" : 
-                this.unObserveChildProps(id);
-                break
-        }
-
+        this.children.forEach((child) => {
+            this.unObserveChildProps(child.id)
+        })
     }
-
 
     unObserveChildProps(id:string) {
+
 
         let { children } = this;
 
@@ -210,10 +206,7 @@ export class BaseInstance {
         let { childDynamticPropExpression } = child
 
         childDynamticPropExpression.forEach((item) => {
-
-
             let { getter } = item;
-
             if (getter) {
                 unobserve(getter);
             }

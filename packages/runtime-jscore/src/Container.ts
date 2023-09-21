@@ -106,6 +106,10 @@ export class Container {
         component.callHookCreate();
 
         this.components.set(componentId,component)
+
+        component.addHook("onDestroyed", () => {
+            this.removeComponent(componentId)
+        })
         if (parentId) {
             component.setParent(parent)
             parent.addChild(component , {
