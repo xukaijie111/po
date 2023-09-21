@@ -14,6 +14,7 @@ export enum PROTOCOL_CMD {
 
     C2S_READY_COMPONENT, // 组件已经amount完成
 
+    C2S_UNMOUNT_COMPONENT, // 组件卸载
 
 
     // s2c
@@ -83,5 +84,12 @@ export interface MESSAGE_COMPONENT_SET_DATA_DATA extends MessageDataBase {
     data:{
         componentId:string,
         data:any
+    }
+}
+
+export interface MESSAGE_COMPONENT_UNMOUNT_DATA extends MessageDataBase {
+    type:PROTOCOL_CMD.C2S_UNMOUNT_COMPONENT,
+    data:{
+        componentId:string,
     }
 }

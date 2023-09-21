@@ -137,4 +137,14 @@ export class Container {
 
     }
 
+
+    removeComponent(id:string) {
+            let ids = this.components.map((comp) => comp.id);
+            let index = ids.indexOf(id)
+            if (index !== -1) {
+                    this.components.splice(index,1);
+            }
+
+    }
+
 }

@@ -28,11 +28,19 @@ function removeVnodes(
 ): void {
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx];
-    htmlDomApi.removeChild(parentElm, ch.elm!)
+    if (ch.isComponent()) {
+        ch.component.remove();
+    }else {
+      htmlDomApi.removeChild(parentElm, ch.elm!)
+    }
+   
   }
 }
 
-
+export function unmount(node:Node) {
+    let parent = htmlDomApi.parentNode(node);
+    parent.removeChild(node);
+}
 
 function createKeyToOldIdx(
   children: VNode[],

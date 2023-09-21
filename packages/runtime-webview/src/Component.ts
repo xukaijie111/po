@@ -15,7 +15,8 @@ import {
 } from '@po/shared'
 
 import {
-    amountElement, patch
+    amountElement, patch,
+    unamount
 } from './patch'
 
 import { VNode  , pushCurrentComponent,popCurrentComponent} from "./Node";
@@ -76,8 +77,6 @@ export class Component {
     // 执行组件生命周期created/show
     async callHookCreate() {
         let { options,id,props } = this;
-        
-        console.log(`###webview prop is `,typeof props)
         this.data = await this.send({
             type: PROTOCOL_CMD.C2S_INIT_COMPONENT,
             data: {
@@ -94,9 +93,25 @@ export class Component {
         return ;
     }
 
-    callMethod(name: string): void {
+    sendUnmount() {
+        this.send({
+            type:PROTOCOL_CMD.C2S_UNMOUNT_COMPONENT,
+            data:{
+                componentId:this.id
+            }
+        })
+        this.children.forEach((child) => {
+            child.sendUnmount()
+        })
 
+        this.container.removeComponent(this.id)
     }
+
+   remove() {
+        this.sendUnmount();
+        unamount(this.vnode.elm);
+        
+   }
 
 
    async amount(elm: Node, refElm: Node = null) {
