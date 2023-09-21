@@ -1,5 +1,5 @@
 import { ComponentOptions } from "./expose";
-import { observable, observe } from '@nx-js/observer-util';
+import { observable, observe , unobserve } from '@nx-js/observer-util';
 
 
 import {
@@ -22,7 +22,14 @@ import {
  import {
     queuePostFlushCb
  } from "./scheduler"
-import { ComponentInstance } from "./Component";
+
+
+ type IMessageFromChild = {
+    type:"destroyed",
+    data:{
+        id:string,
+    } & Record<string,string>
+ }
 
 
 
@@ -53,11 +60,12 @@ export class BaseInstance {
     onShow:Function
     onReady:Function
     onDestroyed:Function
-    children = []
+    children:Array< { id:string,component:BaseInstance, childDynamticPropExpression:Array<any> }> = [] 
     propKeys = []
     childDynamticPropExpression = {} //子组件属性的动态表达式
     listenPropSet = {}
     listenDataKeys = new Set<string>
+    parent:BaseInstance
     constructor(options:BaseInstance.options) {
         this.options = options
         this.data = {}
@@ -115,13 +123,17 @@ export class BaseInstance {
 
     }
 
+    setParent(pa:BaseInstance){
+        this.parent = pa;
+    }
+
     initLifeTimes() {
 
         let { runOptions ,initData} = this.options
 
         let { query } = initData
 
-        let { onCreated,onReady,onShow } = runOptions
+        let { onCreated,onReady,onShow , onDestroyed } = runOptions
         
         this['onCreated'] = () => {
             if (onCreated) {
@@ -132,15 +144,82 @@ export class BaseInstance {
 
         this['onShow'] = () => {
             if (onShow) {
-                onShow.call(this,query)
+                onShow.call(this)
             }
         }
 
         this['onReady'] = () => {
             if (onReady) {
-                onReady.call(this,query)
+                onReady.call(this)
             }
         }
+
+        this["onDestroyed"] = () => {
+            if (onDestroyed) {
+                this.doDestroyed();
+                onDestroyed.call(this)
+            }
+
+        }
+
+    }
+
+
+    doDestroyed() {
+        //container注销
+        // 父组件的属性监听取消
+        // 自身的响应式取消
+
+        this.container.removeComponent(this.id);
+        this.parent?.receiveMessageFromChild({
+            type:"destroyed",
+            data:{
+                id:this.id
+            }
+        })
+
+    }
+
+
+    receiveMessageFromChild(params:IMessageFromChild) {
+        let { type,data } = params;
+        let { id } = data
+
+        switch(type) {
+
+            case "destroyed" : 
+                this.unObserveChildProps(id);
+                break
+        }
+
+    }
+
+
+    unObserveChildProps(id:string) {
+
+        let { children } = this;
+
+        let ids = children.map((child) => child.id);
+
+        let index = ids.indexOf(id);
+
+        if (index === -1) return ;
+
+        let child = children[index];
+
+        let { childDynamticPropExpression } = child
+
+        childDynamticPropExpression.forEach((item) => {
+
+
+            let { getter } = item;
+
+            if (getter) {
+                unobserve(getter);
+            }
+        })
+
+
 
     }
 
@@ -224,10 +303,10 @@ export class BaseInstance {
     }
 
 
+
     addChild(child:BaseInstance , {
         props
     }) {
-
         let childDynamticPropExpression = [];
         for (let key in props) {
             let expression = props[key];
@@ -240,6 +319,7 @@ export class BaseInstance {
         }
         
         let value = {
+            id:child.id,
             component:child,
             childDynamticPropExpression
         }
@@ -341,6 +421,9 @@ export class BaseInstance {
         }
        
     }
+
+
+
 
 }
 

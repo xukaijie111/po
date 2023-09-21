@@ -16,7 +16,7 @@ import {
 
 import {
     amountElement, patch,
-    unamount
+    unmount
 } from './patch'
 
 import { VNode  , pushCurrentComponent,popCurrentComponent} from "./Node";
@@ -94,14 +94,15 @@ export class Component {
     }
 
     sendUnmount() {
+        this.children.forEach((child) => {
+            child.sendUnmount()
+        })
+
         this.send({
             type:PROTOCOL_CMD.C2S_UNMOUNT_COMPONENT,
             data:{
                 componentId:this.id
             }
-        })
-        this.children.forEach((child) => {
-            child.sendUnmount()
         })
 
         this.container.removeComponent(this.id)
@@ -109,7 +110,7 @@ export class Component {
 
    remove() {
         this.sendUnmount();
-        unamount(this.vnode.elm);
+        unmount(this.vnode.elm);
         
    }
 

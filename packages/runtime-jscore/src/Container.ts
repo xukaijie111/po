@@ -47,26 +47,25 @@ export class Container {
         this.bridge.register(this.processMessageFromNative);
     }
 
-    processMessageFromNative = (data:MessageDataBase) =>{
 
+    removeComponent(id:string) {
+       this.components.delete(id);
+
+}
+
+    processMessageFromNative = (data:MessageDataBase) => {
 
         let { type } = data;
 
         switch(type) {
-
-
             case PROTOCOL_CMD.C2S_INIT_COMPONENT:
-
                 return this.cmdCreateComponent(data as MESSAGE_CREATE_COMPONENT_DATA)
-
             case PROTOCOL_CMD.C2S_DOM_ON_CLICK:
                 this.cmdDomOnClick(data as MESSAGE_DOM_ON_CLICK_DATA)
                 break;
-
             case PROTOCOL_CMD.C2S_READY_COMPONENT:
                 this.cmdComponentReady(data as MESSAGE_COMPONENT_READY_CMD_DATA)
                 break;
-
         }
 
     }
@@ -108,6 +107,7 @@ export class Container {
 
         this.components.set(componentId,component)
         if (parentId) {
+            component.setParent(parent)
             parent.addChild(component , {
                 props
             });

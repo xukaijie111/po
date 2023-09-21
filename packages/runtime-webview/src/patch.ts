@@ -29,8 +29,10 @@ function removeVnodes(
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx];
     if (ch.isComponent()) {
+        console.log(`####删除组件dom`)
         ch.component.remove();
     }else {
+      console.log(`###删除普通dom`)
       htmlDomApi.removeChild(parentElm, ch.elm!)
     }
    

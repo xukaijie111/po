@@ -17,6 +17,7 @@ export type ComponentOptions = {
     onCreated?:Function,
     onShow?:Function,
     onReady?:Function
+    onDestroyed?:Function
 
 }
 
