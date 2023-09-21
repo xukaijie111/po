@@ -129,7 +129,7 @@ export class Container {
         let component = this.components.get(componentId)
 
         try {
-            component[name](eventParams)
+            component.callMethod(name,eventParams);
         } catch (error) {
             console.log(error)
         }

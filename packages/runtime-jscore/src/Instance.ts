@@ -9,6 +9,7 @@ import {
     hasOwn,
     PROTOCOL_CMD,
     MESSAGE_COMPONENT_SET_DATA_DATA,
+    isDynamaticExpression
 } from '@po/shared'
 import { Application } from "./Application";
 import { 
@@ -141,7 +142,6 @@ export class BaseInstance {
             }
         }
 
-
     }
 
 
@@ -253,7 +253,6 @@ export class BaseInstance {
 
     setData(value:Record<string,string>,callback?:Function) {
 
-        console.log(`###this setdata is`,value)
         if (!value) return ;
         let reg = /^((?:(?![\[\.])\w)+)(.*)/;
         let keys  = Object.keys(value);
@@ -280,8 +279,6 @@ export class BaseInstance {
             this.listenDataKeys.add(key);
         })
 
-
-        console.log(`###this setdata listenDataKeys `,this.listenDataKeys)
 
         queuePostFlushCb(this.doRender);
 
@@ -327,6 +324,22 @@ export class BaseInstance {
         console.log(`#####express value is `,res,expression)
         
         return res
+    }
+
+
+    callMethod(funcExpOrName,params) {
+        let methodName = funcExpOrName
+        if (isDynamaticExpression(null,funcExpOrName)) {
+            let func = new Function(`_ctx`, `return ${funcExpOrName}`);
+            methodName = func(this.data)
+        }
+       
+        if (this[methodName]) {
+            this[methodName](params);
+        }else {
+            console.warn(`未找到点击事件 ${methodName}`)
+        }
+       
     }
 
 }

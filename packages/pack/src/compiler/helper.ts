@@ -143,7 +143,7 @@ export function isDataPath(path:any,node:TemplateNode,rootNode:RootNode) {
     if (checkNodeHasForSameName(node ,_name)) return;
     if (isPxsModule(_name,rootNode)) return ;
     if (isMethods(_name,rootNode)) return ;
-    if (data.includes(_name))    return ;
+   // if (data.includes(_name))    return ;
 
     return true;
 

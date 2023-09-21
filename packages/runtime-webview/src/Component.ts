@@ -116,25 +116,26 @@ export class Component {
 
 
     // 给render 函数调用
-    getOn(name: string) {
+    getOn(funExpOrName: string) {
         let { cache, id } = this;
-        if (cache[name]) return cache[name]
+        if (cache[funExpOrName]) return cache[funExpOrName]
 
-        cache[name] = function (event: Event) {
+        cache[funExpOrName] =  (event: Event) =>{
             let data: MESSAGE_DOM_ON_CLICK_DATA = {
                 type: PROTOCOL_CMD.C2S_DOM_ON_CLICK,
                 data: {
                     componentId: id,
-                    name,
-                    params: "will to do"
+                    name:funExpOrName,
+                    params: event
                 }
             }
+            console.log(`event is`,event);
             this.send(data)
 
             event.stopPropagation();
         }
 
-        return cache[name]
+        return cache[funExpOrName]
     }
 
 

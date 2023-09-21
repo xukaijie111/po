@@ -14,5 +14,13 @@ Page({
                 isPage:"xxxxxx"
             })
         }, 3000);
+    },
+
+    methods:{
+        clickMyName(e) {
+
+            console.log(`###e is `,e)
+        }
+
     }
 }) 

@@ -60,5 +60,8 @@ export class ComponentInstance extends BaseInstance {
         queuePostFlushCb(this.doRender);
 
     }
+
+
+   
     
 }
