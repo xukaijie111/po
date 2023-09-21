@@ -36,6 +36,10 @@ export default class  Android implements DsBridgeInterface {
 
         }
 
+        checkConnectStatus(){
+            return true;
+        }
+
 
 
 

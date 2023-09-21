@@ -12,4 +12,6 @@ export interface DsBridgeInterface {
      init(data?:any):Promise<any>
 
      register(func:Function):Promise<any>
+
+     checkConnectStatus():boolean
 }

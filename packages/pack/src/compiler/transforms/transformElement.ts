@@ -30,7 +30,8 @@ import {
     RENDER_LIST,
     CREATE_COMPONENT_VNODE,
     CREATE_COMMENT_VNODE,
-    CREATE_ELEMENT_VNODE
+    CREATE_ELEMENT_VNODE,
+    isSpecialKey
 } from '@po/shared'
 
 
@@ -158,7 +159,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
 
                 let { itemName,indexName, } = forInfo;
                 let value = _.find(props,{ dirname :'for'}).value;
-                let list = transformExpression(value!,node,context,false)
+                let list = transformExpression(value!,node,context)
 
                 context.helper(RENDER_LIST)
 
@@ -179,13 +180,13 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
                 let item = _.find(props, { dirname : "if"})
                 if (item) {
                        //@ts-ignore
-                    hasIf = transformExpression(item.value!,node,context,false)
+                    hasIf = transformExpression(item.value!,node,context)
                 }
 
                 item = _.find(props, { dirname : "else:if"})
                 if (item) {
                     //@ts-ignore
-                    hasElseIf = transformExpression(item.value!,node,context,false)
+                    hasElseIf = transformExpression(item.value!,node,context)
              }
 
                 if (hasIf || hasElseIf) {
@@ -196,7 +197,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
                         condition:hasIf || hasElseIf,
     
                         //@ts-ignore
-                        trueBranch: forCodegenNode || elementCodegenNode
+                        trueBranch: forCodeGenNode || elementCodegenNode
                     }
                 }
 
@@ -212,7 +213,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
                     'if','for','else:if','else','for-item','for-index'
                 ]
 
-                let { props } = node;
+                let { props, tag } = node;
 
                 for (let i = 0; i < props.length;i++) {
 
@@ -220,6 +221,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
 
                     //@ts-ignore
                     let { key , type , value  ,dirname } = prop ;
+
 
                     if (dirname && ignoreProps.includes(dirname)) continue;
 
@@ -237,10 +239,17 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
                         let res = directiveProcessor(prop,node,context)
                         properties.push(res)
                     }else {
+
+                        let expression = `${transformExpression(value!,node,context)}`
+                        // 自定义的组件的时候，属性的值，是表达式的字符串，给jscore进行响应式处理
+                        if (context.isComponentTag(tag) && !isSpecialKey(key)) {
+                            expression = `"${expression}"`
+                        }
+
                         properties.push({
                             key,
                              //@ts-ignore
-                            value: `"${transformExpression(value!,node,context)}"`
+                            value: expression
                         })
                     }
 

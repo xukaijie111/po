@@ -3,13 +3,11 @@ import {
     createResolver,
     getAst,
     walkNode,
-    relativeId,
     generateCodeByAst
  } from "@po/cjs-utils";
 import { Base } from "./base";
 
 
-import Path  from "path";
 
 import isCore from "is-core-module"
 

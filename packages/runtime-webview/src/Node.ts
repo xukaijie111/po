@@ -50,6 +50,8 @@ export class VNode {
         this.options = params?.options
         this.component = currentComponent
 
+ 
+
         if (tagName)
             this.shapeFlag |= isString(children)? ShapeFlags.TEXT_CHILDREN:ShapeFlags.ARRAY_CHILDREN
         
@@ -95,7 +97,7 @@ export namespace VNode {
     export type params = {
         tagName:VNodeTagName
         namespace?:string,
-        data?:VNodeData | undefined
+        data?:VNodeData | undefined 
         children?:VNodeChildren
         shapeFlage?:ShapeFlags
         options?:CompilerComponentOptions

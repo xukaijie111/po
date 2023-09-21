@@ -3,11 +3,16 @@
 import {
     isSpecialKey
 }from '@po/shared'
-export function getCustomPropKeys(properties:Record<string,any>) {
+export function getCustomProp(properties:Record<string,any>) {
 
-    let keys = Object.keys(properties);
+    let props = {}
 
-    return keys.filter((key) => {
-        return !isSpecialKey(key)
-    })
+    for (let key in properties) {
+        if (!isSpecialKey(key)) {
+
+            props[key] = properties[key]
+        }
+    }
+
+    return props;
 }

@@ -19,9 +19,14 @@ import {
 } from './patch'
 
 import { VNode  , pushCurrentComponent,popCurrentComponent} from "./Node";
-import { getCustomPropKeys } from './helper';
+import { getCustomProp } from './helper';
 import { Container } from './container';
 
+
+
+// 子组件接收父组件的属性相关的定义，
+// 在jscore创建组件的时候，告诉父组件，属性是如何计算出来的
+// webview的props字段不做任何数据展示，只是告诉jscore的父组件相关的信息
 
 export class Component {
 
@@ -32,14 +37,16 @@ export class Component {
     vnode:VNode
     prevVnode:VNode
     id:string
-    props:Record<string,any>
+    props: Record<string,any>
     data:Record<string,any>
-    constructor(private options: CompilerComponentOptions, props: Record<string, any>) {
-        this.props = props || {}
+    constructor(private options: CompilerComponentOptions, props : Record<string,any> , container:Container) {
+        this.props = props  || {}
         this.id = generateMixed()
         this.children = [];
         //@ts-ignore
         this.cache = {};// 缓存DOM事件
+        this.container = container
+        this.container.addComponent(this)
 
     }
 
@@ -70,7 +77,7 @@ export class Component {
     async callHookCreate() {
         let { options,id,props } = this;
         
-
+        console.log(`###webview prop is `,typeof props)
         this.data = await this.send({
             type: PROTOCOL_CMD.C2S_INIT_COMPONENT,
             data: {
@@ -78,7 +85,7 @@ export class Component {
                 templateId:options.templateId,
                 componentId:id,
                 parentId:this.parent?.id,
-                propKeys:getCustomPropKeys(props)
+                props
             }
         })
 
@@ -131,8 +138,16 @@ export class Component {
     }
 
 
-    async update(data) {
-        this.data = data;
+    async update(data:Record<string,any>) {
+
+        try{
+            let keys = Object.keys(data)
+            keys.forEach((key) => {
+                this.data[key] = data[key]
+            })
+        }catch(err) {
+            console.error(err)
+        }
         this.render();
         patch(this.prevVnode,this.vnode)
     }

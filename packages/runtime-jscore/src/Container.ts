@@ -5,7 +5,9 @@ import {
     PROTOCOL_CMD,
     MESSAGE_CREATE_COMPONENT_DATA,
     MESSAGE_DOM_ON_CLICK_DATA,
-    MESSAGE_COMPONENT_READY_CMD_DATA
+    MESSAGE_COMPONENT_READY_CMD_DATA,
+    isSpecialKey,
+    isDynamaticExpression
 } from "@po/shared"
 
 import {
@@ -80,33 +82,39 @@ export class Container {
 
         let { application } = this
         let { data } = params;
-        let { name ,componentId ,propKeys = [] ,parentId } = data;
+        let { name ,componentId ,props  ,parentId } = data;
     
         let parent = this.getComponentById(parentId);
-        let props = { }
+        let properties = { }
+        
 
-        propKeys.forEach((key) => {
-            if (parent)
-                props[key] = parent.data[key]
-        })
-        let initData = { ...data , props}
+
+        for (let key in props) {
+            let exp = props[key];
+            if (isDynamaticExpression(key,exp)) {
+                properties[key] = parent.getPropsDataByExpression(exp);
+            }else {
+                properties[key] = exp;
+            }
+        }
+
+
+        let initData = { ...data , props:properties}
         let component  = application.createComponent(initData);
 
         component.container = this;
-
-
 
         component.callHookCreate();
 
         this.components.set(componentId,component)
         if (parentId) {
-            let parent = this.components.get(parentId)
-            parent.addChild(component);
+            parent.addChild(component , {
+                props
+            });
         }
 
         let userData = component.getUserData();
 
-        console.log(`###user data is`,userData)
         return userData
 
        

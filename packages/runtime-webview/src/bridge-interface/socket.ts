@@ -3,7 +3,9 @@ import {
 } from "@po/dsbridge"
 
 import {
-    MessageDataBase
+    MessageDataBase,
+    SOCKET_SERVER_HOST,
+    SOCKET_SERVER_PORT
 } from "@po/shared"
 
 
@@ -18,7 +20,17 @@ export default class  Socket implements DsBridgeInterface {
 
     callback:Function
 
+
+    checkConnectStatus() {
+
+        return this.ws && this.ws.readyState === 1
+    }
+
     async send(data:MessageDataBase) {
+
+        if (!this.ws) {
+            throw new Error(`no socket connected`)
+        }
         let { type } = data;
         let { httpMap } = this;
         const symbol = Date.now() + type
@@ -38,19 +50,30 @@ export default class  Socket implements DsBridgeInterface {
     async init(): Promise<any> {
         return new Promise((resolve) => {
             //@ts-ignore
-            this.ws = new WebSocket(`ws://${__SOCKET_HOST__}:${__SOCKET_PORT__}`)
+            this.ws = new WebSocket(`ws://${SOCKET_SERVER_HOST}:${SOCKET_SERVER_PORT}`)
 
             this.ws.onopen = (e) => {
+                console.log(`connect ws success`)
                 this.startServerListen()
                 resolve(null);
             };
+
+
+            this.ws.onerror = (err) => {
+                throw new Error(`ws connect error ${err}`);
+            }
+
+
             resolve(null);
         })
     }
 
 
     startServerListen() {
+
         this.ws.onmessage = (params) => {
+
+            console.log(`######onmessage params is `,params)
             let { data } = params;
             data = JSON.parse(data);
             let { symbol,type } = data;

@@ -24,6 +24,9 @@ export function patchEvent(
   if (oldValue === newValue) {
     return;
   }
+  if (oldValue && newValue &&(oldValue.value === newValue.value)) {
+    return ;
+  }
 
   if (oldValue) {
     let instance = oldNode.component;

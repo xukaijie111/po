@@ -40,7 +40,7 @@ export type INIT_COMPONENT_DATA = {
     templateId:string,
     name:string,
     query?:Record<string,string>
-    propKeys:Array<string>
+    props:Record<string,string>
 }
 
 // 

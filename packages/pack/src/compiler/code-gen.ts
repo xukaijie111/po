@@ -227,8 +227,6 @@ function getElementNodeParams(codegenNode: CodegenNode) {
 
     if (type === NodeTypes.COMPONENT) {
 
-
-
         source = [
             tag,
             //@ts-ignore
@@ -239,7 +237,7 @@ function getElementNodeParams(codegenNode: CodegenNode) {
 
     return source.map((s) => {
         //@ts-ignore
-        return s ? (isString(s) ? s.replace(/\"/g, "'") : s) : "undefined"
+        return s ? (isString(s) ? s : s) : "undefined"
     })
 
 }
@@ -320,7 +318,6 @@ function genNodeProps(node: PropsCodegenNode, context: CodeGenContext) {
 
     props.forEach((prop) => {
         let { key, value } = prop
-        value = value?.replace(/\"/g, "'")
         str += `${key}: ${value},\n`
     })
 

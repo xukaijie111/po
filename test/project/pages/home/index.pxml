@@ -1,5 +1,6 @@
 <view class="container">
-<view>page/home</view>
-<view>{{message}}</view>
-<test-comp name = "{{name}}"/>
+    <view >page/home</view>
+    <view >{{message}}</view>
+    <test-comp name = "{{isPage? name :'empty'}}" />
+    <view po:if="{{page}}">123</view>
 </view>

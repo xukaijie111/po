@@ -52,8 +52,6 @@ export class JsCoreBuild {
 
     async run() {
 
-        console.log(`#####externl is `,this.compilation.getExternals())
-
         try {
             await esbuild
                 .build({

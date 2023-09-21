@@ -88,15 +88,39 @@ export * from "./const"
 
 
 export function isSpecialKey(key:string) {
-
-    let lists = ["on","class","style"]
-
+    let lists = ["on","class","style","key"]
     return lists.includes(key)
 }
 
+
+export function isDynamaticExpression(key:string,exp:string) {
+    return exp.indexOf("_ctx") !== -1
+}
 
 
 export function isNativePropKey(key:string) {
     let lists = ["catch","tap","po:","bind"]
     return lists.some((item) => key.startsWith(item))
+}
+
+
+export const sleep =  function(time:number) {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(null)
+            }, time);
+        })
+
+}
+
+
+export function parsePath(path: string): any {
+  const segments = path.split('.')
+  return function (obj) {
+    for (let i = 0; i < segments.length; i++) {
+      if (!obj) return
+      obj = obj[segments[i]]
+    }
+    return obj
+  }
 }

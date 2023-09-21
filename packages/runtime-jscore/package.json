@@ -1,9 +1,18 @@
 {
 
     "name": "@po/runtime-jscore",
-    "version":"1.0.0",
-    "module":"dist/runtime-jscore.es.js",
-    "main":"dist/runtime-jscore.cjs.js",
-    "types": "dist/index.d.ts"
+
+    "version": "1.0.0",
+
+    "module": "dist/runtime-jscore.es.js",
+
+    "main": "dist/runtime-jscore.cjs.js",
+
+    "types": "dist/index.d.ts",
+
+    "dependencies": {
+        "@nx-js/observer-util": "^4.2.2"
+    }
 
 }
+

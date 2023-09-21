@@ -1,11 +1,14 @@
 import { ComponentOptions } from "./expose";
+import { observable, observe } from '@nx-js/observer-util';
 
 
 import {
     LifeTimes,
     diffAndClone,
     getDataByPath,
-    hasOwn
+    hasOwn,
+    PROTOCOL_CMD,
+    MESSAGE_COMPONENT_SET_DATA_DATA,
 } from '@po/shared'
 import { Application } from "./Application";
 import { 
@@ -14,7 +17,26 @@ import {
     isSpecialKey
  } from "@po/shared";
 
+
+ import {
+    queuePostFlushCb
+ } from "./scheduler"
+import { ComponentInstance } from "./Component";
+
+
+
  export type CreateComponentData = Omit<INIT_COMPONENT_DATA,"propKeys"> & { props : Record<string,any>}
+
+ export type IChidlren = {
+
+    componentId: {
+
+        component:BaseInstance,
+        propKeys:Array<string>  // children de
+
+    }
+
+ }
 
 export class BaseInstance {
 
@@ -30,16 +52,20 @@ export class BaseInstance {
     onShow:Function
     onReady:Function
     onDestroyed:Function
-    children:Set<BaseInstance>
+    children = []
+    propKeys = []
+    childDynamticPropExpression = {} //子组件属性的动态表达式
+    listenPropSet = {}
+    listenDataKeys = new Set<string>
     constructor(options:BaseInstance.options) {
         this.options = options
         this.data = {}
         this.methods = new Map();
         this.observers = new Map();
         this.lifetimes = new Map();
-        this.children = new Set();
         this.init();
     }
+
 
 
     init() {
@@ -52,7 +78,6 @@ export class BaseInstance {
 
 
     initId() {
-
         let { initData } = this.options
         this.id = initData.componentId
     }
@@ -123,9 +148,8 @@ export class BaseInstance {
     initData() {
         let { runOptions} = this.options
         let { data = { }} = runOptions
-        this.data = diffAndClone(data, { }).clone
-
-
+        Object.assign(this.data,data);
+        this.data = observable(diffAndClone(this.data,{}).clone);
     }
 
 
@@ -146,26 +170,39 @@ export class BaseInstance {
     }
 
 
-    initRender() {
+    initChildPropListen(value) {
 
+        let { component, childDynamticPropExpression  = [] } = value
 
+        childDynamticPropExpression.forEach((item) => {
+
+            if (item.getter) return ;
+            let { key , expression   } = item;
+
+            let func = new Function(`_ctx`, `return ${expression}`)
+            let getter =  () => {
+                    let res =  func(this.data);
+                    console.log(`######子组件需要的属性变了,`,key,res);
+                    // 初始化的时候，不需要更新，
+                    if (item.inited) {
+                        component.notifyPropChange(key,res);
+                    }
+
+                    item.inited = true
+                  
+                    return res;
+            }   
+    
+            item.getter = getter;
+            observe(getter);
+        })
     }
+
+
+   
 
     getData() {
         return this.data
-    }
-
-
-    getDataByKeys(keys:string[]) {
-        let data = {}
-        keys.forEach((key) => {
-            if (isSpecialKey(key)) return ;
-            if (hasOwn(this.data,key)) {
-                data[key] = this.data[key]
-            }
-        })
-
-        return data;
     }
 
 
@@ -187,16 +224,115 @@ export class BaseInstance {
     }
 
 
-    addChild(child) {
-        this.children.add(child)
+    addChild(child:BaseInstance , {
+        props
+    }) {
+
+        let childDynamticPropExpression = [];
+        for (let key in props) {
+            let expression = props[key];
+            if (!isSpecialKey(key) && expression.indexOf("_ctx") !== -1) {
+                childDynamticPropExpression.push({
+                    key,
+                    expression
+                })
+            }
+        }
+        
+        let value = {
+            component:child,
+            childDynamticPropExpression
+        }
+
+
+        this.initChildPropListen(value);
+    
+        this.children.push(value)
     }
 
+
+    setData(value:Record<string,string>,callback?:Function) {
+
+        console.log(`###this setdata is`,value)
+        if (!value) return ;
+        let reg = /^((?:(?![\[\.])\w)+)(.*)/;
+        let keys  = Object.keys(value);
+        if (!keys.length) return ;
+        let realValue = { ...value };
+        keys.forEach((key) => {
+            let match = key.match(reg);
+            if (!match) {
+                console.error(`setdata no match ? ${value}`)
+            }
+            let realKey = match[1];
+            if (this.propKeys.includes(realKey)) {
+                console.warn(` key ${realKey} is props Key , can not be set`)
+                delete realValue[key]
+            }
+        })
+
+        let realKeys = Object.keys(realValue)
+        if (!realKeys.length) return ;
+
+        
+        realKeys.forEach((key) => {
+            this.data[key] = realValue[key]
+            this.listenDataKeys.add(key);
+        })
+
+
+        console.log(`###this setdata listenDataKeys `,this.listenDataKeys)
+
+        queuePostFlushCb(this.doRender);
+
+    }
+
+
+    doRender = () => {
+
+
+        let { listenDataKeys ,listenPropSet} = this;
+
+        let keys = Object.keys(listenPropSet).concat(Array.from(listenDataKeys))
+
+        let value = {}
+
+        keys.forEach((key) => {
+            value[key] = this.data[key]
+        })
+
+        let data : MESSAGE_COMPONENT_SET_DATA_DATA = {
+            type:PROTOCOL_CMD.S2C_SET_DATA,
+            data:{
+                componentId:this.id,
+                data:{
+                    ...value
+                }
+                
+            }
+        }
+
+        console.log(`###send data is`,data)
+        this.container.send(data);
+
+        // 渲染完成后，清空
+        this.listenDataKeys.clear();
+        this.listenPropSet = {};
+    }
+
+    getPropsDataByExpression(expression : string) {
+        let func = new Function(`_ctx`, `return ${expression}`)
+        let res = func(this.data);
+
+        console.log(`#####express value is `,res,expression)
+        
+        return res
+    }
 
 }
 
 
 export namespace BaseInstance {
-
     export type options = {
         initData:CreateComponentData,
         runOptions:ComponentOptions,

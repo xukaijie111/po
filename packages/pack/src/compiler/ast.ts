@@ -57,6 +57,7 @@ export interface AttributeConstantNode extends Node {
 export interface AttributeDirectiveNode extends Node {
     type: NodeTypes.ATTRIBUTE_DIRECTIVE,
     dirname: string,
+    bindname?:string, // 事件的名称
     key: string,
     value?: string
 }

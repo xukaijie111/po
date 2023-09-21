@@ -5,7 +5,8 @@
 
 
 import {
-    MessageDataBase
+    MessageDataBase,
+    SOCKET_SERVER_PORT
 } from "@po/shared"
 
 import {
@@ -31,18 +32,16 @@ export default class Socket implements DsBridgeInterface {
             return ;
         }
 
-        this.ws.send(JSON.stringify({
-            data
-        }));
+        this.ws.send(JSON.stringify(data));
     }
 
 
     async init(data?: any): Promise<any> {
         
         //@ts-ignore
-       this.server = new WebSocket.Server({ port : __SOCKET_PORT__ })
+       this.server = new WebSocket.Server({ port : SOCKET_SERVER_PORT })
         //@ts-ignore
-       console.log(`Socket listing on port: ${__SOCKET_PORT__}`)
+       console.log(`Socket listing on port: ${SOCKET_SERVER_PORT}`)
        this.listenConnetcion();
 
     }
@@ -53,6 +52,7 @@ export default class Socket implements DsBridgeInterface {
  
         server.on('connection',(ws) => {
             this.ws = ws;
+            console.log(`###socket connected success`)
             ws.on('message',(_params:string) => {
               let params = JSON.parse(_params)
               console.log(`###socket 收到message`,params)
@@ -83,6 +83,11 @@ export default class Socket implements DsBridgeInterface {
 
     async register(func: Function): Promise<any> {
         this.callback = func;
+    }
+
+
+    checkConnectStatus() {
+      return !!this.ws 
     }
 
 }

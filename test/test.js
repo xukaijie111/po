@@ -18,7 +18,7 @@ let dist = Path.resolve(__dirname,'./dist')
 
 let appJson =  resolve('./project/app.json')
 
-let interfaceMap = {
+let platformMap = {
 
     "android" :{
         alias:{
@@ -35,8 +35,6 @@ let interfaceMap = {
             "@po/bridge-interface-jscore":Path.resolve(__dirname,'../packages/runtime-jscore/src/bridge-interface/socket.ts'),
         },
         replacement:{
-             __SOCKET_PORT__:3457,
-            __SOCKET_HOST__:"localhost",
             __PLATFORM_NODE__:true
         }
       
@@ -48,7 +46,7 @@ let interfaceMap = {
 
 let currentPlatform = "node"
 
-let currentMap = interfaceMap[currentPlatform]
+let currentMap = platformMap[currentPlatform]
 
 rm(dist,() => {
 

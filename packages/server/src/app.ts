@@ -8,7 +8,9 @@ import corsMiddleware from "./middleware/cors.middleware"
 import { IndexContoller } from './controller/index'
 import { JsCoreContoller }  from "./controller/jsCore"
 
-
+import {
+    NodePlatform
+} from "./node/index"
 
 let controllers = [
     IndexContoller,
@@ -25,6 +27,7 @@ export class Application {
         this.app = express();
         this.initializeMiddlewares();
         this.initializeControllers(controllers);
+        this.initializeNodePlatform()
 
     }
 
@@ -33,6 +36,12 @@ export class Application {
         this.listen()
     }
 
+
+    initializeNodePlatform() {
+        if (this.options.targetPlatform === "node") {
+            new NodePlatform(this).init();
+        }
+    }
 
 
     public listen() {
@@ -82,6 +91,7 @@ export namespace Application {
     export type options = {
 
         webviewPath: string,
-        jsCorePath: string
+        jsCorePath: string,
+        targetPlatform?:"node" | "android"
     }
 }

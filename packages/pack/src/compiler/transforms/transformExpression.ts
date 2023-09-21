@@ -27,13 +27,15 @@ import {
  import { types } from '@babel/core'
 
 
-export function transformExpression(exp:string,node:TemplateNode,context:TransformContext,isEs6 = true) {
+export function transformExpression(exp:string,node:TemplateNode,context:TransformContext) {
 
         if (!exp) return exp;
 
         let booleanReg = /^\s*{{\s*((?:true)|(?:false))\s*}}\s*$/
         let booleanMatch = exp.match(booleanReg)
         if (booleanMatch) return booleanMatch[1]
+
+
 
         let rootNode = getRootNode(node);
 
@@ -43,17 +45,12 @@ export function transformExpression(exp:string,node:TemplateNode,context:Transfo
             matches.forEach((match) => {
                 let str = deleteBrackets(match);
                str = processExpression(str);
-              if (isEs6) exp = exp.replace(match,"${" + str +"}")
-              else exp = str
+               exp = exp.replace(match,"${" + str +"}")
             })
 
-        }else {
-           return exp;
         }
 
-        if (isEs6) exp = "`"+ exp + "`"
-
-        return exp
+        return "`"+exp +"`"
 
 
         function processExpression(str:string) {

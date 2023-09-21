@@ -109,9 +109,9 @@ async function patchVNode(oldNode: VNode, newNode: VNode) {
             (oldNode.isText() && newNode.isText())
   ) {
     htmlDomApi.setTextContent(elm!, newChildren as string || "")
-  }else {
-
-    console.log(`what is up ? `)
+  }else if (oldNode.isComponent() && newNode.isComponent()){
+      // todo 组件
+      console.log(`都是component节点，由组件自己去更新`)
   }
 }
 
@@ -286,8 +286,7 @@ export async function amountElement(vnode: VNode, parentElm: Node, refElm: Node 
     //@ts-ignore
     let Ctor = component.__proto__.constructor;
 
-    console.log(`###new comp props is`,data)
-    let comp = new Ctor(options, data)
+    let comp = new Ctor(options, data , component.container)
 
     
 

@@ -7,5 +7,12 @@ Page({
 
     onCreated() {
         console.log(`WWWpage on created`)
+
+        setTimeout(() => {
+
+            this.setData({
+                isPage:"xxxxxx"
+            })
+        }, 3000);
     }
 }) 

@@ -12,12 +12,20 @@ import {
 export class DsBridge {
     interface:DsBridgeInterface
    callback:Function
+   inited = false
     constructor(options:DsBridge.options) {
         this.interface = options.interface
+        this.init();
     }
 
+    checkConnectStatus() {
+
+        return this.interface.checkConnectStatus();
+    }
 
     async init() {
+        if (this.inited) return ;
+        this.inited = true;
         await this.interface.init(this);
         await this.interface.register(this.processRegisterRequest)
     }
@@ -31,7 +39,7 @@ export class DsBridge {
     }
 
     processRegisterRequest = (params:MessageDataBase) => {
-       if (this.callback) this.callback(params)
+       if (this.callback) return this.callback(params)
     }
 
 }
