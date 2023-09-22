@@ -20,7 +20,6 @@ import {
 } from './patch'
 
 import { VNode  , pushCurrentComponent,popCurrentComponent} from "./Node";
-import { getCustomProp } from './helper';
 import { Container } from './container';
 
 

@@ -70,6 +70,12 @@ export * from './object'
 
 export * from './util'
 
+export * from "./underscore"
+
+import _ from "./underscore"
+
+export default _
+
 
 export enum LifeTimes {
 
@@ -87,20 +93,18 @@ export * from './protocol'
 export * from "./const"
 
 
-export function isSpecialKey(key:string) {
-    let lists = ["on","class","style","key"]
-    return lists.includes(key)
+export function isComponentCustomEventKey(key:string) {
+    return /^(catch|bind)/.test(key);
+}
+
+export function isComponentCustomPropKey(key:string) {
+    let lists = ["on","class","style","key","catch","bind"]
+    return !lists.some((item) => new RegExp(item).test(key))
 }
 
 
-export function isDynamaticExpression(key:string,exp:string) {
+export function isDynamaticExpression(exp:string) {
     return exp.indexOf("_ctx") !== -1
-}
-
-
-export function isNativePropKey(key:string) {
-    let lists = ["catch","tap","po:","bind"]
-    return lists.some((item) => key.startsWith(item))
 }
 
 

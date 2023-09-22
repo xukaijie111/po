@@ -31,7 +31,7 @@ import {
     CREATE_COMPONENT_VNODE,
     CREATE_COMMENT_VNODE,
     CREATE_ELEMENT_VNODE,
-    isSpecialKey
+    isComponentCustomPropKey
 } from '@po/shared'
 
 
@@ -62,8 +62,6 @@ function processRootNode(node:RootNode,context: TransformContext) {
 
 
 export function transfromElement(node:ElementNode,context:TransformContext) {
-
-
 
         let { type, props , tag} = node as ElementNode;
         
@@ -242,7 +240,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
 
                         let expression = `${transformExpression(value!,node,context)}`
                         // 自定义的组件的时候，属性的值，是表达式的字符串，给jscore进行响应式处理
-                        if (context.isComponentTag(tag) && !isSpecialKey(key)) {
+                        if (context.isComponentTag(tag) && isComponentCustomPropKey(key)) {
                             expression = `"${expression}"`
                         }
 

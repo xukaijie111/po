@@ -6,8 +6,8 @@ import {
     MESSAGE_CREATE_COMPONENT_DATA,
     MESSAGE_DOM_ON_CLICK_DATA,
     MESSAGE_COMPONENT_READY_CMD_DATA,
-    isSpecialKey,
-    isDynamaticExpression
+    isDynamaticExpression,
+    isComponentCustomPropKey
 } from "@po/shared"
 
 import {
@@ -27,6 +27,8 @@ import {
 
 //@ts-ignore
 import Interface  from "@po/bridge-interface-jscore"
+
+import _ from "@po/shared"
 
 type Instance = PageInstance | ComponentInstance
 
@@ -90,7 +92,7 @@ export class Container {
 
         for (let key in props) {
             let exp = props[key];
-            if (isDynamaticExpression(key,exp)) {
+            if (isDynamaticExpression(exp) && isComponentCustomPropKey(key)) {
                 properties[key] = parent.getPropsDataByExpression(exp);
             }else {
                 properties[key] = exp;
@@ -157,5 +159,6 @@ export class Container {
         this.bridge.send(data);
     }
     
+
 
 }

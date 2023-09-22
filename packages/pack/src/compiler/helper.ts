@@ -5,9 +5,7 @@ import {
     TemplateNode,
     NodeTypes,
     TextNode,
-    Node,
     ElementCodegenNode,
-    PlaiElement,
     InterpolationNode
 } from './ast'
 
@@ -15,7 +13,6 @@ import _ from 'lodash'
 
 import {
     isNil,
-    isNativePropKey,
 } from '@po/shared'
 
 

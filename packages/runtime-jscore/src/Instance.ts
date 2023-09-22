@@ -6,7 +6,6 @@ import {
     LifeTimes,
     diffAndClone,
     getDataByPath,
-    hasOwn,
     PROTOCOL_CMD,
     MESSAGE_COMPONENT_SET_DATA_DATA,
     isDynamaticExpression
@@ -15,9 +14,11 @@ import { Application } from "./Application";
 import { 
 
     INIT_COMPONENT_DATA,
-    isSpecialKey
+    isComponentCustomPropKey,
+    isComponentCustomEventKey
  } from "@po/shared";
 
+ import _ from "@po/shared"
 
  import {
     queuePostFlushCb
@@ -26,15 +27,27 @@ import {
 
  export type CreateComponentData = Omit<INIT_COMPONENT_DATA,"propKeys"> & { props : Record<string,any>}
 
- export type IChidlren = {
-    componentId: {
-        component:BaseInstance,
-        propKeys:Array<string>  // children de
-    }
- }
 
 
  export type INSTANCEHOOKNAME = "onDestroyed"
+
+
+ type IChildDynamticPropExpression = {
+    key:string,
+    expression:string,
+    getter?:Function
+ }
+
+ export type IChildren = {
+    id:string,
+    component:BaseInstance, 
+    childDynamticPropExpression?:Array<IChildDynamticPropExpression>,
+    childEventExpressionLists?:Array<{
+        key:string,
+        expression:string
+    }>
+
+ }
 
 export class BaseInstance {
 
@@ -50,7 +63,7 @@ export class BaseInstance {
     onShow:Function
     onReady:Function
     onDestroyed:Function
-    children:Array< { id:string,component:BaseInstance, childDynamticPropExpression:Array<any> }> = [] 
+    children:Array<IChildren> = [] 
     propKeys = []
     listenPropSet = {}
     listenDataKeys = new Set<string>
@@ -193,15 +206,8 @@ export class BaseInstance {
     unObserveChildProps(id:string) {
 
 
-        let { children } = this;
-
-        let ids = children.map((child) => child.id);
-
-        let index = ids.indexOf(id);
-
-        if (index === -1) return ;
-
-        let child = children[index];
+        let child = this.findChildById(id)
+        if (!child) return;
 
         let { childDynamticPropExpression } = child
 
@@ -214,6 +220,15 @@ export class BaseInstance {
 
 
 
+    }
+
+
+    findChildById(id) : IChildren {
+
+        let { children } = this;;
+
+        let child = _.find(children, { id })
+        return child
     }
 
 
@@ -301,10 +316,18 @@ export class BaseInstance {
         props
     }) {
         let childDynamticPropExpression = [];
+        let childEventExpressionLists = [];
         for (let key in props) {
             let expression = props[key];
-            if (!isSpecialKey(key) && expression.indexOf("_ctx") !== -1) {
+            if (isComponentCustomPropKey(key) && expression.indexOf("_ctx") !== -1) {
                 childDynamticPropExpression.push({
+                    key,
+                    expression
+                })
+            }
+
+            if (isComponentCustomEventKey(key)) {
+                childEventExpressionLists.push({
                     key,
                     expression
                 })
@@ -393,26 +416,73 @@ export class BaseInstance {
     getPropsDataByExpression(expression : string) {
         let func = new Function(`_ctx`, `return ${expression}`)
         let res = func(this.data);
-
-        console.log(`#####express value is `,res,expression)
-        
+     
         return res
     }
 
 
-    callMethod(funcExpOrName,params) {
-        let methodName = funcExpOrName
-        if (isDynamaticExpression(null,funcExpOrName)) {
-            let func = new Function(`_ctx`, `return ${funcExpOrName}`);
-            methodName = func(this.data)
+    getReallyName(expOrStr:string) {
+        let res = expOrStr;
+        if (isDynamaticExpression(expOrStr)) {
+            let func = new Function(`_ctx`, `return ${expOrStr}`);
+            res = func(this.data);
         }
-       
+
+        return res;
+    }
+
+
+    callMethod(funcExpOrName,params) {
+        let methodName = this.getReallyName(funcExpOrName);
         if (this[methodName]) {
             this[methodName](params);
         }else {
             console.warn(`未找到点击事件 ${methodName}`)
         }
        
+    }
+
+    $emit(name:string,args:any) {
+
+        if (this.parent) {
+            this.parent.emitEventByChild({
+                id:this.id,
+                name,
+                args
+            })
+        }
+
+    }
+
+
+    emitEventByChild({
+        id,
+        name,
+        args
+    }) {
+
+        let child = this.findChildById(id)
+        if (!child) return;
+
+        let { childEventExpressionLists = [] } = child
+
+        let item = _.find(childEventExpressionLists , { key:name })
+
+        if(!item) {
+            console.warn(`Can not find event name ${name}`)
+            return 
+        }
+
+        let { expression } = item;
+        let exp = this.getReallyName(expression);
+        if (this[exp]) {
+            this[exp](args)
+        }
+        else {
+            console.warn(`未找到点击事件 ${exp}`)
+        }
+
+
     }
 
 
