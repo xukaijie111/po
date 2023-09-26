@@ -58,7 +58,9 @@ Component({
 ```
 
 ### demo演示
-1. npm run build
-2. node test/test.js
-3. 打开android目录下的工程，运行,或者直接在浏览器输入http://localhost:3456/?page=pages/home/index查看
+1. pnpm install
+2. npm run build
+3. node test/test.js
+4. 直接在浏览器输入http://localhost:3456/?page=pages/home/index查看
+5. 也可以使用android工程运行小程序  打开android目录下的工程，运行(需要有一定的android开发基础)
 
