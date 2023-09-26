@@ -157,7 +157,7 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
 
                 let { itemName,indexName, } = forInfo;
                 let value = _.find(props,{ dirname :'for'}).value;
-                let list = transformExpression(value!,node,context)
+                let list = transformExpression(value!,node,context,false)
 
                 context.helper(RENDER_LIST)
 

@@ -70,7 +70,6 @@ export * from './object'
 
 export * from './util'
 
-export * from "./underscore"
 
 import _ from "./underscore"
 

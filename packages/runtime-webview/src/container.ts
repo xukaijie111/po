@@ -148,3 +148,33 @@ export class Container {
     }
 
 }
+
+
+
+export function injectStyle(value:string,id:string) {
+
+        let styles = document.getElementsByTagName('style');
+
+        for (let i = 0; i < styles.length;i++) {
+            if (styles[i].getAttribute("id") === id) return ;
+        }
+
+
+        let head = document.getElementsByTagName('head')[0];
+
+        let style = document.createElement("style");
+       style.setAttribute("type","text/css");
+       style.setAttribute("id",id);
+
+       if (style.getAttribute("styleSheet")) {
+        //@ts-ignore
+        style.styleSheet.cssText = value
+        console.log(`###这里创建`)
+       }else {
+            style.appendChild(document.createTextNode(value));
+       }
+
+
+       head.appendChild(style);
+
+}

@@ -1,6 +1,11 @@
 <view class="container">
-    <view catchtap = "{{isPage?'clickMyName':'clickMyName'}}">page/home</view>
-    <view catchtap = "clickMyName">{{message}}</view>
-    <test-comp name = "{{isPage? name :'empty'}}" />
-    <view po:if="{{page}}">123</view>
+
+        <view class="header-bg"></view>
+
+        <view class = "goods-list-wrap">
+                <view class="goods-item" po:for="{{goods}}">
+                    <img class="header" src ="{{item.src}}"/>
+                    <view>{{item.name}}</view>
+                </view>
+        </view>
 </view>

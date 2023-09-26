@@ -87,7 +87,8 @@ export class Component {
             }
         })
 
-        console.log(`####this.data is `,JSON.stringify(this.data));
+        console.log(`####this.data is `,this.data,typeof this.data);
+        console.log(`####this.data is2 `,this.data.goods,typeof this.data.goods);
 
         return ;
     }

@@ -43,11 +43,13 @@ export function checkNodeHasForSameName(node:TemplateNode,name:string):boolean {
   
     if (!node) return false
     //@ts-ignore
-    let { parent , forTouch } = node;
+    let { parent , forInfo } = node;
 
-    if (forTouch) {
-      let { itemName ,indexName } = forTouch
-      if (itemName === name || indexName === name) return true
+    if (forInfo) {
+      let { itemName ,indexName } = forInfo
+      if (itemName === name || indexName === name) {
+        return true
+      } 
     }
 
     if (!parent) return false;

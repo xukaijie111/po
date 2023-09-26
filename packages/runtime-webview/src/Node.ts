@@ -162,7 +162,9 @@ export function createComponentVNode(tagName:string,options:CompilerComponentOpt
 
 
 export function renderList(list:any,fn:Function) {
-    return list.map((item,index) => {
+    
+    console.log(`$$$renderList is `,list,typeof list)
+    return list.map((item:any,index:number) => {
         return fn(item,index)
     })
 

@@ -5,7 +5,7 @@ import postcssLess from "postcss-less";
 
 import less from "less";
 import { createResolver } from "@po/cjs-utils";
-import { RUNTIME_JSCORE_NPM } from "@po/shared";
+import { RUNTIME_WEBVIEW_NPM } from "@po/shared";
 
 let lessImportReg = /(?<!(?:\/\/|\/\*)\s*)@import\s+(["'][a-z0-9./\-_@]+(\.(less|scss))?(["'].*))/gi;
 
@@ -38,7 +38,7 @@ export class StyleModule extends Base {
             return (root) => {
                 root.walkDecls((node) => {
                     // rpx->px
-                    let pxReg = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)px/g;
+                    let pxReg = /"[^"]+"|'[^']+'|url\([^\)]+\)|(\d*\.?\d+)rpx/g;
                     if (!node.value.includes("rpx")) return;
                     node.value = node.value.replace(pxReg, (m, $1) => {
                         if (!$1) return m;
@@ -96,7 +96,7 @@ export class StyleModule extends Base {
 
 
         this.code = `
-        import { injectStyle } from "${RUNTIME_JSCORE_NPM};"
+        import { injectStyle } from "${RUNTIME_WEBVIEW_NPM}";
         ${currentCode}
             let style = "${res.css}";
             injectStyle(style,"${this.shareInfo? this.shareInfo.id : this.id}")

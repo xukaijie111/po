@@ -2,7 +2,8 @@ import { RootNode, baseParse, transform, generate} from "../compiler/index";
 import { Base } from "./base";
 import {
     readFileSync,
-    serialComponentTageName
+    serialComponentTageName,
+    getRelativePath
 } from '@po/cjs-utils'
 
 import _ from 'lodash'
@@ -10,6 +11,7 @@ import _ from 'lodash'
 import Path from "path"
 
 import { JsonModule } from "./json";
+import { StyleModule } from "./style";
 
 export class TemplateModule extends Base {
 
@@ -47,6 +49,17 @@ export class TemplateModule extends Base {
 
     }
 
+
+
+    getComponentStyleRelativePath() {
+        let { src,dist } = this;
+        let { dir, name } = Path.parse(src)
+        let styleFile = `${dir}/${name}.less`
+        let styleModule = this.compilation.getModule(styleFile) as StyleModule
+
+        return getRelativePath(dist,styleModule.dist)
+
+    }
 
     async transform(): Promise<void> {
 
@@ -89,6 +102,14 @@ export class TemplateModule extends Base {
             code += `import   ${serialComponentTageName(name)}  from "${this.compilation.getDistRelativePath(this.src,path)}";\n`
 
         })
+
+        // import style 
+
+        let stylePath = this.getComponentStyleRelativePath();
+        if (stylePath) {
+            code += `import "${stylePath}";\n`
+        }
+
 
         code += generate(this.rootNode, {
             getComponentShareInfo:() => {

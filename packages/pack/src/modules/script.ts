@@ -20,7 +20,7 @@ export class ScriptModule extends Base {
         }
 
         this.resolver = createResolver({
-            extensions:['.ts','js'],
+            extensions:['.ts','.js'],
             alias:this.compilation.getAlias() || {}
         })
     }
@@ -83,7 +83,7 @@ export class ScriptModule extends Base {
 
     }
 
-    addImport(local:string,source:string) {
+    addImport(source:string,node:Record<string,any>) {
         if (isCore(source)) return;
 
         if (this.compilation.isExternal(source)) return ;     

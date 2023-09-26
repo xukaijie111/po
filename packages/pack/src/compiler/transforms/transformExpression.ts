@@ -27,7 +27,7 @@ import {
  import { types } from '@babel/core'
 
 
-export function transformExpression(exp:string,node:TemplateNode,context:TransformContext) {
+export function transformExpression(exp:string,node:TemplateNode,context:TransformContext,isString = true) {
 
         if (!exp) return exp;
 
@@ -45,12 +45,21 @@ export function transformExpression(exp:string,node:TemplateNode,context:Transfo
             matches.forEach((match) => {
                 let str = deleteBrackets(match);
                str = processExpression(str);
-               exp = exp.replace(match,"${" + str +"}")
+               // for语句的列表不能转换成字符串
+               if (isString) {
+                     exp = exp.replace(match,"${" + str +"}")
+               }else {
+                    exp = exp.replace(match,str)
+               }
+              
+
+             
             })
 
         }
 
-        return "`"+exp +"`"
+
+        return  isString ? "`" + exp + "`" :exp;
 
 
         function processExpression(str:string) {
