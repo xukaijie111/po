@@ -1,11 +1,5 @@
 <view class="container">
 
         <view class="header-bg"></view>
-
-        <view class = "goods-list-wrap">
-                <view class="goods-item" po:for="{{goods}}">
-                    <img class="header" src ="{{item.src}}"/>
-                    <view>{{item.name}}</view>
-                </view>
-        </view>
+        <view class="store-wrap"></view>
 </view>

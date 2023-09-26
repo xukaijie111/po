@@ -23,12 +23,42 @@
 5. android：android app 运行示例
 
 
+### 语法
+
+语法上和微信小程序高度相似
+
+```html
+
+<view po:for="{{goods}}" >{{item.name}}</view>
+
+<view po:if = "{{loaded}}"></view>
+
+```
+
+```js
+
+Component({
+    data:{
+        loaded:false,
+        goods:[
+            {
+                name:"石榴"
+            }
+        ]
+    },
+    onCreated(){
+
+    },
+    onDestroyed(){
+
+    },
+    ....
+})
+
+```
 
 ### demo演示
 1. npm run build
 2. node test/test.js
-3. 打开android目录下的工程，运行
+3. 打开android目录下的工程，运行,或者直接在浏览器输入http://localhost:3456/?page=pages/home/index查看
 
-
-### android studio 预览效果图
-![img](assets/preview.png)
