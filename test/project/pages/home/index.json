@@ -1,5 +1,6 @@
 {
     "usingComponents":{
-        "test-comp":"../../components/index"
+        "test-comp":"../../components/index",
+        "goods":"../../components/goods/index"
     }
 }

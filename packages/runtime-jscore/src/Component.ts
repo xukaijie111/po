@@ -2,13 +2,6 @@
 
 import { BaseInstance } from './Instance';
 
-import {
-    observe
-} from "@nx-js/observer-util"
-
-import {
-    hasOwn
-} from '@po/shared'
 
 import {
     queuePostFlushCb
@@ -25,12 +18,12 @@ export class ComponentInstance extends BaseInstance {
 
 
     initProps() {
-        let { runOptions, initData } = this.options
-        let { props : parentProps } = initData
-        let { props = {} } = runOptions
+        let { createOptions } = this.options
+
+        let { props  = { }} = createOptions;
         let values = {}
         for (let key in props) {
-            values[key] = hasOwn(parentProps, key) ? parentProps[key] : props[key]
+            values[key] = props[key]
         }
 
         this.propKeys = Object.keys(props);

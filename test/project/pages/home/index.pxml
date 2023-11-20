@@ -1,5 +1,32 @@
 <view class="container">
 
         <view class="header-bg"></view>
-        <view class="store-wrap"></view>
+        <view class="store-wrap">
+            <view class="store-name">{{store.name}}</view>
+
+            <view class="tags-wrap">
+                <view class="tag-item" po:for="{{tags}}">{{item.name}}</view>
+            </view>
+
+            <view class="notice">公告: 欢迎光临本店，很高兴为您服务xxx。</view>
+        </view>
+
+
+        <view class="home-content-wrap">
+            <view class="category-wrap">
+                <view class="category-item {{index ===currentSelectedCategoryIndex?'selected':''}}"
+                po:for="{{categories}}"
+                > {{item.name}}</view>
+            
+            </view>
+
+            <view>
+                <view po:for="{{goods}}">
+                    <goods 
+                        goods = "{{item}}"
+                    />
+                </view>
+            </view>
+        
+        </view>
 </view>

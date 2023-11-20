@@ -92,7 +92,7 @@ async function patchVNode(oldNode: VNode, newNode: VNode) {
 
     if (oldNode.isArrayChildren() && newNode.isArrayChildren()) {
       // 都是数组子项
-      console.log(`都是数组chidlren `)
+      console.error(`都是数组chidlren `,oldNode,newNode)
       await updateChildren(elm!, oldChildren as VNode[], newChildren as VNode[])
 
     } else if (oldNode.isArrayChildren()) {
@@ -131,6 +131,11 @@ async function updateChildren(
   oldCh: VNode[],
   newCh: VNode[],
 ) {
+
+  try {
+
+
+  
   let oldStartIdx = 0;
   let newStartIdx = 0;
   let oldEndIdx = oldCh.length - 1;
@@ -155,16 +160,16 @@ async function updateChildren(
     } else if (newEndVnode == null) {
       newEndVnode = newCh[--newEndIdx];
     } else if (isSameVNode(oldStartVnode, newStartVnode)) {
-      patchVNode(oldStartVnode, newStartVnode,);
+      await patchVNode(oldStartVnode, newStartVnode,);
       oldStartVnode = oldCh[++oldStartIdx];
       newStartVnode = newCh[++newStartIdx];
     } else if (isSameVNode(oldEndVnode, newEndVnode)) {
-      patchVNode(oldEndVnode, newEndVnode,);
+      await patchVNode(oldEndVnode, newEndVnode,);
       oldEndVnode = oldCh[--oldEndIdx];
       newEndVnode = newCh[--newEndIdx];
     } else if (isSameVNode(oldStartVnode, newEndVnode)) {
       // Vnode moved right
-      patchVNode(oldStartVnode, newEndVnode);
+      await patchVNode(oldStartVnode, newEndVnode);
       htmlDomApi.insertBefore(
         parentElm,
         oldStartVnode.elm!,
@@ -174,7 +179,7 @@ async function updateChildren(
       newEndVnode = newCh[--newEndIdx];
     } else if (isSameVNode(oldEndVnode, newStartVnode)) {
       // Vnode moved left
-      patchVNode(oldEndVnode, newStartVnode);
+      await patchVNode(oldEndVnode, newStartVnode);
       htmlDomApi.insertBefore(parentElm, oldEndVnode.elm!, oldStartVnode.elm!);
       oldEndVnode = oldCh[--oldEndIdx];
       newStartVnode = newCh[++newStartIdx];
@@ -196,7 +201,7 @@ async function updateChildren(
         if (elmToMove.tagName !== newStartVnode.tagName) {
           await amountElement(newStartVnode,parentElm,oldStartVnode.elm!)
         } else {
-          patchVNode(elmToMove, newStartVnode,);
+          await patchVNode(elmToMove, newStartVnode,);
           oldCh[idxInOld] = undefined as any;
           htmlDomApi.insertBefore(parentElm, elmToMove.elm!, oldStartVnode.elm!);
         }
@@ -219,6 +224,12 @@ async function updateChildren(
   if (oldStartIdx <= oldEndIdx) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
   }
+
+}catch(err) {
+  console.error(err)
+console.error(`oldCh is `,oldCh)
+  throw new Error(err)
+}
 }
 
 export async function patch(oldNode: VNode, newNode: VNode) {

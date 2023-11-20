@@ -8,12 +8,12 @@ import {
     getDataByPath,
     PROTOCOL_CMD,
     MESSAGE_COMPONENT_SET_DATA_DATA,
-    isDynamaticExpression
+    generateMixed,
+    CREATE_COMPONENT_DATA,
+    CompilerComponentOptions
 } from '@po/shared'
 import { Application } from "./Application";
 import { 
-
-    INIT_COMPONENT_DATA,
     isComponentCustomPropKey,
     isComponentCustomEventKey
  } from "@po/shared";
@@ -25,10 +25,9 @@ import {
  } from "./scheduler"
 
 
- export type CreateComponentData = Omit<INIT_COMPONENT_DATA,"propKeys"> & { props : Record<string,any>}
-
-
-
+ import {
+    Node
+ } from "./node"
  export type INSTANCEHOOKNAME = "onDestroyed"
 
 
@@ -49,7 +48,7 @@ import {
 
  }
 
-export class BaseInstance {
+export class BaseInstance extends Node{
 
     data:Record<string,any>
     methods:Map<string,Function>
@@ -70,7 +69,9 @@ export class BaseInstance {
     parent:BaseInstance
     hooks:Record<INSTANCEHOOKNAME,Array<Function>>
     constructor(options:BaseInstance.options) {
+        super();
         this.options = options
+        this.id = generateMixed();
         this.data = {}
         this.methods = new Map();
         this.observers = new Map();
@@ -78,25 +79,46 @@ export class BaseInstance {
         this.hooks = {
             "onDestroyed":[]
         }
-        this.init();
     }
 
 
 
     init() {
-        this.initId();
         this.initData();
         this.initLifeTimes();
         this.initMethods();
+        this.initObservers();
+        this.initLifeTimes();
+        this.callHookCreate();
+        this.callHookShow();
+        this.callHookReady();
+        this.render();
+    }
+
+
+
+    render() {
+        let { options } = this;
+        let { compilerOptions } = options;
+
+        let { render } = compilerOptions;
+
+
+        this.vnode = render.call(this);
 
     }
 
 
-    initId() {
-        let { initData } = this.options
-        this.id = initData.componentId
+    getMetaVnode() {
+
+        return this._getMetaVnode();
     }
 
+
+    _getMetaVnode() {
+
+
+    }
 
     initObservers() {
         let { runOptions } = this.options
@@ -135,9 +157,9 @@ export class BaseInstance {
 
     initLifeTimes() {
 
-        let { runOptions ,initData} = this.options
+        let { runOptions ,createOptions} = this.options
 
-        let { query } = initData
+        let { query = {} } = createOptions
 
         let { onCreated,onReady,onShow , onDestroyed } = runOptions
         
@@ -301,6 +323,13 @@ export class BaseInstance {
         }
     }
 
+    callHookShow() {
+        try{
+            this.onShow();
+        }catch(err) {
+            console.error(err)
+        }
+    }
 
     callHookReady() {
         try{
@@ -493,9 +522,9 @@ export class BaseInstance {
 
 export namespace BaseInstance {
     export type options = {
-        initData:CreateComponentData,
+        createOptions:CREATE_COMPONENT_DATA
+        compilerOptions:CompilerComponentOptions
         runOptions:ComponentOptions,
         application:Application
-
     }
 }

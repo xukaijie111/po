@@ -1,0 +1,5 @@
+<view class="goods-component-wrap">
+        <img src="{{goods.src}}"/>
+        <view class="content-wrap"></view>
+
+</view>

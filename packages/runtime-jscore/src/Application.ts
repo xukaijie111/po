@@ -2,18 +2,20 @@
 
 
 import {
-    CompilerComponentOptions
+    CompilerComponentOptions,
+    CREATE_COMPONENT_DATA
 } from '@po/shared'
 import { ComponentInstance } from './Component';
 
 import { PageInstance } from './Page'
 
+import _ from "lodash"
 
 
 import {
     ComponentOptions
 } from './expose'
-import { BaseInstance,CreateComponentData } from './Instance';
+import { BaseInstance } from './Instance';
 
 
 
@@ -26,13 +28,14 @@ export type CompotionsMap = Map<
 
 export class Application {
 
-    components:Set<ComponentInstance | PageInstance>
+    components:Array<ComponentInstance | PageInstance>
     componentsMap: CompotionsMap
-    currentComponentOptions: CompilerComponentOptions | null
+    currentCompilerComponentOptions: CompilerComponentOptions | null
+
 
     constructor() {
-        this.components = new Set();
-        this.currentComponentOptions = null;
+        this.components = [];
+        this.currentCompilerComponentOptions = null;
         this.componentsMap = new Map();
 
     }
@@ -40,35 +43,35 @@ export class Application {
 
     register = (options: CompilerComponentOptions) => {
 
-        if (this.currentComponentOptions) {
-            throw new Error(`Path ${this.currentComponentOptions.path} Has No Component/Page Register`)
+        if (this.currentCompilerComponentOptions) {
+            throw new Error(`Path ${this.currentCompilerComponentOptions.path} Has No Component/Page Register`)
         }
-        this.currentComponentOptions = options
+        this.currentCompilerComponentOptions = options
     }
 
     addComponent(options: ComponentOptions) {
-        let { currentComponentOptions } = this;
+        let { currentCompilerComponentOptions } = this;
 
-        if (!currentComponentOptions) {
+        if (!currentCompilerComponentOptions) {
             throw new Error(`Has No Component/Page Register`)
         }
 
-        this.componentsMap.set(currentComponentOptions, {
+        this.componentsMap.set(currentCompilerComponentOptions, {
             options,
         })
 
 
-        this.currentComponentOptions = null;
+        this.currentCompilerComponentOptions = null;
 
     }
 
 
 
-    createComponent(initData: CreateComponentData) {
+    createComponent(initData: CREATE_COMPONENT_DATA) {
+
+        let { componentsMap, } = this;
 
         let { templateId } = initData
-
-        let { componentsMap } = this;
 
         let keys = Array.from(componentsMap.keys());
 
@@ -80,13 +83,19 @@ export class Application {
                     let { options } = res;
 
                     let instanceOptions:BaseInstance.options = {
-                        initData,
+                        createOptions:initData,
                         runOptions:options,
                         application:this
 
                     }
                     let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
-                    this.components.add(instance)
+                    this.components.push(instance)
+
+                    instance.addHook("onDestroyed",() => {
+                        this.removeComponent(instance.id)
+                    })
+
+                    instance.init();
                     return instance ;
             }
         }
@@ -98,15 +107,19 @@ export class Application {
 
     resolveComponent(id:string) {
         let { components } = this
-
-        let array = Array.from(components)
-        for (let i = 0 ;i < array.length;i++) {
-            if (array[i].id === id) {
-                return array[i]
+        for (let i = 0 ;i < components.length;i++) {
+            if (components[i].id === id) {
+                return components[i]
             }
         }
 
         throw new Error(`Can Not Resolve Component Id : ${id}`)
 
+    }
+
+
+    removeComponent(id:string) {
+        let index = _.findIndex(this.components, { id })
+        this.components.splice(index,1)
     }
 }

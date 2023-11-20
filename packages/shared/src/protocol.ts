@@ -35,13 +35,12 @@ export interface MessageDataBase {
 }
 
 
-export type INIT_COMPONENT_DATA = {
-    componentId:string,
-    parentId:string,
+export type CREATE_COMPONENT_DATA = {
+    name:string
+    parentId?:string,
     templateId:string,
-    name:string,
-    query?:Record<string,string>
-    props:Record<string,string>
+    props?:Record<string,string> // 组件属性值
+    query?:Record<string,string> // 页面的入参 onCreated入参
 }
 
 // 
@@ -56,7 +55,7 @@ export interface MESSAGE_CREATE_WEBVIEW extends MessageDataBase {
 
 export interface MESSAGE_CREATE_COMPONENT_DATA extends MessageDataBase {
     type:PROTOCOL_CMD.C2S_INIT_COMPONENT,
-    data:INIT_COMPONENT_DATA
+    data:CREATE_COMPONENT_DATA
 }
 
 export interface MESSAGE_DOM_ON_CLICK_DATA extends MessageDataBase {

@@ -32,7 +32,7 @@ import _ from "@po/shared"
 
 type Instance = PageInstance | ComponentInstance
 
-export class Container {
+export class Command {
 
     application:Application
     components:Map<string,Instance>
@@ -83,47 +83,13 @@ export class Container {
 
         let { application } = this
         let { data } = params;
-        let { name ,componentId ,props  ,parentId } = data;
     
-        let parent = this.getComponentById(parentId);
-        let properties = { }
+   
+         application.createComponent(data);
+
+
+
         
-
-
-        for (let key in props) {
-            let exp = props[key];
-            if (isDynamaticExpression(exp) && isComponentCustomPropKey(key)) {
-                properties[key] = parent.getPropsDataByExpression(exp);
-            }else {
-                properties[key] = exp;
-            }
-        }
-
-
-        let initData = { ...data , props:properties}
-        let component  = application.createComponent(initData);
-
-        component.container = this;
-
-        component.callHookCreate();
-
-        this.components.set(componentId,component)
-
-        component.addHook("onDestroyed", () => {
-            this.removeComponent(componentId)
-        })
-        if (parentId) {
-            component.setParent(parent)
-            parent.addChild(component , {
-                props
-            });
-        }
-
-        let userData = component.getUserData();
-
-        return userData
-
-       
       
     }
 

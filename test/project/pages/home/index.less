@@ -1,7 +1,9 @@
 .container{
     width: 100%;
     height: 100vh;
-    background-color:  #f6f6f6;
+    background-color:  #fff;
+    display: flex;
+    flex-direction: column;
 
     .header-bg {
         background: url(https://smart-static.wosaimg.com/themes/default/bgHeader.webp?x-oss-process=image/format,png) no-repeat;
@@ -9,26 +11,120 @@
         height: 145px;
         width: 100%;
     }
-    .goods-list-wrap{
-        padding: 0px 20px;
-        width: 100%;
+
+    .store-wrap{
+        position: relative;
         box-sizing: border-box;
-        display: flex;
-        justify-content: space-around;
+        z-index: 998;
+        margin-bottom: 18px;
+        margin-top: -30px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 7px 17px 0 rgba(0, 0, 0, 0.07);
+        padding: 10px 15px;
+        margin-left: 15px;
+        margin-right: 15px;
+        .store-name{
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: 000;
+        }
 
-        .goods-item{
-
-            width:40%;
+        .tags-wrap{
             display: flex;
-            flex-direction: column;
+            margin-bottom: 5px;
+            .tag-item{
 
-            .header {
+                font-size: 11px;
+                padding: 1px 4px;
+                border: none;
+                border-radius: 2px;
+                height: 16px;
+                position: relative;
+                margin-right: 5px;
+                margin-bottom: 5px;
+                color: #f24839;
+                &::before{
 
-                width: 100%;
-                height:80px
+                    position: absolute;
+                    content: '';
+                    width: calc(3 * 100%);
+                    height: calc(3 * 100%);
+                    top: -100%;
+                    left: -100%;
+                    border-top: 3rpx solid #f24839;
+                    border-right: 3rpx solid #f24839;
+                    border-bottom: 3rpx solid #f24839;
+                    border-left: 3rpx solid #f24839;
+                    transition: none;
+                    transform: scale(calc(1 / 3));
+                    border-radius: 12rpx;
+                    box-sizing: border-box;
+                    border-top-width: 1px;
+                    border-top-style: solid;
+                    border-top-color: rgb(242, 72, 57);
+                    border-right-width: 1px;
+                    border-right-style: solid;
+                    border-right-color: rgb(242, 72, 57);
+                    border-bottom-width: 1px;
+                    border-bottom-style: solid;
+                    border-bottom-color: rgb(242, 72, 57);
+                    border-left-width: 1px;
+                    border-left-style: solid;
+                    border-left-color: rgb(242, 72, 57);
+                    transition-duration: 0s;
+                    transition-timing-function: ease;
+                    transition-delay: 0s;
+                    transition-property: none;
+                    border-top-left-radius: 6px;
+                    border-top-right-radius: 6px;
+                    border-bottom-right-radius: 6px;
+                    border-bottom-left-radius: 6px;
+                }
             }
             
         }
 
+        .notice{
+
+            color: #8C8C8C;
+            font-size: 12px;
+        }
+
     }
+
+
+    .home-content-wrap{
+
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        height: 0px;
+
+        .category-wrap {
+
+            width:80px;
+            background: #f6f6f6;
+
+
+            .category-item{
+                color: #666;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                height: 40px;
+
+                &.selected {
+                    color: #000;
+                    font-size: 14px;
+                    background-color: #fff;
+                    font-weight: bold;
+                }
+            }
+           
+        }
+    }
+ 
 }

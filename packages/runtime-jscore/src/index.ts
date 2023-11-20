@@ -13,18 +13,20 @@ import {
 
 
 import {
-    Container
-} from "./container"
+    Command
+} from "./command"
+
+export * from "./node"
 
 
-let container = new Container(application);
+let cmd = new Command(application);
 
 
 // 供android调用
 export function nativeCallJsCoreFuncName(_data:string) {
         let data = JSON.parse(_data) as MessageDataBase
       
-         return JSON.stringify(container.processMessageFromNative(data))
+         return JSON.stringify(cmd.processMessageFromNative(data))
 }
 
 
@@ -32,5 +34,5 @@ export {
     Page,
     Component,
     App,
-    container
+    cmd
 }
