@@ -164,3 +164,11 @@ export function isPxsFile(path: string) {
 
     return `${dir}/${name}`
   }
+
+
+  export function getJsonContent(file:string) {
+
+    let content = fse.readFileSync(file);
+
+    return JSON.parse(content)
+  }
