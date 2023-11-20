@@ -16,7 +16,6 @@ import {
     Command
 } from "./command"
 
-export * from "./node"
 
 
 let cmd = new Command(application);

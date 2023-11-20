@@ -31,8 +31,6 @@ import {
     CREATE_COMPONENT_VNODE,
     CREATE_COMMENT_VNODE,
     CREATE_ELEMENT_VNODE,
-    isComponentCustomPropKey,
-    deleteBrackets
 } from '@po/shared'
 
 
@@ -240,11 +238,6 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
                     }else {
 
                         let expression = `${transformExpression(value!,node,context)}`
-                        // // 自定义的组件的时候，属性的值，是表达式的字符串，给jscore进行响应式处理
-                        // // 如果是for,需要解析具体的值
-                        // if (context.isComponentTag(tag) && isComponentCustomPropKey(key)) {
-                        //     expression = getReallyExpression(value,node,expression)
-                        // }
 
                         properties.push({
                             key,
@@ -259,31 +252,6 @@ export function transfromElement(node:ElementNode,context:TransformContext) {
                     type:NodeTypes.PROPS,
                     props:properties
                 }
-
-            }
-
-
-
-            function getReallyExpression(value:string,node:ElementNode,rawExpression:string) {
-
-                let noBracketsValue = deleteBrackets(value);
-
-
-                let isForItemExpression = false;
-
-                let currentNode = node;
-
-                while(currentNode) {
-
-                    let { forInfo } = currentNode
-                    if (forInfo) {
-
-                        let { } = 
-                    }
-                    currentNode = currentNode.parent?
-
-                }
-
 
             }
 

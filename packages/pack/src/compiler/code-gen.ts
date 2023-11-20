@@ -15,6 +15,8 @@ import {
     helperNameMap,
     isString,
     isObject,
+    CREATE_ELEMENT_VNODE,
+    CREATE_COMPONENT_VNODE,
 } from '@po/shared'
 
 import {
@@ -138,6 +140,7 @@ function genRender(context: CodeGenContext) {
 
 
     push(`function render(_ctx) {
+            let { ${CREATE_ELEMENT_VNODE}, ${CREATE_COMPONENT_VNODE} } = this
             return `)
 
     
@@ -226,7 +229,6 @@ function getElementNodeParams(codegenNode: CodegenNode) {
     ]
 
     if (type === NodeTypes.COMPONENT) {
-
         source = [
             tag,
             //@ts-ignore
@@ -358,8 +360,6 @@ function generateExport(context:CodeGenContext) {
                 templateId:"${id}",
                 path:"${pathWidthProject}"
             };
-
-            export default ${name};
         `)
 
 }

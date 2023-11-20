@@ -84,6 +84,7 @@ export class Application {
 
                     let instanceOptions:BaseInstance.options = {
                         createOptions:initData,
+                        compilerOptions:compilerOptions,
                         runOptions:options,
                         application:this
 

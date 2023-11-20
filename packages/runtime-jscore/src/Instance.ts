@@ -10,7 +10,8 @@ import {
     MESSAGE_COMPONENT_SET_DATA_DATA,
     generateMixed,
     CREATE_COMPONENT_DATA,
-    CompilerComponentOptions
+    CompilerComponentOptions,
+    ShapeFlags
 } from '@po/shared'
 import { Application } from "./Application";
 import { 
@@ -25,9 +26,6 @@ import {
  } from "./scheduler"
 
 
- import {
-    Node
- } from "./node"
  export type INSTANCEHOOKNAME = "onDestroyed"
 
 
@@ -48,7 +46,19 @@ import {
 
  }
 
-export class BaseInstance extends Node{
+
+
+export type IVNODE = {
+    tag: string,
+    id:string,
+    props?: Record<any, any>,
+    children ? : Array<IVNODE>,
+    vnode?:IVNODE // 组件内部真正的虚拟节点
+    shapeFlage: ShapeFlags
+}
+
+
+export class BaseInstance {
 
     data:Record<string,any>
     methods:Map<string,Function>
@@ -68,9 +78,11 @@ export class BaseInstance extends Node{
     listenDataKeys = new Set<string>
     parent:BaseInstance
     hooks:Record<INSTANCEHOOKNAME,Array<Function>>
+    vnode:IVNODE
+    application:Application
     constructor(options:BaseInstance.options) {
-        super();
         this.options = options
+        this.application = options.application
         this.id = generateMixed();
         this.data = {}
         this.methods = new Map();
@@ -96,18 +108,19 @@ export class BaseInstance extends Node{
     }
 
 
-
     render() {
         let { options } = this;
         let { compilerOptions } = options;
 
         let { render } = compilerOptions;
 
-
-        this.vnode = render.call(this);
+        this.vnode = render.call(this,this.data);
 
     }
 
+    getVnode() {
+        return this.vnode
+    }
 
     getMetaVnode() {
 
@@ -450,19 +463,11 @@ export class BaseInstance extends Node{
     }
 
 
-    getReallyName(expOrStr:string) {
-        let res = expOrStr;
-        if (isDynamaticExpression(expOrStr)) {
-            let func = new Function(`_ctx`, `return ${expOrStr}`);
-            res = func(this.data);
-        }
 
-        return res;
-    }
 
 
     callMethod(funcExpOrName,params) {
-        let methodName = this.getReallyName(funcExpOrName);
+        let methodName = funcExpOrName
         if (this[methodName]) {
             this[methodName](params);
         }else {
@@ -503,7 +508,7 @@ export class BaseInstance extends Node{
         }
 
         let { expression } = item;
-        let exp = this.getReallyName(expression);
+        let exp = expression
         if (this[exp]) {
             this[exp](args)
         }
@@ -512,6 +517,38 @@ export class BaseInstance extends Node{
         }
 
 
+    }
+
+
+    createElementVNode(tag: string, props: Record<any, any>, children: IVNODE[]): IVNODE {
+        return {
+            tag,
+            props,
+            id:generateMixed(),
+            children,
+            shapeFlage: ShapeFlags.ELEMENT
+        }
+    }
+
+
+
+    createComponentVNode(tag:string,options:CompilerComponentOptions,props:Record<string,any>) :IVNODE {
+
+        let { application,id } = this;
+
+        let children = application.createComponent({
+            parentId:id,
+            props,
+            templateId:options.templateId,
+            name:options.name
+        })
+        children.init();
+        return {
+            tag,
+            id:generateMixed(),
+            vnode:children.getVnode(),
+            shapeFlage:ShapeFlags.COMPONENT
+        }
     }
 
 
