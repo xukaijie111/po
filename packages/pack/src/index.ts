@@ -8,7 +8,6 @@ import glob from 'glob'
 
 import esbuild from 'esbuild'
 
-import Path from "path"
 
 import {
     Plugin
@@ -16,15 +15,23 @@ import {
 
 import {
     getJsonContent,
-    readFileSync
 } from "@po/cjs-utils"
+import { Component } from "./Component"
 
+import {
+    EsbuildProcessAppFilePlugin
+} from "./plugins/esbuildProcessAppFilePlugin"
+
+import {
+    EsbuildProcessComponentScriptPlugin
+} from "./plugins/esbuildProcessComponentScriptPlugin"
 
 export type IPackJsCoreOptions = {
     projectPath:string,
     dist:string,
     externals:Array<string>
     alias?:Record<string,string>
+    platform:"node" | "android" | "ios"
 }
 
 
@@ -32,18 +39,23 @@ export class PackJsCore {
     options:IPackJsCoreOptions
     appFilePath:string
     appJsonPath:string
-    componentFiles:Array<string>
+    components:Map<string,Component> = new Map()
+
+    plugins:any[]
     constructor(options:IPackJsCoreOptions) {
         this.options = options;
+       
     }
 
     async start() {
-        this.parseFiles();
+        await this.parseFiles();
         this.startBuild();
     }
 
     async parseFiles() {
         await this.parseApp();
+
+        await this.parseComponentFiles();
     }
 
 
@@ -68,37 +80,60 @@ export class PackJsCore {
     }
 
 
+    getAppFile() {
+        return this.appFilePath
+    }
+    getAlias() {
+        return this.options.alias
+    }
+
+    getProjectPath(){
+        return this.options.projectPath
+    }
     async parseComponentFiles() {
 
-        let { appJsonPath,options,componentFiles } = this;
-        let { projectPath } = options;
-
+        let { appJsonPath,options, } = this;
+        let { projectPath } = options
         let parsed = getJsonContent(appJsonPath);
-
         let pages = parsed.pages || []
         if (!pages.length) {
             throw new Error(`No Pages register in app.json`)
         }
 
        for (let page of pages) {
-            let pagePath = await glob.sync(`${projectPath}/${page}.{t,j}s`)
+            await this.parseComponent(`${projectPath}/${page}`)
+       }    
 
-            if (!pagePath || !pagePath.length) {
-                throw new Error(`No Find page ${page} in app.json`)
-            }
+    }
 
-            if (componentFiles.includes(pagePath[0])) {
-                throw new Error(`dulpicate register page ${page} in app.json`)
-            }
 
-           this.parseComponentFile(pagePath[0])
-       }
+    async parseComponent(baseFile:string) {
+
+        let { components } = this;
+        let component = new Component({
+            basePath:baseFile,
+            compilation:this
+        })
+        await component.parseFiles();
+
+        components.set(component.id,component)
+        let jsonResult = component.getJsonResult();
+
+        for (let dep of jsonResult.components) {
+                await this.parseComponent(dep.path);
+        }
 
     }
 
 
 
     async startBuild() {
+
+        this.plugins = [
+            new EsbuildProcessAppFilePlugin(this),
+            new EsbuildProcessComponentScriptPlugin(this)
+        ]
+
 
         try {
             await esbuild
@@ -112,7 +147,7 @@ export class PackJsCore {
                     plugins: this.getPlugins(),
                     treeShaking:false,
                     external:[
-                        ...this.options.externals
+                        ...this.options.externals || []
                     ]
                    
                 })
@@ -126,7 +161,7 @@ export class PackJsCore {
 
     getJsCoreDist() {
 
-        return `${this.options.dist}/jsCore`
+        return `${this.options.dist}/jsCore/index.js`
     }
 
     getPlugins() {
@@ -142,41 +177,22 @@ export class PackJsCore {
     getJsPlugin(): Plugin {
 
         return {
-
             name: "Entry",
             setup: (build) => {
-                build.onLoad({ filter: /\.(j|t)s$/ }, (args) => {
-
-                    let { path } = args;
-                    let code = readFileSync(path)
-
-                    if (path === this.appFilePath) {
-                        code = this.handleAppFile()
-                    } else if (this.componentFiles.includes(path)) {
-                        code = this.processComponentFile(path)
-                    }
-
-                    return {
-                        contents: code,
-                        loader: "ts"
-                    }
-
-                });
-
-                build.onEnd(() => {
-                    
-                    
-
+                this.plugins.forEach((plugin) => {
+                    build.onLoad({ filter: plugin.filter},(args) => {
+                        return plugin.process(args)
+                    })
                 })
             }
         }
     }
 
 
-    processComponentFile(path) {
+    getTargetPlatform():string {
 
+        return this.options.platform;
 
     }
-    
 
 }

@@ -49,7 +49,10 @@ export function walkNode(ast:babel.types.File,obj:any) {
 export function generateCodeByAst(ast: any, options = { plugins :[]}) {
     return generate(ast,{
       //@ts-ignore
-      plugins:options.plugins
+      plugins:options.plugins,
+      jsescOption:{
+        minimal:true
+      }
     }).code;
   }
   

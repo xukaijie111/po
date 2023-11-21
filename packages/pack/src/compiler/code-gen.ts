@@ -87,7 +87,7 @@ export function generate(root:RootNode,options:GenerateOptions):string {
 function generateTemplate(context:CodeGenContext) {
 
 
-    genImports(context);
+   // genImports(context);
 
     context.nextline()
 
@@ -109,27 +109,27 @@ function genImportComponents(context: CodeGenContext) {
 }
 
 
-function genImports(context:CodeGenContext) {
-    let ast = context.getRootAst();
+// function genImports(context:CodeGenContext) {
+//     let ast = context.getRootAst();
 
-    let { push } = context;
-    let { helpers } = ast
+//     let { push } = context;
+//     let { helpers } = ast
 
-    push(`import { `)
+//     push(`import { `)
 
-    let keys = Object.keys(helpers);
+//     let keys = Object.keys(helpers);
 
-    keys.forEach((targetPath) => {
+//     keys.forEach((targetPath) => {
 
-        let keys = helpers[targetPath];
-        keys.forEach((key) => {
-            let map = helperNameMap[key]
-            push(`${map} as ${key}, `)
-        })
-        push(` } from "${targetPath}"`)
+//         let keys = helpers[targetPath];
+//         keys.forEach((key) => {
+//             let map = helperNameMap[key]
+//             push(`${map} as ${key}, `)
+//         })
+//         push(` } from "${targetPath}"`)
 
-    })
-}
+//     })
+// }
 
 
 function genRender(context: CodeGenContext) {
