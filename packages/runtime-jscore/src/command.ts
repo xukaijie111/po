@@ -26,7 +26,7 @@ import {
 } from "@po/dsbridge"
 
 //@ts-ignore
-import Interface  from "@po/bridge-interface-jscore"
+import Interface from "@po/bridge-interface-jscore"
 
 import _ from "@po/shared"
 
@@ -34,32 +34,37 @@ type Instance = PageInstance | ComponentInstance
 
 export class Command {
 
-    application:Application
-    components:Map<string,Instance>
+    application: Application
+    components: Map<string, Instance>
 
     bridge: DsBridge
-    constructor( application:Application) {
+    constructor(application: Application) {
         this.components = new Map();
         this.application = application;
-        this.bridge = new DsBridge({
-            interface:new Interface()
-        })
 
-        // android/ios平台下，该行无实际作用
-        this.bridge.register(this.processMessageFromNative);
     }
 
 
-    removeComponent(id:string) {
-       this.components.delete(id);
+    initBridge() {
+        this.bridge = new DsBridge({
+            interface: new Interface()
+        })
+        // node 平台下才有实际作用
+        this.bridge.register(this.processMessageFromNative);
 
-}
+    }
 
-    processMessageFromNative = (data:MessageDataBase) => {
+
+    removeComponent(id: string) {
+        this.components.delete(id);
+
+    }
+
+    processMessageFromNative = (data: MessageDataBase) => {
 
         let { type } = data;
 
-        switch(type) {
+        switch (type) {
             case PROTOCOL_CMD.C2S_INIT_COMPONENT:
                 return this.cmdCreateComponent(data as MESSAGE_CREATE_COMPONENT_DATA)
             case PROTOCOL_CMD.C2S_DOM_ON_CLICK:
@@ -73,35 +78,28 @@ export class Command {
     }
 
 
-    getComponentById(id:string) {
+    getComponentById(id: string) {
         return this.components.get(id)
     }
 
 
 
-    cmdCreateComponent = (params:MESSAGE_CREATE_COMPONENT_DATA) =>  {
+    cmdCreateComponent = (params: MESSAGE_CREATE_COMPONENT_DATA) => {
 
         let { application } = this
         let { data } = params;
-    
-   
-         application.createComponent(data);
-
-
-
-        
-      
+        application.createComponent(data);
     }
 
-    cmdDomOnClick = (params:MESSAGE_DOM_ON_CLICK_DATA) => {
+    cmdDomOnClick = (params: MESSAGE_DOM_ON_CLICK_DATA) => {
 
         let { data } = params;
-        let { componentId ,name ,params:eventParams} = data
+        let { componentId, name, params: eventParams } = data
 
         let component = this.components.get(componentId)
 
         try {
-            component.callMethod(name,eventParams);
+            component.callMethod(name, eventParams);
         } catch (error) {
             console.log(error)
         }
@@ -109,7 +107,7 @@ export class Command {
     }
 
 
-    cmdComponentReady = (params:MESSAGE_COMPONENT_READY_CMD_DATA) => {
+    cmdComponentReady = (params: MESSAGE_COMPONENT_READY_CMD_DATA) => {
         let { data } = params
 
         let { componentId } = data
@@ -121,10 +119,14 @@ export class Command {
     }
 
 
-    send(data:MessageDataBase) {
-        this.bridge.send(data);
+    send(data: MessageDataBase) {
+        if (this.bridge)
+            this.bridge.send(data);
     }
-    
 
+
+    getInstances() {
+        return this.application.components
+    }
 
 }

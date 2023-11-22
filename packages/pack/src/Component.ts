@@ -172,8 +172,6 @@ export class Component  extends Node{
 
         let { basePath, jsonResult } = this;
 
-        let id = generateMixed();
-
         let projectPath = this.compilation.getProjectPath()
 
         let pathWidthProject = basePath.replace(`${projectPath}/`, '')
@@ -183,7 +181,7 @@ export class Component  extends Node{
         this.shareInfo = {
             name: compName,
             pathWidthProject,
-            id,
+            id:compName,
             isPage: !jsonResult.component
         }
 
@@ -204,6 +202,7 @@ export class Component  extends Node{
 
         let { shareInfo } = this;
 
+        let { name,id,pathWidthProject,isPage } = shareInfo
 
         walkNode(ast, {
 
@@ -218,14 +217,19 @@ export class Component  extends Node{
 
                     let lastPath = this.getLastImportPath(path)
 
-                    let templateCode = generate(this.rootNode ,  {
-                        getComponentShareInfo:() => {
-                            return this.shareInfo
-                        }
-                    })
+                    let renderCode = generate(this.rootNode)
 
+                    const renderTemplate = template(renderCode);
 
-                    const registerTemplate = template(templateCode);
+                    lastPath.insertAfter(renderTemplate());
+
+                    const registerTemplate = template(`${componentOrPageName}.register({
+                        name:"${name}",
+                        render,
+                        templateId:"${id}",
+                        path:"${pathWidthProject}",
+                        isPage:${isPage}
+                    })`)
 
                     lastPath.insertAfter(registerTemplate());
 
@@ -234,7 +238,6 @@ export class Component  extends Node{
         })
 
 
-        console.log(`###comp code is`,generateCodeByAst(ast))
         return  generateCodeByAst(ast)
 
     }

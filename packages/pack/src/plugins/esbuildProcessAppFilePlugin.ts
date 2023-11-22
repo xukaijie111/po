@@ -57,7 +57,7 @@ export class EsbuildProcessAppFilePlugin  extends Node{
                 enter: (path: NodePath) => {
 
 
-                    let appImportNode = template(`import { cmd  } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
+                    let appImportNode = template(`import {  ${JSCORE_APP_NAME} , cmd  } from "${RUNTIME_JSCORE_NPM}";`, { sourceType: 'module' })
 
                     //@ts-ignore
                     path.unshiftContainer("body", appImportNode());

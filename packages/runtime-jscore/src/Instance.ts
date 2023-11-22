@@ -6,18 +6,14 @@ import {
     LifeTimes,
     diffAndClone,
     getDataByPath,
-    PROTOCOL_CMD,
-    MESSAGE_COMPONENT_SET_DATA_DATA,
     generateMixed,
     CREATE_COMPONENT_DATA,
+    PROTOCOL_CMD,
     CompilerComponentOptions,
     ShapeFlags
 } from '@po/shared'
 import { Application } from "./Application";
-import { 
-    isComponentCustomPropKey,
-    isComponentCustomEventKey
- } from "@po/shared";
+
 
  import _ from "@po/shared"
 
@@ -28,33 +24,15 @@ import {
 
  export type INSTANCEHOOKNAME = "onDestroyed"
 
-
- type IChildDynamticPropExpression = {
-    key:string,
-    expression:string,
-    getter?:Function
- }
-
- export type IChildren = {
-    id:string,
-    component:BaseInstance, 
-    childDynamticPropExpression?:Array<IChildDynamticPropExpression>,
-    childEventExpressionLists?:Array<{
-        key:string,
-        expression:string
-    }>
-
- }
-
-
-
 export type IVNODE = {
     tag: string,
     id:string,
+    key:string,
     props?: Record<any, any>,
     children ? : Array<IVNODE>,
     vnode?:IVNODE // 组件内部真正的虚拟节点
-    shapeFlage: ShapeFlags
+    shapeFlage: ShapeFlags,
+    compilerOptions ? :CompilerComponentOptions // 创建组件需要的
 }
 
 
@@ -72,13 +50,14 @@ export class BaseInstance {
     onShow:Function
     onReady:Function
     onDestroyed:Function
-    children:Array<IChildren> = [] 
+    children:Array<BaseInstance> = [] 
     propKeys = []
     listenPropSet = {}
     listenDataKeys = new Set<string>
     parent:BaseInstance
     hooks:Record<INSTANCEHOOKNAME,Array<Function>>
     vnode:IVNODE
+    prevVnode:IVNODE
     application:Application
     constructor(options:BaseInstance.options) {
         this.options = options
@@ -96,14 +75,19 @@ export class BaseInstance {
 
 
     init() {
-        this.initData();
         this.initLifeTimes();
         this.initMethods();
-        this.initObservers();
         this.initLifeTimes();
         this.callHookCreate();
         this.callHookShow();
         this.callHookReady();
+
+        this.observeData();
+
+        // 初始化数据监听
+        this.initObservers();
+
+
         this.render();
     }
 
@@ -122,27 +106,21 @@ export class BaseInstance {
         return this.vnode
     }
 
-    getMetaVnode() {
+    getMetaVnode(vnode:IVNODE) {
 
-        return this._getMetaVnode();
+        
     }
 
 
-    _getMetaVnode() {
-
-
-    }
+  
 
     initObservers() {
         let { runOptions } = this.options
-
         let { observers = { }} = runOptions
 
         for (let name in observers) {
             let lists = name.split(',').map((item) => item.trim())
-
             let origin = observers[name];
-
             let proxyed = () => {
                 let params = lists.map((item) => {
                         let res = [];
@@ -156,10 +134,7 @@ export class BaseInstance {
                 })
                 origin.call(this,...params)
             }
-
             this.observers.set(name,proxyed)
-
-
         }
 
     }
@@ -204,8 +179,7 @@ export class BaseInstance {
 
 
         this.addHook("onDestroyed", () => {
-            this.unObserveChildrenProps();
-            this.parent?.unObserveChildProps(this.id);
+            
         })
 
 
@@ -231,34 +205,10 @@ export class BaseInstance {
     }
 
 
-    unObserveChildrenProps() {
-
-        this.children.forEach((child) => {
-            this.unObserveChildProps(child.id)
-        })
-    }
-
-    unObserveChildProps(id:string) {
+   
 
 
-        let child = this.findChildById(id)
-        if (!child) return;
-
-        let { childDynamticPropExpression } = child
-
-        childDynamticPropExpression.forEach((item) => {
-            let { getter } = item;
-            if (getter) {
-                unobserve(getter);
-            }
-        })
-
-
-
-    }
-
-
-    findChildById(id) : IChildren {
+    findChildById(id:string) : BaseInstance {
 
         let { children } = this;;
 
@@ -267,7 +217,7 @@ export class BaseInstance {
     }
 
 
-    initData() {
+    observeData() {
         let { runOptions} = this.options
         let { data = { }} = runOptions
         Object.assign(this.data,data);
@@ -292,35 +242,7 @@ export class BaseInstance {
     }
 
 
-    initChildPropListen(value) {
-
-        let { component, childDynamticPropExpression  = [] } = value
-
-        childDynamticPropExpression.forEach((item) => {
-
-            if (item.getter) return ;
-            let { key , expression   } = item;
-
-            let func = new Function(`_ctx`, `return ${expression}`)
-            let getter =  () => {
-                    let res =  func(this.data);
-                    console.log(`######子组件需要的属性变了,`,key,res);
-                    // 初始化的时候，不需要更新，
-                    if (item.inited) {
-                        component.notifyPropChange(key,res);
-                    }
-
-                    item.inited = true
-                  
-                    return res;
-            }   
     
-            item.getter = getter;
-            observe(getter);
-        })
-    }
-
-
    
 
     getData() {
@@ -354,40 +276,6 @@ export class BaseInstance {
 
 
 
-    addChild(child:BaseInstance , {
-        props
-    }) {
-        let childDynamticPropExpression = [];
-        let childEventExpressionLists = [];
-        for (let key in props) {
-            let expression = props[key];
-            if (isComponentCustomPropKey(key) && expression.indexOf("_ctx") !== -1) {
-                childDynamticPropExpression.push({
-                    key,
-                    expression
-                })
-            }
-
-            if (isComponentCustomEventKey(key)) {
-                childEventExpressionLists.push({
-                    key,
-                    expression
-                })
-            }
-        }
-        
-        let value = {
-            id:child.id,
-            component:child,
-            childDynamticPropExpression
-        }
-
-
-        this.initChildPropListen(value);
-    
-        this.children.push(value)
-    }
-
 
     setData(value:Record<string,string>,callback?:Function) {
 
@@ -414,9 +302,7 @@ export class BaseInstance {
         
         realKeys.forEach((key) => {
             this.data[key] = realValue[key]
-            this.listenDataKeys.add(key);
         })
-
 
         queuePostFlushCb(this.doRender);
 
@@ -426,40 +312,32 @@ export class BaseInstance {
     doRender = () => {
 
 
-        let { listenDataKeys ,listenPropSet} = this;
+        this.prevVnode = this.vnode;
 
-        let keys = Object.keys(listenPropSet).concat(Array.from(listenDataKeys))
+        this.render()
 
-        let value = {}
+        let diff = this.patch(this.vnode,this.prevVnode);
 
-        keys.forEach((key) => {
-            value[key] = this.data[key]
-        })
-
-        let data : MESSAGE_COMPONENT_SET_DATA_DATA = {
-            type:PROTOCOL_CMD.S2C_SET_DATA,
-            data:{
+        this.application.send({
+            type: PROTOCOL_CMD.S2C_SET_DATA,
+            data: {
                 componentId:this.id,
-                data:{
-                    ...value
-                }
-                
+                data:this.getMetaVnode(diff)
             }
-        }
-
-        console.log(`###send data is`,data)
-        this.container.send(data);
-
-        // 渲染完成后，清空
-        this.listenDataKeys.clear();
-        this.listenPropSet = {};
+        })
     }
 
-    getPropsDataByExpression(expression : string) {
-        let func = new Function(`_ctx`, `return ${expression}`)
-        let res = func(this.data);
-     
-        return res
+
+    patch(newVnode:IVNODE,oldVnode:IVNODE) {
+
+
+        if (!oldVnode) return newVnode
+
+        
+
+
+        return newVnode
+
     }
 
 
@@ -476,54 +354,12 @@ export class BaseInstance {
        
     }
 
-    $emit(name:string,args:any) {
-
-        if (this.parent) {
-            this.parent.emitEventByChild({
-                id:this.id,
-                name,
-                args
-            })
-        }
-
-    }
-
-
-    emitEventByChild({
-        id,
-        name,
-        args
-    }) {
-
-        let child = this.findChildById(id)
-        if (!child) return;
-
-        let { childEventExpressionLists = [] } = child
-
-        let item = _.find(childEventExpressionLists , { key:name })
-
-        if(!item) {
-            console.warn(`Can not find event name ${name}`)
-            return 
-        }
-
-        let { expression } = item;
-        let exp = expression
-        if (this[exp]) {
-            this[exp](args)
-        }
-        else {
-            console.warn(`未找到点击事件 ${exp}`)
-        }
-
-
-    }
-
 
     createElementVNode(tag: string, props: Record<any, any>, children: IVNODE[]): IVNODE {
         return {
             tag,
             props,
+            key:props.key,
             id:generateMixed(),
             children,
             shapeFlage: ShapeFlags.ELEMENT
@@ -534,24 +370,24 @@ export class BaseInstance {
 
     createComponentVNode(tag:string,options:CompilerComponentOptions,props:Record<string,any>) :IVNODE {
 
-        let { application,id } = this;
-
-        let children = application.createComponent({
-            parentId:id,
-            props,
-            templateId:options.templateId,
-            name:options.name
-        })
-        children.init();
         return {
             tag,
             id:generateMixed(),
-            vnode:children.getVnode(),
+            key:props.key,
+            compilerOptions:options,
+            props:props,
             shapeFlage:ShapeFlags.COMPONENT
         }
     }
 
 
+
+   renderList(list:any,fn:Function) {
+        return list.map((item:any,index:number) => {
+            return fn(item,index)
+        })
+    
+    }
 
 
 }

@@ -12,22 +12,17 @@ import { RootNode,
 import {
     CREATE_COMMENT_VNODE,
     RENDER_LIST,
-    helperNameMap,
     isString,
     isObject,
     CREATE_ELEMENT_VNODE,
     CREATE_COMPONENT_VNODE,
 } from '@po/shared'
 
-import {
-
-    ComponentShareInfo
-} from '../helper'
 
 
 export type GenerateOptions = {
 
-    getComponentShareInfo:() => ComponentShareInfo
+   
 
 }
 
@@ -76,7 +71,7 @@ export function generate(root:RootNode,options:GenerateOptions):string {
     let context = createContext(root,options)
 
     generateTemplate(context) 
-    generateExport(context)
+   // generateExport(context)
 
     return context.code;
 
@@ -140,7 +135,10 @@ function genRender(context: CodeGenContext) {
 
 
     push(`function render(_ctx) {
-            let { ${CREATE_ELEMENT_VNODE}, ${CREATE_COMPONENT_VNODE} } = this
+            let { 
+                ${CREATE_ELEMENT_VNODE}, 
+                ${RENDER_LIST},
+                ${CREATE_COMPONENT_VNODE} } = this
             return `)
 
     
@@ -344,22 +342,22 @@ function getCommentVnodeString(comment: string) {
 
 
 
-function generateExport(context:CodeGenContext) {
+// function generateExport(context:CodeGenContext) {
 
 
-        let { push ,options } = context;
-        let shareInfo = options.getComponentShareInfo()
-        let { name,id,pathWidthProject } = shareInfo
+//         let { push ,options } = context;
+//         let shareInfo = options.getComponentShareInfo()
+//         let { name,id,pathWidthProject } = shareInfo
 
 
 
-        push(`
-            const ${name} = {
-                name: "${name}",
-                render,
-                templateId:"${id}",
-                path:"${pathWidthProject}"
-            };
-        `)
+//         push(`
+//             const ${name} = {
+//                 name: "${name}",
+//                 render,
+//                 templateId:"${id}",
+//                 path:"${pathWidthProject}"
+//             };
+//         `)
 
-}
+// }

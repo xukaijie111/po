@@ -3,7 +3,8 @@
 
 import {
     CompilerComponentOptions,
-    CREATE_COMPONENT_DATA
+    CREATE_COMPONENT_DATA,
+    serialPageName
 } from '@po/shared'
 import { ComponentInstance } from './Component';
 
@@ -16,6 +17,7 @@ import {
     ComponentOptions
 } from './expose'
 import { BaseInstance } from './Instance';
+import { Command } from './command';
 
 
 
@@ -31,15 +33,18 @@ export class Application {
     components:Array<ComponentInstance | PageInstance>
     componentsMap: CompotionsMap
     currentCompilerComponentOptions: CompilerComponentOptions | null
+    cmd:Command
 
-
-    constructor() {
+    constructor(cmd:Command) {
         this.components = [];
         this.currentCompilerComponentOptions = null;
         this.componentsMap = new Map();
-
+        this.cmd = cmd
     }
 
+    send(params) {
+        this.cmd.send(params);
+    }
 
     register = (options: CompilerComponentOptions) => {
 
@@ -71,6 +76,9 @@ export class Application {
 
         let { componentsMap, } = this;
 
+
+        initData.templateId = serialPageName(initData.templateId)
+        initData.name = serialPageName(initData.name)
         let { templateId } = initData
 
         let keys = Array.from(componentsMap.keys());
