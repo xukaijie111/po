@@ -3,6 +3,9 @@ import { observable, observe , unobserve } from '@nx-js/observer-util';
 
 
 import {
+    patch
+} from "./patch"
+import {
     LifeTimes,
     diffAndClone,
     getDataByPath,
@@ -32,6 +35,8 @@ export type IVNODE = {
     vnode?:IVNODE // 组件内部真正的虚拟节点
     shapeFlage: ShapeFlags,
     compilerOptions ? :CompilerComponentOptions // 创建组件需要的
+
+    owner:BaseInstance
 }
 
 
@@ -315,7 +320,7 @@ export class BaseInstance {
 
         this.render()
 
-        let diff = this.patch(this.vnode,this.prevVnode);
+        let diff = patch(this.vnode,this.prevVnode);
 
         this.application.send({
             type: PROTOCOL_CMD.S2C_SET_DATA,
@@ -326,18 +331,6 @@ export class BaseInstance {
         })
     }
 
-
-    patch(newVnode:IVNODE,oldVnode:IVNODE) {
-
-
-        if (!oldVnode) return newVnode
-
-        
-
-
-        return newVnode
-
-    }
 
 
 
@@ -361,6 +354,7 @@ export class BaseInstance {
             key:props.key,
             id:generateMixed(),
             children,
+            owner:this,
             shapeFlage: ShapeFlags.ELEMENT
         }
     }
@@ -370,6 +364,7 @@ export class BaseInstance {
     createComponentVNode(tag:string,options:CompilerComponentOptions,props:Record<string,any>) :IVNODE {
 
         return {
+            owner:this,
             tag,
             id:generateMixed(),
             key:props.key,
