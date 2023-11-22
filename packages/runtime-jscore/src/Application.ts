@@ -10,7 +10,7 @@ import { ComponentInstance } from './Component';
 
 import { PageInstance } from './Page'
 
-import _ from "lodash"
+
 
 
 import {
@@ -30,13 +30,12 @@ export type CompotionsMap = Map<
 
 export class Application {
 
-    components:Array<ComponentInstance | PageInstance>
+    components:Map<string, ComponentInstance | PageInstance> = new Map()
     componentsMap: CompotionsMap
     currentCompilerComponentOptions: CompilerComponentOptions | null
     cmd:Command
 
     constructor(cmd:Command) {
-        this.components = [];
         this.currentCompilerComponentOptions = null;
         this.componentsMap = new Map();
         this.cmd = cmd
@@ -98,7 +97,7 @@ export class Application {
 
                     }
                     let instance = isPage? new PageInstance(instanceOptions):new ComponentInstance(instanceOptions)
-                    this.components.push(instance)
+                    this.components.set(instance.id,instance)
 
                     instance.addHook("onDestroyed",() => {
                         this.removeComponent(instance.id)
@@ -115,20 +114,14 @@ export class Application {
 
 
     resolveComponent(id:string) {
-        let { components } = this
-        for (let i = 0 ;i < components.length;i++) {
-            if (components[i].id === id) {
-                return components[i]
-            }
-        }
+        return this.components.get(id)
 
-        throw new Error(`Can Not Resolve Component Id : ${id}`)
+       // throw new Error(`Can Not Resolve Component Id : ${id}`)
 
     }
 
 
     removeComponent(id:string) {
-        let index = _.findIndex(this.components, { id })
-        this.components.splice(index,1)
+       this.components.delete(id);
     }
 }

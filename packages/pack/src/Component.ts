@@ -217,7 +217,7 @@ export class Component  extends Node{
 
                     let lastPath = this.getLastImportPath(path)
 
-                    let renderCode = generate(this.rootNode)
+                    let renderCode = generate(this.rootNode , { })
 
                     const renderTemplate = template(renderCode);
 

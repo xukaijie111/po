@@ -71,9 +71,6 @@ export * from './object'
 export * from './util'
 
 
-import _ from "./underscore"
-
-export default _
 
 
 export enum LifeTimes {

@@ -6,7 +6,7 @@ import {
     getRelativePath
 } from '@po/cjs-utils'
 
-import _ from 'lodash'
+import _ from "lodash"
 
 import Path from "path"
 

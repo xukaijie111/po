@@ -35,9 +35,7 @@ export const enum HOOKNAMES  {
    AFTEREMIT = "afterEmit"
 }
 
-import {
-    ComponentShareInfo
-} from './helper'
+
 
 import defaultPlugins from "./plugins/index"
 

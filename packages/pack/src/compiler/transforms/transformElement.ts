@@ -17,7 +17,7 @@ import {
     CodeGenProp
 } from '../ast'
 
-import _ from 'lodash'
+import _ from "lodash"
 import { transformExpression } from "./transformExpression";
 import {
     processElemnetCodegenChild,

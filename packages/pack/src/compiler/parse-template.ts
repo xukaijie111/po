@@ -18,7 +18,7 @@ import {
 
 
 
-import _ from 'lodash'
+import _ from "lodash"
 import { ResolveOptions } from './helper'
 
 

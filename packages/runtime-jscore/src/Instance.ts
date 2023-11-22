@@ -15,7 +15,6 @@ import {
 import { Application } from "./Application";
 
 
- import _ from "@po/shared"
 
  import {
     queuePostFlushCb
@@ -50,7 +49,7 @@ export class BaseInstance {
     onShow:Function
     onReady:Function
     onDestroyed:Function
-    children:Array<BaseInstance> = [] 
+    children:Map<string,BaseInstance> = new Map()
     propKeys = []
     listenPropSet = {}
     listenDataKeys = new Set<string>
@@ -212,7 +211,7 @@ export class BaseInstance {
 
         let { children } = this;;
 
-        let child = _.find(children, { id })
+        let child = children.get(id);
         return child
     }
 

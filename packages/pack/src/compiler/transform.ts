@@ -5,7 +5,7 @@ import {
     CodegenNode
 } from './ast'
 
-import _ from 'lodash'
+import _ from "lodash"
 
 import {
     processOnExpression
